@@ -31,6 +31,10 @@ public class Robot {
             position.setxCoordinate(position.getxCoordinate() + trajectorySpeed());
         } else if (position.getRotation() == 180.0) {
             position.setxCoordinate(position.getxCoordinate() - trajectorySpeed());
+        } else if (position.getRotation() == 90.0) {
+            position.setyCoordinate(position.getyCoordinate() + trajectorySpeed());
+        } else if (position.getRotation() == 270.0) {
+            position.setyCoordinate(position.getyCoordinate() - trajectorySpeed());
         } else if (position.getRotation() <= 90.0) {
             position.setxCoordinate(position.getxCoordinate() + (trajectorySpeed() * (1 - rotation / 90)));
             position.setyCoordinate(position.getyCoordinate() + (trajectorySpeed() * (rotation / 90)));
