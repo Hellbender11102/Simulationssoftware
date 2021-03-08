@@ -35,15 +35,15 @@ public class Position {
     }
 
     public void setRotation(double rotation) {
-        this.rotation = rotation;
+        while(rotation < 0) rotation+=360;
+        this.rotation = rotation % 360;
     }
 
     @Override
     public String toString() {
-        return "Position{" +
-                "xCoordinate=" + xCoordinate +
-                ", yCoordinate=" + yCoordinate +
-                ", rotation=" + rotation +
-                '}';
+        return "Position:" +
+                "X:" + String.format("%,.2f", xCoordinate) +
+                ", Y:" + String.format("%,.2f", yCoordinate)  +
+                ", rotation:" + rotation;
     }
 }
