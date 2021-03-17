@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.LinkedList;
 import java.awt.Graphics;
+import java.util.Random;
 
 public class View extends JFrame {
     private LinkedList<Position> globalPosition = new LinkedList();
@@ -28,10 +29,11 @@ public class View extends JFrame {
             g.setColor(Color.red);
             g.fillRect((int) pos.getxCoordinate(), (int) pos.getyCoordinate(), 15, 15);
         }
-        if(singleRobotPos != null){
-            g.setColor(Color.blue);
-            g.fillRect((int) singleRobotPos.getxCoordinate(), (int) singleRobotPos.getyCoordinate(), 10, 10);
 
+        if(singleRobotPos != null){
+            Random r = new Random();
+            g.setColor(new Color(r.nextInt()));
+            g.fillRect((int) singleRobotPos.getxCoordinate(), (int) singleRobotPos.getyCoordinate(), 10, 10);
         }
     }
 

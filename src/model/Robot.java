@@ -1,9 +1,6 @@
 package model;
 
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Robot extends Thread {
     private double engineL;
@@ -13,12 +10,14 @@ public class Robot extends Thread {
     private final double distanceE;
     double powerTransmission = 0;
     int cycles = 10000;
+    ConcurrentLinkedQueue<Position> conQueue;
 
-    public Robot(double motorR, double motorL, double distanceE,Position position) {
+    public Robot(double motorR, double motorL, double distanceE, Position position, ConcurrentLinkedQueue<Position> conQue) {
         this.engineL = motorL;
         this.engineR = motorR;
         this.distanceE = distanceE;
         this.position = position;
+        this.conQueue = conQue;
     }
 
     private double trajectorySpeed() {
@@ -76,13 +75,15 @@ public class Robot extends Thread {
     public void run() {
         for (int i = 0; i < cycles; i++) {
             drive();
-            System.out.println(i + ": " + toString());
             try {
-                sleep(1000);
+                sleep(10);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            conQueue.offer(position);
+
         }
+        System.out.println(conQueue.poll());
     }
 
     public void start(int cycles) {
