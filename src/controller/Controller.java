@@ -9,20 +9,29 @@ import java.util.*;
 public class Controller {
     private View view;
     private Map<Robot, Position> robotsAndPositionOffsets = new HashMap<>();
+    int x = 0, y = 0;
 
     public Controller(View view) {
         this.view = view;
-        robotsAndPositionOffsets.put(new Robot(0, 1, 2), new Position(0, 0));
-        robotsAndPositionOffsets.put(new Robot(0, 1, 2), new Position(100, 100, 50));
+
+        Position p1 = new Position(300, 300);
+        Robot r1 = new Robot(0, 1, 2, p1);
+        //Robot r2 = new Robot(1, 0, 2);
+        robotsAndPositionOffsets.put(r1, p1);
+        //  robotsAndPositionOffsets.put(r2, new Position(100, 100, 50));
     }
 
-    public void simulationLoop() {
-        for (Robot robot : robotsAndPositionOffsets.keySet()) {
-            robot.start(1000);
-        }
-        for (int i = 0; i < 1000; i++) {
-            view.setRobots(convertPositionsToGlobal(robotsAndPositionOffsets));
-            view.repaint();
+    public void simulationLoop(int i) {
+        view.repaint();
+        for (Robot r : robotsAndPositionOffsets.keySet()) {
+            view.setRobot(r.getLocalPosition());
+            r.start(i);
+                            view.setRobot(r.getLocalPosition());
+            for (int j = 0; j < i; j++) {
+                view.setRobot(r.getLocalPosition());
+                view.repaint();
+            }
+
         }
     }
 
@@ -33,6 +42,7 @@ public class Controller {
         }
         return globalPositionList;
     }
+
 
     private Position transformation(Position pGlobal, Position pLocal) {
         double x = pGlobal.getxCoordinate() + pLocal.getxCoordinate();

@@ -9,6 +9,7 @@ import java.awt.Graphics;
 
 public class View extends JFrame {
     private LinkedList<Position> globalPosition = new LinkedList();
+    private Position singleRobotPos;
 
     public View() {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -27,5 +28,14 @@ public class View extends JFrame {
             g.setColor(Color.red);
             g.fillRect((int) pos.getxCoordinate(), (int) pos.getyCoordinate(), 15, 15);
         }
+        if(singleRobotPos != null){
+            g.setColor(Color.blue);
+            g.fillRect((int) singleRobotPos.getxCoordinate(), (int) singleRobotPos.getyCoordinate(), 10, 10);
+
+        }
+    }
+
+    public void setRobot(Position localPosition) {
+        this.singleRobotPos = localPosition;
     }
 }

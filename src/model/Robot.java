@@ -1,31 +1,36 @@
 package model;
 
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 public class Robot extends Thread {
     private double engineL;
     private double engineR;
-    private int width = 1, hight = 1;
+    private final int width = 1, hight = 1;
     private Position position;
     private final double distanceE;
     double powerTransmission = 0;
-    int cycles;
+    int cycles = 10000;
 
-    public Robot(double motorR, double motorL, double distanceE) {
+    public Robot(double motorR, double motorL, double distanceE,Position position) {
         this.engineL = motorL;
         this.engineR = motorR;
         this.distanceE = distanceE;
-        this.position = new Position(0, 0, 0);
+        this.position = position;
     }
 
-    public double trajectorySpeed() {
+    private double trajectorySpeed() {
         return (engineR + engineL) / 2;
     }
 
-    public double angularVelocity() {
+    private double angularVelocity() {
         return (engineR - engineL) / distanceE;
     }
 
 
-    public void drive() {
+    private synchronized void drive() {
         position.setRotation(position.getRotation() + angularVelocity());
         double rotation = position.getRotation() % 90;
         if (position.getRotation() == 0.0) {
@@ -59,28 +64,13 @@ public class Robot extends Thread {
         return position;
     }
 
-    public void setEngineL(double motorL) {
-        this.engineL = motorL;
-    }
-
-    public double getEngineL() {
-        return engineL;
-    }
-
-    public void setEngineR(double motorR) {
-        this.engineR = motorR;
-    }
-
-    public double getEngineR() {
-        return engineR;
-    }
-        public int getWidth() {
+    public int getWidth() {
         return width;
     }
+
     public int getHight() {
         return hight;
     }
-
 
     @Override
     public void run() {
@@ -88,7 +78,7 @@ public class Robot extends Thread {
             drive();
             System.out.println(i + ": " + toString());
             try {
-                sleep(10);
+                sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
