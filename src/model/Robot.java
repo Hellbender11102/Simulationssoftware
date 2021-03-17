@@ -1,12 +1,13 @@
 package model;
 
-public class Robot {
+public class Robot extends Thread {
     private double engineL;
     private double engineR;
-    private double length = 1, width = 1;
+    private int width = 1, hight = 1;
     private Position position;
-    final double distanceE;
+    private final double distanceE;
     double powerTransmission = 0;
+    int cycles;
 
     public Robot(double motorR, double motorL, double distanceE) {
         this.engineL = motorL;
@@ -54,23 +55,48 @@ public class Robot {
         return position.toString();
     }
 
-    public Position getPosition() {
+    public Position getLocalPosition() {
         return position;
     }
 
-    public void setmotorL(double motorL) {
+    public void setEngineL(double motorL) {
         this.engineL = motorL;
     }
 
-    public double getmotorL() {
+    public double getEngineL() {
         return engineL;
     }
 
-    public void setmotorR(double motorR) {
+    public void setEngineR(double motorR) {
         this.engineR = motorR;
     }
 
-    public double getmotorR() {
+    public double getEngineR() {
         return engineR;
+    }
+        public int getWidth() {
+        return width;
+    }
+    public int getHight() {
+        return hight;
+    }
+
+
+    @Override
+    public void run() {
+        for (int i = 0; i < cycles; i++) {
+            drive();
+            System.out.println(i + ": " + toString());
+            try {
+                sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void start(int cycles) {
+        this.cycles = cycles;
+        super.start();
     }
 }
