@@ -1,23 +1,31 @@
 package model;
 
+import java.awt.*;
+import java.util.LinkedList;
+import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Robot extends Thread {
     private double engineL;
     private double engineR;
-    private final int width = 1, hight = 1;
     private Position position;
     private final double distanceE;
     double powerTransmission = 0;
-    int cycles = 10000;
-    ConcurrentLinkedQueue<Position> conQueue;
+    private int cycles = 10000;
+    private ConcurrentLinkedQueue<Robot> threadOutputQueue;
+    private final Random random;
 
-    public Robot(double motorR, double motorL, double distanceE, Position position, ConcurrentLinkedQueue<Position> conQue) {
+    final Color color;
+
+    public Robot(double motorR, double motorL, double distanceE,
+                 Position position, ConcurrentLinkedQueue<Robot> threadOutputQueue,Random random) {
         this.engineL = motorL;
         this.engineR = motorR;
         this.distanceE = distanceE;
         this.position = position;
-        this.conQueue = conQue;
+        this.random = random;
+        this.threadOutputQueue = threadOutputQueue;
+        this.color = new Color(random.nextInt());
     }
 
     private double trajectorySpeed() {
@@ -63,27 +71,22 @@ public class Robot extends Thread {
         return position;
     }
 
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHight() {
-        return hight;
-    }
 
     @Override
     public void run() {
-        for (int i = 0; i < cycles; i++) {
+        while (cycles-- > 0) {
             drive();
+            threadOutputQueue.offer(this);
             try {
-                sleep(10);
+                sleep(15);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            conQueue.offer(position);
-
         }
-        System.out.println(conQueue.poll());
+    }
+
+        public Color getColor() {
+        return color;
     }
 
     public void start(int cycles) {

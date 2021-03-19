@@ -4,42 +4,39 @@ import model.Position;
 import model.Robot;
 import view.View;
 
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Controller {
     private View view;
-    private Map<Robot, Position> robotsAndPositionOffsets = new HashMap<>();
-    ConcurrentLinkedQueue<Position> conQueue = new ConcurrentLinkedQueue<>();
+    private Map<Robot, Position> robotsAndPositionOffsets;
+    private ConcurrentLinkedQueue<Robot> threadOutputQueue;
+    private final Random random;
 
-    public Controller(View view) {
+    public Controller(View view, ConcurrentLinkedQueue<Robot> threadOutputQueue,
+                      Map<Robot, Position>robotsAndPositionOffsets,Random random) {
         this.view = view;
-
-        Position p1 = new Position(300, 300);
-        Position p2 = new Position(300, 300);
-        Robot r1 = new Robot(0, 1, 2, p1, conQueue);
-        Robot r2 = new Robot(1, 0, 2, p2, conQueue);
-        robotsAndPositionOffsets.put(r1, p1);
-        robotsAndPositionOffsets.put(r2, p2);
+        this.robotsAndPositionOffsets = robotsAndPositionOffsets;
+        viewListener();
+        this.threadOutputQueue = threadOutputQueue;
+        this.random = random;
     }
 
     public void startRobotThreads(int cycle) {
         robotsAndPositionOffsets.keySet().forEach(robot -> {
             robot.start(cycle);
-            view.setRobot(robot.getLocalPosition());
         });
     }
 
     public void visiualisationLoop() {
-        while (robotsAndPositionOffsets.keySet().stream().map(Thread::isAlive).reduce(false,(e1, e2) -> e1||e2)) {
-            if (!conQueue.isEmpty()) {
-                Position pos = conQueue.poll();
-                System.out.println(pos);
-                view.setRobot(pos);
+        while (robotsAndPositionOffsets.keySet().stream().map(Thread::isAlive).reduce(false, (e1, e2) -> e1 || e2)) {
+            if (!threadOutputQueue.isEmpty()) {
+                view.setRobot(new LinkedList<Robot>(threadOutputQueue));
                 view.repaint();
             }
         }
-        System.out.println("fertig");
     }
 
     private LinkedList<Position> convertPositionsToGlobal(Map<Robot, Position> localAndOffset) {
@@ -56,5 +53,29 @@ public class Controller {
         double y = pGlobal.getyCoordinate() + pLocal.getyCoordinate();
         double rotation = pGlobal.getRotation() + pLocal.getRotation();
         return new Position(x, y, rotation);
+    }
+
+    private void viewListener() {
+        KeyListener keyListener = new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyChar() == ' ') {
+                    robotsAndPositionOffsets.keySet().forEach(robot -> {
+                        System.out.println(robot.getState());
+                    });
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+
+            }
+        };
+        view.addKeyListener(keyListener);
     }
 }
