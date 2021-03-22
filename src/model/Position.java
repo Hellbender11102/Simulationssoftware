@@ -6,7 +6,7 @@ public class Position {
     public Position(double xCoordinate, double yCoordinate, double rotation) {
         this.xCoordinate = xCoordinate;
         this.yCoordinate = yCoordinate;
-        this.rotation = rotation;
+        this.rotation = rotation % 360;
     }
 
     public Position(double xCoordinate, double yCoordinate) {
@@ -35,15 +35,21 @@ public class Position {
     }
 
     public void setRotation(double rotation) {
-        while(rotation < 0) rotation+=360;
+        while (rotation < 0) rotation += 360;
         this.rotation = rotation % 360;
+    }
+
+    public boolean equals(Position position) {
+        return xCoordinate == position.xCoordinate &&
+                yCoordinate == position.yCoordinate &&
+                rotation == position.rotation;
     }
 
     @Override
     public String toString() {
         return "Position:" +
                 "X:" + String.format("%,.2f", xCoordinate) +
-                ", Y:" + String.format("%,.2f", yCoordinate)  +
+                ", Y:" + String.format("%,.2f", yCoordinate) +
                 ", rotation:" + rotation;
     }
 }

@@ -1,31 +1,44 @@
 package model;
 
+import java.awt.*;
+import java.util.LinkedList;
+import java.util.Random;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 public class Robot extends Thread {
     private double engineL;
     private double engineR;
-    private int width = 1, hight = 1;
     private Position position;
     private final double distanceE;
     double powerTransmission = 0;
-    int cycles;
+    private int cycles = 10000;
+    private int width = 10 ,height = 10;
+    private ConcurrentLinkedQueue<Robot> threadOutputQueue;
+    private final Random random;
 
-    public Robot(double motorR, double motorL, double distanceE) {
+    final Color color;
+
+    public Robot(double motorR, double motorL, double distanceE,
+                 Position position, ConcurrentLinkedQueue<Robot> threadOutputQueue,Random random) {
         this.engineL = motorL;
         this.engineR = motorR;
         this.distanceE = distanceE;
-        this.position = new Position(0, 0, 0);
+        this.position = position;
+        this.random = random;
+        this.threadOutputQueue = threadOutputQueue;
+        this.color = new Color(random.nextInt());
     }
 
-    public double trajectorySpeed() {
+    private double trajectorySpeed() {
         return (engineR + engineL) / 2;
     }
 
-    public double angularVelocity() {
+    private double angularVelocity() {
         return (engineR - engineL) / distanceE;
     }
 
 
-    public void drive() {
+    private synchronized void drive() {
         position.setRotation(position.getRotation() + angularVelocity());
         double rotation = position.getRotation() % 90;
         if (position.getRotation() == 0.0) {
@@ -59,44 +72,33 @@ public class Robot extends Thread {
         return position;
     }
 
-    public void setEngineL(double motorL) {
-        this.engineL = motorL;
+    public void start(int cycles) {
+        this.cycles = cycles;
+        super.start();
     }
-
-    public double getEngineL() {
-        return engineL;
-    }
-
-    public void setEngineR(double motorR) {
-        this.engineR = motorR;
-    }
-
-    public double getEngineR() {
-        return engineR;
-    }
-        public int getWidth() {
-        return width;
-    }
-    public int getHight() {
-        return hight;
-    }
-
 
     @Override
     public void run() {
-        for (int i = 0; i < cycles; i++) {
+        while (cycles-- > 0) {
             drive();
-            System.out.println(i + ": " + toString());
+            threadOutputQueue.offer(this);
             try {
-                sleep(10);
+                sleep(15);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    public void start(int cycles) {
-        this.cycles = cycles;
-        super.start();
+        public Color getColor() {
+        return color;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public int getWidth() {
+        return width;
     }
 }
