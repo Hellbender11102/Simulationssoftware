@@ -12,6 +12,7 @@ public class Robot extends Thread {
     private final double distanceE;
     double powerTransmission = 0;
     private int cycles = 10000;
+    private int width = 10 ,height = 10;
     private ConcurrentLinkedQueue<Robot> threadOutputQueue;
     private final Random random;
 
@@ -71,6 +72,10 @@ public class Robot extends Thread {
         return position;
     }
 
+    public void start(int cycles) {
+        this.cycles = cycles;
+        super.start();
+    }
 
     @Override
     public void run() {
@@ -89,8 +94,11 @@ public class Robot extends Thread {
         return color;
     }
 
-    public void start(int cycles) {
-        this.cycles = cycles;
-        super.start();
+    public int getHeight() {
+        return height;
+    }
+
+    public int getWidth() {
+        return width;
     }
 }
