@@ -59,7 +59,7 @@ public class Controller {
 
     private void viewListener() {
         KeyListener keyListener = new KeyListener() {
-            int i = 1;
+            int x=1,y = 1;
 
             @Override
             public void keyTyped(KeyEvent e) {
@@ -73,14 +73,19 @@ public class Controller {
                         robotsAndPositionOffsets.keySet().forEach(robot -> {
                             System.out.println(robot.getState());
                         });
-                    case 'w':
-                        System.out.println("scroll: " + i++);
+                        break;
+                    case'w':
+                        System.out.println("scroll w: " + x++);
+                        break;
                     case 'a':
-                        System.out.println("scroll: " + i++);
+                        System.out.println("scroll a: " + y--);
+                        break;
                     case 's':
-                        System.out.println("scroll: " + i++);
+                        System.out.println("scroll s: " + x--);
+                        break;
                     case 'd':
-                        System.out.println("scroll: " + i++);
+                        System.out.println("scroll d: " + y++);
+                        break;
                 }
             }
 
@@ -88,17 +93,15 @@ public class Controller {
             public void keyReleased(KeyEvent e) {
                 switch (e.getKeyChar()) {
                     case 'w':
-                        i = 0;
-                        System.out.println("scroll: " + i);
-                    case 'a':
-                        i = 0;
-                        System.out.println("scroll: " + i);
                     case 's':
-                        i = 0;
-                        System.out.println("scroll: " + i);
+                        x=0;
+                        System.out.println("scroll: " + x);
+                        break;
+                    case 'a':
                     case 'd':
-                        i = 0;
-                        System.out.println("scroll: " + i);
+                        y=0;
+                        System.out.println("scroll: " + y);
+                        break;
                 }
             }
         };
