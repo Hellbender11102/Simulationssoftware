@@ -1,5 +1,6 @@
 package controller;
 
+import model.Arena;
 import model.Position;
 import model.Robot;
 import view.View;
@@ -8,18 +9,22 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Controller {
     private View view;
+    private Arena arena;
     private Map<Robot, Position> robotsAndPositionOffsets;
     private ConcurrentLinkedQueue<Robot> threadOutputQueue;
     private final Random random;
+    private final Timer timer = new Timer();
 
-    public Controller( ConcurrentLinkedQueue<Robot> threadOutputQueue,
-                      Map<Robot, Position> robotsAndPositionOffsets, Random random) {
+    public Controller(ConcurrentLinkedQueue<Robot> threadOutputQueue,
+                      Map<Robot, Position> robotsAndPositionOffsets, Arena arena, Random random) {
         view = new View();
+        this.arena = arena;
         this.robotsAndPositionOffsets = robotsAndPositionOffsets;
         viewListener();
         this.threadOutputQueue = threadOutputQueue;
@@ -32,14 +37,20 @@ public class Controller {
         });
     }
 
-    public void visiualisationLoop() {
-        while (robotsAndPositionOffsets.keySet().stream().map(Thread::isAlive).reduce(false, (e1, e2) -> e1 || e2)) {
-            if (!threadOutputQueue.isEmpty()) {
-                view.setRobot(new LinkedList<>(threadOutputQueue));
-                view.repaint();
+    public void visiualisationLoop(int framesPerSecond) {
+        //  if (!threadOutputQueue.isEmpty()) {
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                    if (threadOutputQueue.size() > 2) {
+                        view.setRobot(new LinkedList<Robot>(List.of(threadOutputQueue.poll(), threadOutputQueue.poll(), threadOutputQueue.poll())));
+                    }
+                    view.repaint();
+                    System.out.println(LocalDateTime.now());
             }
-        }
+        }, 1000,1000 / framesPerSecond);
     }
+
 
     private LinkedList<Position> convertPositionsToGlobal(Map<Robot, Position> localAndOffset) {
         LinkedList<Position> globalPositionList = new LinkedList<>();
@@ -59,7 +70,7 @@ public class Controller {
 
     private void viewListener() {
         KeyListener keyListener = new KeyListener() {
-            int x=1,y = 1;
+            int x = 1, y = 1;
 
             @Override
             public void keyTyped(KeyEvent e) {
@@ -74,7 +85,7 @@ public class Controller {
                             System.out.println(robot.getState());
                         });
                         break;
-                    case'w':
+                    case 'w':
                         System.out.println("scroll w: " + x++);
                         break;
                     case 'a':
@@ -94,12 +105,12 @@ public class Controller {
                 switch (e.getKeyChar()) {
                     case 'w':
                     case 's':
-                        x=0;
+                        x = 0;
                         System.out.println("scroll: " + x);
                         break;
                     case 'a':
                     case 'd':
-                        y=0;
+                        y = 0;
                         System.out.println("scroll: " + y);
                         break;
                 }
