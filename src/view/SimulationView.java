@@ -1,14 +1,10 @@
 package view;
 
-import model.Position;
 import model.Robot;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
-import java.util.function.Function;
 
 public class SimulationView extends JPanel {
 
@@ -16,15 +12,18 @@ public class SimulationView extends JPanel {
 
     public void paint(Graphics g) {
         if (robots != null) {
+            g.setPaintMode();
             for (Robot robot : robots) {
+                int x = (int) Math.round(robot.getLocalPosition().getxCoordinate());
+                int y = (int) Math.round(robot.getLocalPosition().getyCoordinate());
                 g.setColor(robot.getColor());
-                g.fillRect((int) Math.round(robot.getLocalPosition().getxCoordinate()), (int) Math.round(robot.getLocalPosition().getyCoordinate()),
-                        robot.getWidth(), robot.getHeight());
+                g.fillOval(x, y, robot.getWidth(), robot.getHeight());
             }
         }
     }
 
     void setRobot(LinkedList<Robot> localPositions) {
         this.robots = localPositions;
+        repaint();
     }
 }

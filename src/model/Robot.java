@@ -12,14 +12,14 @@ public class Robot extends Thread {
     private final double distanceE;
     double powerTransmission = 0;
     private int cycles = 10000;
-    private int width = 10 ,height = 10;
+    private int width = 10, height = 10;
     private ConcurrentLinkedQueue<Robot> threadOutputQueue;
     private final Random random;
 
     final Color color;
 
     public Robot(double motorR, double motorL, double distanceE,
-                 Position position, ConcurrentLinkedQueue<Robot> threadOutputQueue,Random random) {
+                 Position position, ConcurrentLinkedQueue<Robot> threadOutputQueue, Random random) {
         this.engineL = motorL;
         this.engineR = motorR;
         this.distanceE = distanceE;
@@ -72,25 +72,22 @@ public class Robot extends Thread {
         return position;
     }
 
-    public void start(int cycles) {
-        this.cycles = cycles;
-        super.start();
-    }
+   // abstract void behavior();
 
     @Override
     public void run() {
-        while (cycles-- > 0) {
+        while (!this.isInterrupted()) {
             drive();
             threadOutputQueue.offer(this);
             try {
-                sleep(15);
+                sleep(10);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
     }
 
-        public Color getColor() {
+    public Color getColor() {
         return color;
     }
 

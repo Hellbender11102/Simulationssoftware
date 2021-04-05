@@ -1,0 +1,39 @@
+{
+  "seed": 1000,
+  "arena": {
+    "width": 200,
+    "height": 200
+  },
+  "robots": [
+    {
+      "engineR": 0.5,
+      "engineL": 1.0,
+      "distance": 1.0,
+      "position": {
+        "x": 50.0,
+        "y": 50.0,
+        "rotation": 0.0
+      }
+    },
+    {
+      "engineR": 1.0,
+      "engineL": 0.5,
+      "distance": 1.0,
+      "position": {
+        "x": 50.0,
+        "y": 50.0,
+        "rotation": 0.0
+      }
+    },
+    {
+      "engineR": 0.2,
+      "engineL": 1.2,
+      "distance": 1.2,
+      "position": {
+        "x": 50.0,
+        "y": 50.0,
+        "rotation": 80.0
+      }
+    }
+  ]
+}

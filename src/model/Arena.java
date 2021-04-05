@@ -1,7 +1,15 @@
 package model;
 
 public class Arena {
-    int height, width;
+    public int getHeight() {
+        return height;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    final int height, width;
 
     /**
      * Constructor
@@ -11,5 +19,10 @@ public class Arena {
    public Arena(int width, int height) {
         this.width = width;
         this.height = height;
+    }
+
+    @Override
+    public String toString() {
+        return "width:"+width +" height:" +height;
     }
 }

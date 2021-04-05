@@ -19,21 +19,23 @@ public class Controller {
     private Map<Robot, Position> robotsAndPositionOffsets;
     private ConcurrentLinkedQueue<Robot> threadOutputQueue;
     private final Random random;
+    private final int robotCount;
     private final Timer timer = new Timer();
 
     public Controller(ConcurrentLinkedQueue<Robot> threadOutputQueue,
                       Map<Robot, Position> robotsAndPositionOffsets, Arena arena, Random random) {
-        view = new View();
+        view = new View(arena);
+        addViewListener();
         this.arena = arena;
         this.robotsAndPositionOffsets = robotsAndPositionOffsets;
-        viewListener();
         this.threadOutputQueue = threadOutputQueue;
         this.random = random;
+        robotCount = robotsAndPositionOffsets.keySet().size();
     }
 
-    public void startRobotThreads(int cycle) {
+    public void startRobotThreads() {
         robotsAndPositionOffsets.keySet().forEach(robot -> {
-            robot.start(cycle);
+            robot.start();
         });
     }
 
@@ -42,33 +44,35 @@ public class Controller {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                    if (threadOutputQueue.size() > 2) {
-                        view.setRobot(new LinkedList<Robot>(List.of(threadOutputQueue.poll(), threadOutputQueue.poll(), threadOutputQueue.poll())));
+                if (threadOutputQueue.size() >= robotCount) {
+                    LinkedList<Robot> robotList = new LinkedList<Robot>();
+                    for (int i = 0; i < robotCount; i++) {
+                        robotList.add(threadOutputQueue.poll());
                     }
-                    view.repaint();
-                    System.out.println(LocalDateTime.now());
+                    view.setRobot(robotList);
+                }
             }
-        }, 1000,1000 / framesPerSecond);
+        }, 1000, 1000 / framesPerSecond);
     }
 
 
     private LinkedList<Position> convertPositionsToGlobal(Map<Robot, Position> localAndOffset) {
         LinkedList<Position> globalPositionList = new LinkedList<>();
         for (Robot robot : localAndOffset.keySet()) {
-            globalPositionList.add(transformation(localAndOffset.get(robot), robot.getLocalPosition()));
+            globalPositionList.add(transPos(localAndOffset.get(robot), robot.getLocalPosition()));
         }
         return globalPositionList;
     }
 
 
-    private Position transformation(Position pGlobal, Position pLocal) {
+    private Position transPos(Position pGlobal, Position pLocal) {
         double x = pGlobal.getxCoordinate() + pLocal.getxCoordinate();
         double y = pGlobal.getyCoordinate() + pLocal.getyCoordinate();
         double rotation = pGlobal.getRotation() + pLocal.getRotation();
         return new Position(x, y, rotation);
     }
 
-    private void viewListener() {
+    private void addViewListener() {
         KeyListener keyListener = new KeyListener() {
             int x = 1, y = 1;
 

@@ -1,5 +1,6 @@
 package view;
 
+import model.Arena;
 import model.Robot;
 
 import javax.swing.*;
@@ -9,14 +10,13 @@ import java.util.LinkedList;
 public class View extends JFrame {
     private SimulationView simView;
 
-    public View() {
+    public View(Arena arena) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
             ex.printStackTrace();
         }
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        getContentPane().setLayout(new BorderLayout());
 
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         setSize(screenSize.width - (int) (screenSize.width * 0.2), screenSize.height - (int) (screenSize.height * 0.2));
@@ -29,18 +29,16 @@ public class View extends JFrame {
         bar.add(menu);
 
         simView = new SimulationView();
-        getContentPane().add(bar, BorderLayout.NORTH);
-        getContentPane().add(simView, BorderLayout.CENTER);
+        simView.setSize(arena.getWidth(), arena.getHeight());
+        getContentPane().add(bar);
+        getContentPane().add(simView);
         setVisible(true);
     }
 
 
     public void setRobot(LinkedList<Robot> localPositions) {
+        repaint();
         simView.setRobot(localPositions);
     }
 
-    public void repaint() {
-        super.repaint();
-        simView.repaint();
-    }
 }
