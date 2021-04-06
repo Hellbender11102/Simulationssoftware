@@ -19,7 +19,7 @@ public class View extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        setSize(screenSize.width - (int) (screenSize.width * 0.2), screenSize.height - (int) (screenSize.height * 0.2));
+        setSize(screenSize.width , screenSize.height - (int) (screenSize.height * 0.04));
         setTitle("Vibrobot Simulation");
 
         JMenuBar bar = new JMenuBar();
@@ -28,17 +28,14 @@ public class View extends JFrame {
         menu.add(item);
         bar.add(menu);
 
-        simView = new SimulationView();
-        simView.setSize(arena.getWidth(), arena.getHeight());
-        getContentPane().add(bar);
-        getContentPane().add(simView);
+        simView = new SimulationView(arena);
+        getContentPane().add(bar,BorderLayout.NORTH);
+        getContentPane().add(simView,BorderLayout.CENTER);
         setVisible(true);
     }
 
-
-    public void setRobot(LinkedList<Robot> localPositions) {
-        repaint();
-        simView.setRobot(localPositions);
+    public SimulationView getSimView(){
+        return simView;
     }
 
 }

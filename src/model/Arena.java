@@ -1,28 +1,39 @@
 package model;
 
+import java.util.LinkedList;
+
 public class Arena {
-    public int getHeight() {
-        return height;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
+    private LinkedList<Robot> robotList;
     final int height, width;
 
     /**
      * Constructor
-     * @param width in centemeter
+     *
+     * @param width  in centemeter
      * @param height in centemeter
      */
-   public Arena(int width, int height) {
+    public Arena(int width, int height) {
         this.width = width;
         this.height = height;
     }
 
     @Override
     public String toString() {
-        return "width:"+width +" height:" +height;
+        return "width:" + width + " height:" + height;
+    }
+
+    public void setRobots(LinkedList<Robot> robotList) {
+        this.robotList = robotList;
+    }
+    public LinkedList<Robot> getRobots() {
+      return robotList;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public int getWidth() {
+        return width;
     }
 }

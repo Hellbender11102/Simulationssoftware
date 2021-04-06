@@ -40,7 +40,6 @@ public class Controller {
     }
 
     public void visiualisationLoop(int framesPerSecond) {
-        //  if (!threadOutputQueue.isEmpty()) {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -49,7 +48,8 @@ public class Controller {
                     for (int i = 0; i < robotCount; i++) {
                         robotList.add(threadOutputQueue.poll());
                     }
-                    view.setRobot(robotList);
+                    arena.setRobots(robotList);
+                    view.repaint();
                 }
             }
         }, 1000, 1000 / framesPerSecond);
@@ -74,7 +74,7 @@ public class Controller {
 
     private void addViewListener() {
         KeyListener keyListener = new KeyListener() {
-            int x = 1, y = 1;
+            int x = 0, y = 0;
 
             @Override
             public void keyTyped(KeyEvent e) {
@@ -83,39 +83,47 @@ public class Controller {
 
             @Override
             public void keyPressed(KeyEvent e) {
-                switch (e.getKeyChar()) {
-                    case ' ':
+                switch (e.getKeyCode()) {
+                    case KeyEvent.VK_SPACE:
                         robotsAndPositionOffsets.keySet().forEach(robot -> {
                             System.out.println(robot.getState());
                         });
                         break;
-                    case 'w':
-                        System.out.println("scroll w: " + x++);
+                    case KeyEvent.VK_W:
+                    case KeyEvent.VK_UP:
+                        view.getSimView().incOffsetY(y--);
                         break;
-                    case 'a':
-                        System.out.println("scroll a: " + y--);
+                    case KeyEvent.VK_A:
+                    case KeyEvent.VK_LEFT:
+                        view.getSimView().incOffsetX(x--);
                         break;
-                    case 's':
-                        System.out.println("scroll s: " + x--);
+                    case KeyEvent.VK_S:
+                    case KeyEvent.VK_DOWN:
+                        view.getSimView().incOffsetY(y++);
                         break;
-                    case 'd':
-                        System.out.println("scroll d: " + y++);
+                    case KeyEvent.VK_D:
+                    case KeyEvent.VK_RIGHT:
+                        view.getSimView().incOffsetX(x++);
                         break;
                 }
             }
 
             @Override
             public void keyReleased(KeyEvent e) {
-                switch (e.getKeyChar()) {
-                    case 'w':
-                    case 's':
-                        x = 0;
-                        System.out.println("scroll: " + x);
-                        break;
-                    case 'a':
-                    case 'd':
+                switch (e.getKeyCode()) {
+                    case KeyEvent.VK_W:
+                    case KeyEvent.VK_UP:
+                    case KeyEvent.VK_S:
+                    case KeyEvent.VK_DOWN:
                         y = 0;
                         System.out.println("scroll: " + y);
+                        break;
+                    case KeyEvent.VK_A:
+                    case KeyEvent.VK_LEFT:
+                    case KeyEvent.VK_D:
+                    case KeyEvent.VK_RIGHT:
+                        x = 0;
+                        System.out.println("scroll: " + x);
                         break;
                 }
             }
@@ -128,7 +136,6 @@ public class Controller {
 
             @Override
             public void mousePressed(MouseEvent e) {
-
             }
 
             @Override
