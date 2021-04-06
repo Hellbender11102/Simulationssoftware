@@ -91,19 +91,19 @@ public class Controller {
                         break;
                     case KeyEvent.VK_W:
                     case KeyEvent.VK_UP:
-                        view.getSimView().incOffsetY(y--);
+                        view.getSimView().incOffsetY(--y);
                         break;
                     case KeyEvent.VK_A:
                     case KeyEvent.VK_LEFT:
-                        view.getSimView().incOffsetX(x--);
+                        view.getSimView().incOffsetX(--x);
                         break;
                     case KeyEvent.VK_S:
                     case KeyEvent.VK_DOWN:
-                        view.getSimView().incOffsetY(y++);
+                        view.getSimView().incOffsetY(++y);
                         break;
                     case KeyEvent.VK_D:
                     case KeyEvent.VK_RIGHT:
-                        view.getSimView().incOffsetX(x++);
+                        view.getSimView().incOffsetX(++x);
                         break;
                 }
             }
