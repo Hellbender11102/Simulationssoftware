@@ -1,6 +1,8 @@
 package view;
 
 import model.Arena;
+import model.Pose;
+import model.Position;
 import model.Robot;
 
 import javax.swing.*;
@@ -31,6 +33,9 @@ public class SimulationView extends JPanel {
                 int y = (int) Math.round(robot.getLocalPose().getyCoordinate()) - offsetY;
                 g.setColor(robot.getColor());
                 g.fillOval(x - robot.getHeight() / 2, y - robot.getWidth() / 2, robot.getWidth(), robot.getHeight());
+                g.setColor(Color.BLACK);
+                Position direction = calcDirection(robot.getLocalPose().getRotation(), x, y);
+                g.drawLine(x, y, (int) direction.getxCoordinate(), (int) direction.getyCoordinate());
             }
         }
     }
@@ -53,6 +58,25 @@ public class SimulationView extends JPanel {
             offsetY = arena.getHeight() - rectangle.height / 2;
         else
             offsetY = -rectangle.height / 2;
+    }
+
+    private Position calcDirection(double rotation, int x, int y) {
+        double x2 = 0, y2 = 0;
+        double small = rotation % 90;
+        if (rotation <= 90.0) {
+            x2 = x + (10 * (1 - small / 90));
+            y2 = y + (10 * (small / 90));
+        } else if (rotation <= 180.0) {
+            x2 = x - (10 * (small / 90));
+            y2 = y + (10 * (1 - small / 90));
+        } else if (rotation <= 270.0) {
+            x2 = x - (10 * (1 - small / 90));
+            y2 = y - (10 * (small / 90));
+        } else if (rotation <= 360.0) {
+            x2 = x + (10 * (small / 90));
+            y2 = y - (10 * (1 - small / 90));
+        }
+        return new Position(x2, y2);
     }
 
 }
