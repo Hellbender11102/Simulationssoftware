@@ -1,5 +1,6 @@
 import controller.Controller;
 import model.Arena;
+import model.Pose;
 import model.Position;
 import model.Robot;
 import org.json.simple.JSONArray;
@@ -35,15 +36,13 @@ class Main {
             random = new Random();
             arena = new Arena(500, 500);
         }
-
-
         if (settings != null) {
             controller = new Controller(threadOutputQueue, robotsAndPositionOffsets, arena, random);
-            controller.visiualisationLoop((int) (long) settings.get("fps"));
+            controller.visualisationLoop((int) (long) settings.get("fps"));
             controller.startRobotThreads();
         } else {
             controller = new Controller(threadOutputQueue, robotsAndPositionOffsets, arena, random);
-            controller.visiualisationLoop(70);
+            controller.visualisationLoop(30);
             controller.startRobotThreads();
         }
     }
@@ -81,13 +80,13 @@ class Main {
                                    Map<Robot, Position> robotsAndPositionOffsets,
                                    ConcurrentLinkedQueue<Robot> threadOutputQueue, Random random) {
         JSONObject positonObject = (JSONObject) robotObject.get("position");
-        Position pos = new Position(
+        Pose pos = new Pose(
                 (Double) positonObject.get("x"), (Double) positonObject.get("y"), (Double) positonObject.get("rotation"));
         Robot robot = new Robot(
                 (Double) robotObject.get("engineR"),
                 (Double) robotObject.get("engineL"),
                 (Double) robotObject.get("distance"),
-                pos, threadOutputQueue, random);
+                threadOutputQueue, random,pos);
         robotsAndPositionOffsets.put(robot, new Position(0, 0));
     }
 }

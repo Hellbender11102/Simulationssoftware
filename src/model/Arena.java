@@ -2,9 +2,9 @@ package model;
 
 import java.util.LinkedList;
 
-public class Arena {
+ public class Arena {
     private LinkedList<Robot> robotList;
-    final int height, width;
+    private final int height, width;
 
     /**
      * Constructor

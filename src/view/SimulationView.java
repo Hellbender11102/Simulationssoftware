@@ -8,8 +8,8 @@ import java.awt.*;
 import java.util.LinkedList;
 
 public class SimulationView extends JPanel {
-    Arena arena;
-    int offsetX, offsetY;
+    private Arena arena;
+    private int offsetX, offsetY;
 
     public SimulationView(Arena arena) {
         this.arena = arena;
@@ -18,19 +18,19 @@ public class SimulationView extends JPanel {
     }
 
     public void paint(Graphics g) {
-        Graphics2D g2d =(Graphics2D) g;
+        Graphics2D g2d = (Graphics2D) g;
         g2d.setColor(Color.RED);
-        g2d.setStroke(new BasicStroke(3));
+        g2d.setStroke(new BasicStroke(2));
         g2d.drawLine(0 - offsetX, 0 - offsetY, 0 - offsetX, arena.getHeight() - offsetY);
         g2d.drawLine(0 - offsetX, 0 - offsetY, arena.getWidth() - offsetX, 0 - offsetY);
         g2d.drawLine(arena.getWidth() - offsetX, arena.getHeight() - offsetY, 0 - offsetX, arena.getHeight() - offsetY);
         g2d.drawLine(arena.getWidth() - offsetX, arena.getHeight() - offsetY, arena.getWidth() - offsetX, 0 - offsetY);
         if (arena.getRobots() != null) {
             for (Robot robot : arena.getRobots()) {
-                int x = (int) Math.round(robot.getLocalPosition().getxCoordinate()) - offsetX;
-                int y = (int) Math.round(robot.getLocalPosition().getyCoordinate()) - offsetY;
+                int x = (int) Math.round(robot.getLocalPose().getxCoordinate()) - offsetX;
+                int y = (int) Math.round(robot.getLocalPose().getyCoordinate()) - offsetY;
                 g.setColor(robot.getColor());
-                g.fillOval(x-robot.getHeight()/2, y-robot.getWidth()/2, robot.getWidth(), robot.getHeight());
+                g.fillOval(x - robot.getHeight() / 2, y - robot.getWidth() / 2, robot.getWidth(), robot.getHeight());
             }
         }
     }
@@ -54,4 +54,5 @@ public class SimulationView extends JPanel {
         else
             offsetY = -rectangle.height / 2;
     }
+
 }

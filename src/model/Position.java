@@ -1,13 +1,7 @@
 package model;
 
 public class Position {
-    private double xCoordinate, yCoordinate, rotation;
-
-    public Position(double xCoordinate, double yCoordinate, double rotation) {
-        this.xCoordinate = xCoordinate;
-        this.yCoordinate = yCoordinate;
-        this.rotation = rotation % 360;
-    }
+    private double xCoordinate, yCoordinate;
 
     public Position(double xCoordinate, double yCoordinate) {
         this.xCoordinate = xCoordinate;
@@ -30,26 +24,25 @@ public class Position {
         this.yCoordinate = yCoordinate;
     }
 
-    public double getRotation() {
-        return rotation;
+    public double getPolarAngle() {
+        if (getPolarDistance() != 0.0)
+            return Math.atan2(yCoordinate, xCoordinate);
+        else return 0;
     }
 
-    public void setRotation(double rotation) {
-        while (rotation < 0) rotation += 360;
-        this.rotation = rotation % 360;
+    public double getPolarDistance() {
+        return Math.sqrt(Math.exp(xCoordinate) + Math.exp(yCoordinate));
     }
 
     public boolean equals(Position position) {
         return xCoordinate == position.xCoordinate &&
-                yCoordinate == position.yCoordinate &&
-                rotation == position.rotation;
+                yCoordinate == position.yCoordinate;
     }
 
     @Override
     public String toString() {
         return "Position:" +
                 "X:" + String.format("%,.2f", xCoordinate) +
-                ", Y:" + String.format("%,.2f", yCoordinate) +
-                ", rotation:" + rotation;
+                ", Y:" + String.format("%,.2f", yCoordinate);
     }
 }
