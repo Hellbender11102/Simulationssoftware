@@ -41,7 +41,7 @@ public class Robot extends Thread {
     }
 
 
-    private double trajectorySpeed() {
+    public double trajectorySpeed() {
         return (engineR + engineL) / 2;
     }
 
@@ -50,34 +50,10 @@ public class Robot extends Thread {
     }
 
 
-    private synchronized void drive() {
+    private void drive() {
         pose.setRotation(pose.getRotation() + angularVelocity());
-        double rotation = pose.getRotation() % 90;
-        if (pose.getRotation() == 90) {
-            pose.setyCoordinate(pose.getyCoordinate() + (trajectorySpeed()));
-        } else if (pose.getRotation() == 180) {
-            pose.setxCoordinate(pose.getxCoordinate() + (trajectorySpeed() ));
-        } else if (pose.getRotation() == 270) {
-            pose.setyCoordinate(pose.getyCoordinate() + (trajectorySpeed() ));
-        } else if (pose.getRotation() == 0) {
-            pose.setxCoordinate(pose.getxCoordinate() + (trajectorySpeed()));
-        } else if (pose.getRotation() < 90.0) {
-            pose.setxCoordinate(pose.getxCoordinate() + (trajectorySpeed() * (1 - rotation / 90)));
-            pose.setyCoordinate(pose.getyCoordinate() + (trajectorySpeed() * (rotation / 90)));
-        } else if (pose.getRotation() < 180.0) {
-            pose.setxCoordinate(pose.getxCoordinate() - (trajectorySpeed() * (rotation / 90)));
-            pose.setyCoordinate(pose.getyCoordinate() + (trajectorySpeed() * (1 - rotation / 90)));
-        } else if (pose.getRotation() < 270.0) {
-            pose.setxCoordinate(pose.getxCoordinate() - (trajectorySpeed() * (1 - rotation / 90)));
-            pose.setyCoordinate(pose.getyCoordinate() - (trajectorySpeed() * (rotation / 90)));
-        } else if (pose.getRotation() < 360.0) {
-            pose.setxCoordinate(pose.getxCoordinate() + (trajectorySpeed() * (rotation / 90)));
-            pose.setyCoordinate(pose.getyCoordinate() - (trajectorySpeed() * (1 - rotation / 90)));
-        }
-    }
-
-    public String toString() {
-        return pose.toString();
+        pose.setxCoordinate(pose.getPositionInDirection(trajectorySpeed()).getxCoordinate());
+        pose.setyCoordinate(pose.getPositionInDirection(trajectorySpeed()).getyCoordinate());
     }
 
     public Pose getLocalPose() {
@@ -92,11 +68,15 @@ public class Robot extends Thread {
             drive();
             threadOutputQueue.offer(this);
             try {
-                sleep(2);
+                sleep(10);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    public boolean isPositionInRobotArea(Position position) {
+        return pose.euclideanDistance(position) <= width;
     }
 
     public Color getColor() {
@@ -121,5 +101,9 @@ public class Robot extends Thread {
 
     public void toggleStop() {
         isStop = !isStop;
+    }
+
+    public String toString() {
+        return "Engines: " + engineR + " - " + engineL + "\n" + pose;
     }
 }

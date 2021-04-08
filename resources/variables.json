@@ -5,13 +5,78 @@
     "height": 800
   },
   "robots": [
+       {
+      "engineR": 1.0,
+      "engineL": 0.0,
+      "distance": 1.0,
+      "position": {
+        "x": 250.0,
+        "y": 250.0,
+       "rotation": 90.0
+      }
+    },
     {
-      "engineR":0.0,
-      "engineL": 1.0,
+      "engineR": 1.0,
+      "engineL": 0.9,
       "distance": 1.0,
       "position": {
         "x": 50.0,
         "y": 50.0,
+       "rotation": 90.0
+      }
+    },
+    {
+      "engineR": 1.0,
+      "engineL": 0.9,
+      "distance": 1.0,
+      "position": {
+        "x": 500.0,
+        "y": 50.0,
+       "rotation": 90.0
+      }
+    },    {
+      "engineR": 1.0,
+      "engineL": 0.9,
+      "distance": 1.0,
+      "position": {
+        "x": 50.0,
+        "y": 500.0,
+       "rotation": 90.0
+      }
+    },    {
+      "engineR": 1.0,
+      "engineL": 0.9,
+      "distance": 3.0,
+      "position": {
+        "x": 500.0,
+        "y": 500.0,
+       "rotation": 90.0
+      }
+    },  {
+      "engineR": 1.0,
+      "engineL": 0.9,
+      "distance": 1.0,
+      "position": {
+        "x": 500.0,
+        "y": 50.0,
+        "rotation": 0.0
+      }
+    },    {
+      "engineR": 1.0,
+      "engineL": 0.9,
+      "distance": 1.0,
+      "position": {
+        "x": 50.0,
+        "y": 500.0,
+        "rotation": 0.0
+      }
+    },    {
+      "engineR": 1.0,
+      "engineL": 0.9,
+      "distance": 3.0,
+      "position": {
+        "x": 500.0,
+        "y": 500.0,
         "rotation": 0.0
       }
     }

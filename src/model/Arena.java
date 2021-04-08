@@ -22,18 +22,18 @@ import java.util.LinkedList;
         return "width:" + width + " height:" + height;
     }
 
-    public void setRobots(LinkedList<Robot> robotList) {
+   synchronized public void setRobots(LinkedList<Robot> robotList) {
         this.robotList = robotList;
     }
-    public LinkedList<Robot> getRobots() {
+  synchronized  public LinkedList<Robot> getRobots() {
       return robotList;
     }
 
-    public int getHeight() {
+ synchronized   public int getHeight() {
         return height;
     }
 
-    public int getWidth() {
+  synchronized  public int getWidth() {
         return width;
     }
 }
