@@ -63,16 +63,28 @@ public class SimulationView extends JPanel {
     private Position calcDirection(double rotation, int x, int y) {
         double x2 = 0, y2 = 0;
         double small = rotation % 90;
-        if (rotation <= 90.0) {
+        if (rotation == 90) {
+            x2 = x;
+            y2 = y + 10;
+        } else if (rotation == 180) {
+            x2 = x - 10;
+            y2 = y;
+        } else if (rotation == 270) {
+            x2 = x;
+            y2 = y - 10;
+        } else if (rotation == 0) {
+            x2 = x + 10;
+            y2 = y;
+        } else if (rotation < 90.0) {
             x2 = x + (10 * (1 - small / 90));
             y2 = y + (10 * (small / 90));
-        } else if (rotation <= 180.0) {
+        } else if (rotation < 180.0) {
             x2 = x - (10 * (small / 90));
             y2 = y + (10 * (1 - small / 90));
-        } else if (rotation <= 270.0) {
+        } else if (rotation < 270.0) {
             x2 = x - (10 * (1 - small / 90));
             y2 = y - (10 * (small / 90));
-        } else if (rotation <= 360.0) {
+        } else if (rotation < 360.0) {
             x2 = x + (10 * (small / 90));
             y2 = y - (10 * (1 - small / 90));
         }

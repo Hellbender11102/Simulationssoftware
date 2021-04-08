@@ -7,12 +7,14 @@ public class Pose extends Position {
         this.rotation = rotation % 360;
     }
         public void setRotation(double rotation) {
-        while (rotation < 0) rotation += 360;
-        this.rotation = rotation % 360;
+        if (rotation < 0) rotation += 360;
+        if (rotation >= 360) this.rotation = rotation % 360;
+        else this.rotation = rotation;
     }
         public void incRotation(double rotation) {
-        while (rotation < 0) rotation += 360;
-        this.rotation = rotation + rotation % 360;
+        if (rotation < 0) rotation += 360;
+        if (this.rotation + rotation >= 360) this.rotation = (this.rotation + rotation) % 360;
+        else this.rotation = this.rotation + rotation % 360;
     }
     public double getRotation() {
         return rotation;

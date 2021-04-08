@@ -17,7 +17,7 @@ public class Robot extends Thread {
     final Color color;
 
     public Robot(double motorR, double motorL, double distanceE,
-                 ConcurrentLinkedQueue<Robot> threadOutputQueue, Random random,Pose pose) {
+                 ConcurrentLinkedQueue<Robot> threadOutputQueue, Random random, Pose pose) {
         this.engineL = motorL;
         this.engineR = motorR;
         this.distanceE = distanceE;
@@ -37,7 +37,7 @@ public class Robot extends Thread {
         this.random = robot.random;
         this.threadOutputQueue = robot.threadOutputQueue;
         this.color = robot.color;
-               this.pose = robot.pose;
+        this.pose = robot.pose;
     }
 
 
@@ -53,31 +53,27 @@ public class Robot extends Thread {
     private synchronized void drive() {
         pose.setRotation(pose.getRotation() + angularVelocity());
         double rotation = pose.getRotation() % 90;
-        if (pose.getRotation() == 0.0) {
-            pose.setxCoordinate(pose.getxCoordinate() + trajectorySpeed());
-        } else if (pose.getRotation() == 180.0) {
-            pose.setxCoordinate(pose.getxCoordinate() - trajectorySpeed());
-        } else if (pose.getRotation() == 90.0) {
-            pose.setyCoordinate(pose.getyCoordinate() + trajectorySpeed());
-        } else if (pose.getRotation() == 270.0) {
-            pose.setyCoordinate(pose.getyCoordinate() - trajectorySpeed());
-        } else if (pose.getRotation() <= 90.0) {
+        if (pose.getRotation() == 90) {
+            pose.setyCoordinate(pose.getyCoordinate() + (trajectorySpeed()));
+        } else if (pose.getRotation() == 180) {
+            pose.setxCoordinate(pose.getxCoordinate() + (trajectorySpeed() ));
+        } else if (pose.getRotation() == 270) {
+            pose.setyCoordinate(pose.getyCoordinate() + (trajectorySpeed() ));
+        } else if (pose.getRotation() == 0) {
+            pose.setxCoordinate(pose.getxCoordinate() + (trajectorySpeed()));
+        } else if (pose.getRotation() < 90.0) {
             pose.setxCoordinate(pose.getxCoordinate() + (trajectorySpeed() * (1 - rotation / 90)));
             pose.setyCoordinate(pose.getyCoordinate() + (trajectorySpeed() * (rotation / 90)));
-        } else if (pose.getRotation() <= 180.0) {
+        } else if (pose.getRotation() < 180.0) {
             pose.setxCoordinate(pose.getxCoordinate() - (trajectorySpeed() * (rotation / 90)));
             pose.setyCoordinate(pose.getyCoordinate() + (trajectorySpeed() * (1 - rotation / 90)));
-        } else if (pose.getRotation() <= 270.0) {
+        } else if (pose.getRotation() < 270.0) {
             pose.setxCoordinate(pose.getxCoordinate() - (trajectorySpeed() * (1 - rotation / 90)));
             pose.setyCoordinate(pose.getyCoordinate() - (trajectorySpeed() * (rotation / 90)));
-        } else if (pose.getRotation() <= 360.0) {
+        } else if (pose.getRotation() < 360.0) {
             pose.setxCoordinate(pose.getxCoordinate() + (trajectorySpeed() * (rotation / 90)));
             pose.setyCoordinate(pose.getyCoordinate() - (trajectorySpeed() * (1 - rotation / 90)));
         }
-        System.out.println("Angular Velocity: " + String.format("%,.2f", angularVelocity()));
-        System.out.println("Angular Rotation: " +  String.format("%,.2f", pose.getRotation()));
-        System.out.println("Angular rotation: " +  String.format("%,.2f", rotation));
-        System.out.println("Velocity formular: " + String.format("%,.2f", 0.5 * Math.PI - rotation));
     }
 
     public String toString() {
@@ -96,7 +92,7 @@ public class Robot extends Thread {
             drive();
             threadOutputQueue.offer(this);
             try {
-                sleep(10);
+                sleep(2);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

@@ -6,8 +6,8 @@
   },
   "robots": [
     {
-      "engineR":0.1,
-      "engineL": 1.2,
+      "engineR":0.0,
+      "engineL": 1.0,
       "distance": 1.0,
       "position": {
         "x": 50.0,
