@@ -27,12 +27,12 @@ public class SimulationView extends JPanel {
         g2d.drawLine(arena.getWidth() - offsetX, arena.getHeight() - offsetY, arena.getWidth() - offsetX, 0 - offsetY);
         if (arena.getRobots() != null) {
             for (Robot robot : arena.getRobots()) {
-                int x = (int) Math.round(robot.getLocalPose().getxCoordinate()) - offsetX;
-                int y = (int) Math.round(robot.getLocalPose().getyCoordinate()) - offsetY;
+                int x = (int) Math.round(robot.getPose().getxCoordinate()) - offsetX;
+                int y = (int) Math.round(robot.getPose().getyCoordinate()) - offsetY;
                 g.setColor(robot.getColor());
-                g.fillOval(x - robot.getHeight() / 2, y - robot.getWidth() / 2, robot.getWidth(), robot.getHeight());
+                g.fillOval(x - robot.getDiameters() / 2, y - robot.getDiameters() / 2, robot.getDiameters(), robot.getDiameters());
                 g.setColor(Color.BLACK);
-                Position direction = robot.getLocalPose().getPositionInDirection(robot.trajectorySpeed()*5);
+                Position direction = robot.getPose().getPositionInDirection(robot.trajectorySpeed()*5);
                 g.drawLine(x, y, (int) direction.getxCoordinate()-offsetX, (int) direction.getyCoordinate()- offsetY);
             }
         }

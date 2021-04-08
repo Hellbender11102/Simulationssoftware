@@ -1,8 +1,8 @@
 {
   "seed": 1000,
   "arena": {
-    "width": 1000,
-    "height": 800
+    "width": 200,
+    "height": 100
   },
   "robots": [
        {

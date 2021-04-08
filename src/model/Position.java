@@ -48,7 +48,8 @@ public class Position {
 
     synchronized
     public double euclideanDistance(Position position) {
-        return Math.sqrt((Math.pow(position.xCoordinate,2) - Math.pow(xCoordinate,2)) + (Math.pow(position.yCoordinate,2) - Math.pow(yCoordinate,2)));
+        return Math.sqrt((Math.pow(position.xCoordinate - xCoordinate,2)) +
+                (Math.pow(position.yCoordinate - yCoordinate,2)));
     }
 
     @Override

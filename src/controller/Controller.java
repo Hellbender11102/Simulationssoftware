@@ -9,8 +9,6 @@ import view.View;
 import java.awt.event.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Controller {
     private View view;
@@ -48,8 +46,8 @@ public class Controller {
                         robotList.add(r);
                     }
                     arena.setRobots(robotList);
-                    inArenaBounds();
                     collisionDetection();
+                    inArenaBounds();
                 }
                 view.repaint();
             }
@@ -58,10 +56,10 @@ public class Controller {
 
 
     private synchronized Robot convertPoseToGlobal(Position global, Robot robot) {
-        Pose pose = transPos(global, robot.getLocalPose());
-        robot.getLocalPose().setxCoordinate(pose.getxCoordinate());
-        robot.getLocalPose().setyCoordinate(pose.getyCoordinate());
-        robot.getLocalPose().setRotation(pose.getRotation());
+        Pose pose = transPos(global, robot.getPose());
+        robot.getPose().setxCoordinate(pose.getxCoordinate());
+        robot.getPose().setyCoordinate(pose.getyCoordinate());
+        robot.getPose().setRotation(pose.getRotation());
         return robot;
     }
 
@@ -75,16 +73,14 @@ public class Controller {
 
     private void inArenaBounds() {
         for (Robot robot : arena.getRobots()) {
-            double halfSizeX = robot.getWidth() / 2.0;
-            double halfSizeY = robot.getHeight() / 2.0;
-            if (robot.getLocalPose().getxCoordinate() < halfSizeX)
-                robot.getLocalPose().setxCoordinate(halfSizeX);
-            else if (robot.getLocalPose().getxCoordinate() > arena.getWidth() - halfSizeX)
-                robot.getLocalPose().setxCoordinate(arena.getWidth() - halfSizeX);
-            if (robot.getLocalPose().getyCoordinate() < halfSizeY)
-                robot.getLocalPose().setyCoordinate(halfSizeY);
-            else if (robot.getLocalPose().getyCoordinate() > arena.getHeight() - halfSizeY)
-                robot.getLocalPose().setyCoordinate(arena.getHeight() - halfSizeY);
+            if (robot.getPose().getxCoordinate() < robot.getRadius())
+                robot.getPose().setxCoordinate(robot.getRadius());
+            else if (robot.getPose().getxCoordinate() > arena.getWidth() - robot.getRadius())
+                robot.getPose().setxCoordinate(arena.getWidth() - robot.getRadius());
+            if (robot.getPose().getyCoordinate() < robot.getRadius())
+                robot.getPose().setyCoordinate(robot.getRadius());
+            else if (robot.getPose().getyCoordinate() > arena.getHeight() - robot.getRadius())
+                robot.getPose().setyCoordinate(arena.getHeight() - robot.getRadius());
         }
     }
 
@@ -96,25 +92,36 @@ public class Controller {
                 .collect(Collectors.toList());*/
         arena.getRobots().forEach((r1) -> {
             arena.getRobots().forEach((r2) -> {
-                if (!r1.equals(r2) && r1.getLocalPose().euclideanDistance(r2.getLocalPose()) < r1.getWidth()) {
-                    if (r2.isPositionInRobotArea(r1.getLocalPose().getPositionInDirection(0))) {
-                        bump(r1, r2);
-                    }
-                    if (r1.isPositionInRobotArea(r2.getLocalPose().getPositionInDirection(0))) {
-                        bump(r2, r1);
-                    }
+                if (!r1.equals(r2) && r1.getPose().euclideanDistance(r2.getPose()) < r1.getDiameters()) {
+                    Pose oldPose = r2.getPose();
+                    if (r2.isPositionInRobotArea(r1.getPose().getPositionInDirection(0)))
+                    //    bump(r1, r2);
+                    if (r1.isPositionInRobotArea(r2.getPose().getPositionInDirection(0))){}
+                    //    bump(r2, r1);
+                    double shiftedX = r2.getPose().getxCoordinate() - r1.getPose().getxCoordinate();
+                    double shiftedY = r2.getPose().getyCoordinate() - r1.getPose().getyCoordinate();
+                    if (r1.getPose().getxCoordinate() < oldPose.getxCoordinate()) {
+                        r1.getPose().setxCoordinate(oldPose.getxCoordinate() - (r1.getRadius() + r2.getRadius()));
+                    } else
+                        r1.getPose().setxCoordinate(oldPose.getxCoordinate() + (r1.getRadius() + r2.getRadius()));
+
+                    if (r1.getPose().getyCoordinate() < r2.getPose().getyCoordinate()) {
+                        r1.getPose().setyCoordinate(oldPose.getyCoordinate() -(r1.getRadius() + r2.getRadius()));
+                    } else
+                        r1.getPose().setyCoordinate(oldPose.getyCoordinate() + (r1.getRadius() + r2.getRadius()));
                 }
             });
         });
     }
 
     private void bump(Robot bumping, Robot getsBumped) {
-        Position r1NextPosition = bumping.getLocalPose().getPositionInDirection(bumping.trajectorySpeed());
-        Pose r1Pose = bumping.getLocalPose();
-        System.out.println((r1NextPosition.getxCoordinate() - r1Pose.getxCoordinate()));
-        getsBumped.getLocalPose().setxCoordinate(getsBumped.getLocalPose().getxCoordinate() + (r1NextPosition.getxCoordinate() - r1Pose.getxCoordinate()));
-        getsBumped.getLocalPose().setyCoordinate(getsBumped.getLocalPose().getxCoordinate() + (r1NextPosition.getyCoordinate() - r1Pose.getyCoordinate()));
-     }
+        Position positionInBumpDirection = bumping.getPose().getPositionInDirection(bumping.trajectorySpeed());
+        Pose bumpPose = bumping.getPose();
+        System.out.println(getsBumped);
+        getsBumped.getPose().setxCoordinate(getsBumped.getPose().getxCoordinate() + (positionInBumpDirection.getxCoordinate() - bumpPose.getxCoordinate()));
+        getsBumped.getPose().setyCoordinate(getsBumped.getPose().getyCoordinate() + (positionInBumpDirection.getyCoordinate() - bumpPose.getyCoordinate()));
+        System.out.println(getsBumped);
+    }
 
 
     private void addViewListener() {
