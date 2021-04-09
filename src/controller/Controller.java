@@ -88,17 +88,13 @@ public class Controller {
         arena.getRobots().forEach((r1) -> {
             arena.getRobots().forEach((r2) -> {
                 if (!r1.equals(r2) && r1.getPose().euclideanDistance(r2.getPose()) < r1.getDiameters()) {
-                    Pose oldPoseR2 = r2.getPose();
-                    Pose oldPoseR1 = r1.getPose();
-                    if (r2.isPositionInRobotArea(r1.getPose().getPositionInDirection(r1.getRadius() + 0.02))) {
+                    if (r2.isPositionInRobotArea(r1.getPose().getPositionInDirection(r1.getRadius() + 0.01))) {
                         System.out.println("!");
                         bump(r1, r2, r1.getPose().getPositionInDirection(r1.trajectorySpeed()));
-                    }
-                    else if (r1.isPositionInRobotArea(r2.getPose().getPositionInDirection(r2.getRadius() + 0.02))) {
+                    } else if (r1.isPositionInRobotArea(r2.getPose().getPositionInDirection(r2.getRadius() + 0.01))) {
                         System.out.println("!");
                         bump(r2, r1, r2.getPose().getPositionInDirection(r2.trajectorySpeed()));
-                    }
-                   else if (!r1.isPositionInRobotArea(r2.getPose().getPositionInDirection(r2.getRadius() + 0.02))) {
+                    } else if (!r1.isPositionInRobotArea(r2.getPose().getPositionInDirection(r2.getRadius() + 0.01))) {
                         System.out.println("------");
                         if (r1.getPose().getxCoordinate() < r2.getPose().getxCoordinate()) {
                             bump(r1, r2, new Position(r1.getPose().getxCoordinate() + r1.trajectorySpeed(), r1.getPose().getyCoordinate()));
@@ -115,30 +111,25 @@ public class Controller {
                             bump(r2, r1, new Position(r2.getPose().getxCoordinate(), r2.getPose().getyCoordinate() + r2.trajectorySpeed()));
                         }
                     }
-                    System.out.println("");
+                    else System.out.println("Alles doof");
                 }
             });
         });
     }
 
     private void bump(Robot bumping, Robot getsBumped, Position positionInBumpDirection) {
-        double x = positionInBumpDirection.getxCoordinate() - bumping.getPose().getxCoordinate();
-        double y = positionInBumpDirection.getyCoordinate() - bumping.getPose().getyCoordinate();
-        getsBumped.getPose().setxCoordinate(getsBumped.getPose().getxCoordinate() + x);
-        getsBumped.getPose().setyCoordinate(getsBumped.getPose().getyCoordinate() + y);
-
+        Position vector = bumping.getPose().getDiffrence(positionInBumpDirection);
+        getsBumped.getPose().decPosition(vector);
 
         if (getsBumped.getPose().getxCoordinate() <= getsBumped.getRadius()) {
-            bumping.getPose().setxCoordinate(bumping.getPose().getxCoordinate() - x);
+            bumping.getPose().incPosition(vector.getxCoordinate(), 0);
         } else if (getsBumped.getPose().getxCoordinate() >= arena.getWidth() - getsBumped.getRadius()) {
-            System.out.println(x);
-            bumping.getPose().setxCoordinate(bumping.getPose().getxCoordinate() - x);
+            bumping.getPose().incPosition(vector.getxCoordinate(), 0);
         }
         if (getsBumped.getPose().getyCoordinate() <= bumping.getRadius()) {
-            bumping.getPose().setyCoordinate(bumping.getPose().getyCoordinate() - y);
+            bumping.getPose().incPosition(0, vector.getyCoordinate());
         } else if (getsBumped.getPose().getyCoordinate() >= arena.getHeight() - getsBumped.getRadius()) {
-            System.out.println(y);
-            bumping.getPose().setyCoordinate(bumping.getPose().getyCoordinate() - y);
+            bumping.getPose().incPosition(0, vector.getyCoordinate());
         }
     }
 
