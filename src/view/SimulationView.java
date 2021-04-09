@@ -30,10 +30,11 @@ public class SimulationView extends JPanel {
                 int x = (int) Math.round(robot.getPose().getxCoordinate()) - offsetX;
                 int y = (int) Math.round(robot.getPose().getyCoordinate()) - offsetY;
                 g.setColor(robot.getColor());
-                g.fillOval(x - robot.getDiameters() / 2, y - robot.getDiameters() / 2, robot.getDiameters(), robot.getDiameters());
+                g.fillOval(x - robot.getRadius(), y - robot.getRadius(), robot.getDiameters(), robot.getDiameters());
                 g.setColor(Color.BLACK);
-                Position direction = robot.getPose().getPositionInDirection(robot.trajectorySpeed()*5);
-                g.drawLine(x, y, (int) direction.getxCoordinate()-offsetX, (int) direction.getyCoordinate()- offsetY);
+
+                Position direction = robot.getPose().getPositionInDirection(robot.trajectorySpeed() * 5);
+                g.drawLine(x, y, (int) direction.getxCoordinate() - offsetX, (int) direction.getyCoordinate() - offsetY);
             }
         }
     }

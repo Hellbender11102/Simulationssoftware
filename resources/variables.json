@@ -1,28 +1,27 @@
 {
   "seed": 1000,
   "arena": {
-    "width": 200,
-    "height": 100
+    "width": 800,
+    "height": 800
   },
   "robots": [
-       {
-      "engineR": 0.02,
-      "engineL": 0.02,
+    {
+      "engineR": 0.5,
+      "engineL": 0.5,
       "distance": 1.0,
       "position": {
-        "x": 70.0,
-        "y": 25.0,
-       "rotation": 90.0
+        "x": 50.0,
+        "y": 100.0,
+       "rotation":0.0
       }
-    },
-    {
+    },  {
       "engineR": 1.0,
       "engineL": 1.0,
       "distance": 1.0,
       "position": {
-        "x": 20.0,
-        "y": 25.0,
-       "rotation": 0.0
+        "x": 150.0,
+        "y": 99.0,
+       "rotation":180.0
       }
     }
   ]

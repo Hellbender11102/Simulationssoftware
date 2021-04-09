@@ -10,7 +10,7 @@ public class Robot extends Thread {
     private Pose pose;
     private final double distanceE;
     double powerTransmission = 0;
-    private int diameters = 10;
+    private int diameters = 20;
     private ConcurrentLinkedQueue<Robot> threadOutputQueue;
     private final Random random;
     private boolean isStop = false;
@@ -68,7 +68,7 @@ public class Robot extends Thread {
             drive();
             threadOutputQueue.offer(this);
             try {
-                sleep(100);
+                sleep(30);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -76,7 +76,7 @@ public class Robot extends Thread {
     }
 
     public boolean isPositionInRobotArea(Position position) {
-        return pose.euclideanDistance(position) <= diameters;
+        return pose.euclideanDistance(position) <= getRadius();
     }
 
     public Color getColor() {
