@@ -67,6 +67,15 @@ public class Robot extends Thread {
         while (!isStop) {
             drive();
             threadOutputQueue.offer(this);
+            double posAnle = (calcAngleforPosition(new Position(100, 100)) / (2 * Math.PI)) * 360;
+            pose.setRotation(posAnle);
+            engineL = 0.5;
+            engineR = 0.5;
+            if (isPositionInRobotArea(new Position(100, 100))) {
+                engineL = 0.0;
+                engineR = 0.0;
+            }
+            System.out.println(posAnle + pose.getRotation());
             try {
                 sleep(30);
             } catch (InterruptedException e) {
@@ -83,6 +92,10 @@ public class Robot extends Thread {
         return color;
     }
 
+    private double calcAngleforPosition(Position position) {
+        position.decPosition(this.pose);
+        return position.getPolarAngle();
+    }
 
     public int getDiameters() {
         return diameters;

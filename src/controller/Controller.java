@@ -89,13 +89,13 @@ public class Controller {
             arena.getRobots().forEach((r2) -> {
                 if (!r1.equals(r2) && r1.getPose().euclideanDistance(r2.getPose()) < r1.getDiameters()) {
                     if (r2.isPositionInRobotArea(r1.getPose().getPositionInDirection(r1.getRadius() + 0.01))) {
-                        System.out.println("!");
+
                         bump(r1, r2, r1.getPose().getPositionInDirection(r1.trajectorySpeed()));
                     } else if (r1.isPositionInRobotArea(r2.getPose().getPositionInDirection(r2.getRadius() + 0.01))) {
-                        System.out.println("!");
+
                         bump(r2, r1, r2.getPose().getPositionInDirection(r2.trajectorySpeed()));
                     } else if (!r1.isPositionInRobotArea(r2.getPose().getPositionInDirection(r2.getRadius() + 0.01))) {
-                        System.out.println("------");
+
                         if (r1.getPose().getxCoordinate() < r2.getPose().getxCoordinate()) {
                             bump(r1, r2, new Position(r1.getPose().getxCoordinate() + r1.trajectorySpeed(), r1.getPose().getyCoordinate()));
                             bump(r2, r1, new Position(r2.getPose().getxCoordinate() - r2.trajectorySpeed(), r2.getPose().getyCoordinate()));
