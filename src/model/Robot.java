@@ -1,35 +1,47 @@
 package model;
 
 import java.awt.*;
-import java.util.LinkedList;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Robot extends Thread {
     private double engineL;
     private double engineR;
-    private Position position;
+    private Pose pose;
     private final double distanceE;
     double powerTransmission = 0;
-    private int cycles = 10000;
-    private int width = 10 ,height = 10;
+    private int diameters = 20;
     private ConcurrentLinkedQueue<Robot> threadOutputQueue;
     private final Random random;
-
+    private boolean isStop = false;
     final Color color;
 
     public Robot(double motorR, double motorL, double distanceE,
-                 Position position, ConcurrentLinkedQueue<Robot> threadOutputQueue,Random random) {
+                 ConcurrentLinkedQueue<Robot> threadOutputQueue, Random random, Pose pose) {
         this.engineL = motorL;
         this.engineR = motorR;
         this.distanceE = distanceE;
-        this.position = position;
         this.random = random;
+        this.pose = pose;
         this.threadOutputQueue = threadOutputQueue;
         this.color = new Color(random.nextInt());
+        setDaemon(true);
     }
 
-    private double trajectorySpeed() {
+
+    public Robot(Robot robot) {
+        setDaemon(true);
+        this.engineL = robot.engineL;
+        this.engineR = robot.engineR;
+        this.distanceE = robot.distanceE;
+        this.random = robot.random;
+        this.threadOutputQueue = robot.threadOutputQueue;
+        this.color = robot.color;
+        this.pose = robot.pose;
+    }
+
+
+    public double trajectorySpeed() {
         return (engineR + engineL) / 2;
     }
 
@@ -38,67 +50,61 @@ public class Robot extends Thread {
     }
 
 
-    private synchronized void drive() {
-        position.setRotation(position.getRotation() + angularVelocity());
-        double rotation = position.getRotation() % 90;
-        if (position.getRotation() == 0.0) {
-            position.setxCoordinate(position.getxCoordinate() + trajectorySpeed());
-        } else if (position.getRotation() == 180.0) {
-            position.setxCoordinate(position.getxCoordinate() - trajectorySpeed());
-        } else if (position.getRotation() == 90.0) {
-            position.setyCoordinate(position.getyCoordinate() + trajectorySpeed());
-        } else if (position.getRotation() == 270.0) {
-            position.setyCoordinate(position.getyCoordinate() - trajectorySpeed());
-        } else if (position.getRotation() <= 90.0) {
-            position.setxCoordinate(position.getxCoordinate() + (trajectorySpeed() * (1 - rotation / 90)));
-            position.setyCoordinate(position.getyCoordinate() + (trajectorySpeed() * (rotation / 90)));
-        } else if (position.getRotation() <= 180.0) {
-            position.setxCoordinate(position.getxCoordinate() - (trajectorySpeed() * (rotation / 90)));
-            position.setyCoordinate(position.getyCoordinate() + (trajectorySpeed() * (1 - rotation / 90)));
-        } else if (position.getRotation() <= 270.0) {
-            position.setxCoordinate(position.getxCoordinate() - (trajectorySpeed() * (1 - rotation / 90)));
-            position.setyCoordinate(position.getyCoordinate() - (trajectorySpeed() * (rotation / 90)));
-        } else if (position.getRotation() <= 360.0) {
-            position.setxCoordinate(position.getxCoordinate() + (trajectorySpeed() * (rotation / 90)));
-            position.setyCoordinate(position.getyCoordinate() - (trajectorySpeed() * (1 - rotation / 90)));
-        }
+    private void drive() {
+        pose.setRotation(pose.getRotation() + angularVelocity());
+        pose.setxCoordinate(pose.getPositionInDirection(trajectorySpeed()).getxCoordinate());
+        pose.setyCoordinate(pose.getPositionInDirection(trajectorySpeed()).getyCoordinate());
     }
 
-    public String toString() {
-        return position.toString();
+    public Pose getPose() {
+        return pose;
     }
 
-    public Position getLocalPosition() {
-        return position;
-    }
-
-    public void start(int cycles) {
-        this.cycles = cycles;
-        super.start();
-    }
+    // abstract void behavior();
 
     @Override
     public void run() {
-        while (cycles-- > 0) {
+        while (!isStop) {
             drive();
             threadOutputQueue.offer(this);
             try {
-                sleep(15);
+                sleep(30);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
     }
 
-        public Color getColor() {
+    public boolean isPositionInRobotArea(Position position) {
+        return pose.euclideanDistance(position) <= getRadius();
+    }
+
+    public Color getColor() {
         return color;
     }
 
-    public int getHeight() {
-        return height;
+
+    public int getDiameters() {
+        return diameters;
     }
 
-    public int getWidth() {
-        return width;
+    public int getRadius() {
+        return diameters / 2;
+    }
+
+    public double getEngineL() {
+        return engineL;
+    }
+
+    public double getEngineR() {
+        return engineR;
+    }
+
+    public void toggleStop() {
+        isStop = !isStop;
+    }
+
+    public String toString() {
+        return "Engines: " + engineR + " - " + engineL + "\n" + pose;
     }
 }

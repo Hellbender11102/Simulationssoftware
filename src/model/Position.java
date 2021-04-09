@@ -1,55 +1,81 @@
 package model;
 
 public class Position {
-    private double xCoordinate, yCoordinate, rotation;
-
-    public Position(double xCoordinate, double yCoordinate, double rotation) {
-        this.xCoordinate = xCoordinate;
-        this.yCoordinate = yCoordinate;
-        this.rotation = rotation % 360;
-    }
+    private double xCoordinate, yCoordinate;
 
     public Position(double xCoordinate, double yCoordinate) {
         this.xCoordinate = xCoordinate;
         this.yCoordinate = yCoordinate;
     }
 
+    synchronized
     public double getxCoordinate() {
         return xCoordinate;
     }
 
+    synchronized
     public void setxCoordinate(double xCoordinate) {
         this.xCoordinate = xCoordinate;
     }
 
+    synchronized
     public double getyCoordinate() {
         return yCoordinate;
     }
 
+    synchronized
     public void setyCoordinate(double yCoordinate) {
         this.yCoordinate = yCoordinate;
     }
 
-    public double getRotation() {
-        return rotation;
+    synchronized
+    public double getPolarAngle() {
+        if (getPolarDistance() != 0.0)
+            return Math.atan2(yCoordinate, xCoordinate);
+        else return 0;
     }
 
-    public void setRotation(double rotation) {
-        while (rotation < 0) rotation += 360;
-        this.rotation = rotation % 360;
+    synchronized
+    public double getPolarDistance() {
+        return Math.sqrt(Math.exp(xCoordinate) + Math.exp(yCoordinate));
     }
 
+    synchronized
     public boolean equals(Position position) {
         return xCoordinate == position.xCoordinate &&
-                yCoordinate == position.yCoordinate &&
-                rotation == position.rotation;
+                yCoordinate == position.yCoordinate;
+    }
+
+    synchronized
+    public double euclideanDistance(Position position) {
+        return Math.sqrt((Math.pow(position.xCoordinate - xCoordinate, 2)) +
+                (Math.pow(position.yCoordinate - yCoordinate, 2)));
     }
 
     @Override
     public String toString() {
         return "Position:" +
                 "X:" + String.format("%,.2f", xCoordinate) +
-                ", Y:" + String.format("%,.2f", yCoordinate) +
-                ", rotation:" + rotation;
+                ", Y:" + String.format("%,.2f", yCoordinate);
+    }
+
+    public void incPosition(Position vector) {
+        xCoordinate += vector.xCoordinate;
+        yCoordinate += vector.yCoordinate;
+    }
+
+    public void incPosition(double x, double y) {
+        xCoordinate += x;
+        yCoordinate += y;
+    }
+
+    public void decPosition(Position vector) {
+        xCoordinate -= vector.xCoordinate;
+        yCoordinate -= vector.yCoordinate;
+    }
+
+
+    public Position getDiffrence(Position position) {
+        return new Position(xCoordinate - position.xCoordinate, yCoordinate - position.yCoordinate);
     }
 }
