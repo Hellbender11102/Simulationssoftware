@@ -28,11 +28,11 @@ public class Position {
         this.yCoordinate = yCoordinate;
     }
 
-    synchronized
+
     public double getPolarAngle() {
         if (getPolarDistance() != 0.0)
-            return Math.atan2(yCoordinate, xCoordinate);
-        else return 0;
+            return  (Math.atan2(yCoordinate, xCoordinate) / (2 * Math.PI)) * 360;
+        else return -1;
     }
 
     synchronized

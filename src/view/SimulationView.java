@@ -22,6 +22,7 @@ public class SimulationView extends JPanel {
         g2d.setColor(Color.RED);
         g2d.setStroke(new BasicStroke(2));
         g2d.drawLine(0 - offsetX, 0 - offsetY, 0 - offsetX, arena.getHeight() - offsetY);
+        g2d.drawLine(249 - offsetX, 249 - offsetY, 251 - offsetX, 251 - offsetY);
         g2d.drawLine(0 - offsetX, 0 - offsetY, arena.getWidth() - offsetX, 0 - offsetY);
         g2d.drawLine(arena.getWidth() - offsetX, arena.getHeight() - offsetY, 0 - offsetX, arena.getHeight() - offsetY);
         g2d.drawLine(arena.getWidth() - offsetX, arena.getHeight() - offsetY, arena.getWidth() - offsetX, 0 - offsetY);
@@ -33,7 +34,7 @@ public class SimulationView extends JPanel {
                 g.fillOval(x - robot.getRadius(), y - robot.getRadius(), robot.getDiameters(), robot.getDiameters());
                 g.setColor(Color.BLACK);
 
-                Position direction = robot.getPose().getPositionInDirection(robot.trajectorySpeed() * 5);
+                Position direction = robot.getPose().getPositionInDirection(robot.trajectorySpeed()*5);
                 g.drawLine(x, y, (int) direction.getxCoordinate() - offsetX, (int) direction.getyCoordinate() - offsetY);
             }
         }
