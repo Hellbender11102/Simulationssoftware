@@ -53,8 +53,8 @@ public class Robot extends Thread {
     private void drive() {
         pose.incRotation(angularVelocity());
 
-        pose.setxCoordinate(pose.getPositionInDirection(trajectorySpeed()).getxCoordinate());
-        pose.setyCoordinate(pose.getPositionInDirection(trajectorySpeed()).getyCoordinate());
+        pose.setXCoordinate(pose.getPositionInDirection(trajectorySpeed()).getXCoordinate());
+        pose.setYCoordinate(pose.getPositionInDirection(trajectorySpeed()).getYCoordinate());
 
         // pose.decPosition(pose.getDiffrence(pose.getPositionInDirection(trajectorySpeed())));
     }
@@ -74,7 +74,7 @@ public class Robot extends Thread {
             drive();
             threadOutputQueue.offer(this);
             try {
-                sleep(15);
+                sleep(50);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -91,29 +91,30 @@ public class Robot extends Thread {
 
     private double calcAngleforPosition(Position position) {
         position.decPosition(this.pose);
-        return position.getPolarAngle() + 360;
+        return position.getPolarAngle() < 0 ? position.getPolarAngle() + 360 : position.getPolarAngle();
     }
 
     private void driveToPosition(Position position) {
-        double angular = calcAngleforPosition(position) % 360;
-        System.out.println("Winkel               :" + angular);
-        System.out.println("Winkel - Derzeitigem :" + (angular - pose.getRotation()));
-        if (angular - pose.getRotation() < 2. &&
-                angular - pose.getRotation() > -2.) {
-            System.out.println(0);
-            engineR = 5;
-            engineL = 5;
-        } else if ((angular - pose.getRotation() < 0 && angular - pose.getRotation() > -180) || angular - pose.getRotation() > 180) {
-            System.out.println(1);
-            engineR = -0.1;
-            engineL = 0.1;
-        } else {
-            System.out.println(2);
-            engineR = 0.1;
-            engineL = -0.1;
+        double angular = calcAngleforPosition(position);
+        if (rotateToAngle(angular) ) {
+            engineR = 1;
+            engineL = 1;
         }
+    }
 
-        System.out.println();
+    private boolean rotateToAngle(double angle) {
+        if (angle - pose.getRotation() < 1. &&
+                angle - pose.getRotation() > -1.) {
+            return true;
+        } else if ((angle - pose.getRotation() < 0 && angle - pose.getRotation() > -180) || angle - pose.getRotation() > 180) {
+            engineR = 0;
+            engineL = 0.1;
+            return false;
+        } else {
+            engineR = 0.1;
+            engineL = 0;
+            return false;
+        }
     }
 
     public int getDiameters() {

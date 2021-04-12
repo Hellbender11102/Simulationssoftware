@@ -9,30 +9,30 @@ public class Position {
     }
 
     synchronized
-    public double getxCoordinate() {
+    public double getXCoordinate() {
         return xCoordinate;
     }
 
     synchronized
-    public void setxCoordinate(double xCoordinate) {
+    public void setXCoordinate(double xCoordinate) {
         this.xCoordinate = xCoordinate;
     }
 
     synchronized
-    public double getyCoordinate() {
+    public double getYCoordinate() {
         return yCoordinate;
     }
 
     synchronized
-    public void setyCoordinate(double yCoordinate) {
+    public void setYCoordinate(double yCoordinate) {
         this.yCoordinate = yCoordinate;
     }
 
 
     public double getPolarAngle() {
         if (getPolarDistance() != 0.0)
-            return  (Math.atan2(yCoordinate, xCoordinate) / (2 * Math.PI)) * 360;
-        else return -1;
+            return  (Math.atan2(yCoordinate, xCoordinate) / Math.PI) * 180;
+        else return Double.NaN;
     }
 
     synchronized
@@ -64,9 +64,9 @@ public class Position {
         yCoordinate += vector.yCoordinate;
     }
 
-    public void incPosition(double x, double y) {
-        xCoordinate += x;
-        yCoordinate += y;
+    public void incPosition(double addendX, double addendY) {
+        xCoordinate += addendX;
+        yCoordinate +=addendY;
     }
 
     public void decPosition(Position vector) {

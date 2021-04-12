@@ -57,30 +57,30 @@ public class Controller {
 
     private synchronized Robot convertPoseToGlobal(Position global, Robot robot) {
         Pose pose = transPos(global, robot.getPose());
-        robot.getPose().setxCoordinate(pose.getxCoordinate());
-        robot.getPose().setyCoordinate(pose.getyCoordinate());
+        robot.getPose().setXCoordinate(pose.getXCoordinate());
+        robot.getPose().setYCoordinate(pose.getYCoordinate());
         robot.getPose().setRotation(pose.getRotation());
         return robot;
     }
 
 
     private synchronized Pose transPos(Position pGlobal, Pose pLocal) {
-        double x = pGlobal.getxCoordinate() + pLocal.getxCoordinate();
-        double y = pGlobal.getyCoordinate() + pLocal.getyCoordinate();
+        double x = pGlobal.getXCoordinate() + pLocal.getXCoordinate();
+        double y = pGlobal.getYCoordinate() + pLocal.getYCoordinate();
         double rotation = pLocal.getRotation();
         return new Pose(x, y, rotation);
     }
 
     private void inArenaBounds() {
         for (Robot robot : arena.getRobots()) {
-            if (robot.getPose().getxCoordinate() < robot.getRadius())
-                robot.getPose().setxCoordinate(robot.getRadius());
-            else if (robot.getPose().getxCoordinate() > arena.getWidth() - robot.getRadius())
-                robot.getPose().setxCoordinate(arena.getWidth() - robot.getRadius());
-            if (robot.getPose().getyCoordinate() < robot.getRadius())
-                robot.getPose().setyCoordinate(robot.getRadius());
-            else if (robot.getPose().getyCoordinate() > arena.getHeight() - robot.getRadius())
-                robot.getPose().setyCoordinate(arena.getHeight() - robot.getRadius());
+            if (robot.getPose().getXCoordinate() < robot.getRadius())
+                robot.getPose().setXCoordinate(robot.getRadius());
+            else if (robot.getPose().getXCoordinate() > arena.getWidth() - robot.getRadius())
+                robot.getPose().setXCoordinate(arena.getWidth() - robot.getRadius());
+            if (robot.getPose().getYCoordinate() < robot.getRadius())
+                robot.getPose().setYCoordinate(robot.getRadius());
+            else if (robot.getPose().getYCoordinate() > arena.getHeight() - robot.getRadius())
+                robot.getPose().setYCoordinate(arena.getHeight() - robot.getRadius());
         }
     }
 
@@ -96,22 +96,21 @@ public class Controller {
                         bump(r2, r1, r2.getPose().getPositionInDirection(r2.trajectorySpeed()));
                     } else if (!r1.isPositionInRobotArea(r2.getPose().getPositionInDirection(r2.getRadius() + 0.01))) {
 
-                        if (r1.getPose().getxCoordinate() < r2.getPose().getxCoordinate()) {
-                            bump(r1, r2, new Position(r1.getPose().getxCoordinate() + r1.trajectorySpeed(), r1.getPose().getyCoordinate()));
-                            bump(r2, r1, new Position(r2.getPose().getxCoordinate() - r2.trajectorySpeed(), r2.getPose().getyCoordinate()));
+                        if (r1.getPose().getXCoordinate() < r2.getPose().getXCoordinate()) {
+                            bump(r1, r2, new Position(r1.getPose().getXCoordinate() + r1.trajectorySpeed(), r1.getPose().getYCoordinate()));
+                            bump(r2, r1, new Position(r2.getPose().getXCoordinate() - r2.trajectorySpeed(), r2.getPose().getYCoordinate()));
                         } else {
-                            bump(r1, r2, new Position(r1.getPose().getxCoordinate() - r1.trajectorySpeed(), r1.getPose().getyCoordinate()));
-                            bump(r2, r1, new Position(r2.getPose().getxCoordinate() + r2.trajectorySpeed(), r2.getPose().getyCoordinate()));
+                            bump(r1, r2, new Position(r1.getPose().getXCoordinate() - r1.trajectorySpeed(), r1.getPose().getYCoordinate()));
+                            bump(r2, r1, new Position(r2.getPose().getXCoordinate() + r2.trajectorySpeed(), r2.getPose().getYCoordinate()));
                         }
-                        if (r1.getPose().getyCoordinate() < r2.getPose().getyCoordinate()) {
-                            bump(r1, r2, new Position(r1.getPose().getxCoordinate(), r1.getPose().getyCoordinate() + r1.trajectorySpeed()));
-                            bump(r2, r1, new Position(r2.getPose().getxCoordinate(), r2.getPose().getyCoordinate() - r2.trajectorySpeed()));
+                        if (r1.getPose().getYCoordinate() < r2.getPose().getYCoordinate()) {
+                            bump(r1, r2, new Position(r1.getPose().getXCoordinate(), r1.getPose().getYCoordinate() + r1.trajectorySpeed()));
+                            bump(r2, r1, new Position(r2.getPose().getXCoordinate(), r2.getPose().getYCoordinate() - r2.trajectorySpeed()));
                         } else {
-                            bump(r1, r2, new Position(r1.getPose().getxCoordinate(), r1.getPose().getyCoordinate() - r1.trajectorySpeed()));
-                            bump(r2, r1, new Position(r2.getPose().getxCoordinate(), r2.getPose().getyCoordinate() + r2.trajectorySpeed()));
+                            bump(r1, r2, new Position(r1.getPose().getXCoordinate(), r1.getPose().getYCoordinate() - r1.trajectorySpeed()));
+                            bump(r2, r1, new Position(r2.getPose().getXCoordinate(), r2.getPose().getYCoordinate() + r2.trajectorySpeed()));
                         }
-                    }
-                    else System.out.println("Alles doof");
+                    } else System.out.println("Alles doof");
                 }
             });
         });
@@ -121,15 +120,15 @@ public class Controller {
         Position vector = bumping.getPose().getDiffrence(positionInBumpDirection);
         getsBumped.getPose().decPosition(vector);
 
-        if (getsBumped.getPose().getxCoordinate() <= getsBumped.getRadius()) {
-            bumping.getPose().incPosition(vector.getxCoordinate(), 0);
-        } else if (getsBumped.getPose().getxCoordinate() >= arena.getWidth() - getsBumped.getRadius()) {
-            bumping.getPose().incPosition(vector.getxCoordinate(), 0);
+        if (getsBumped.getPose().getXCoordinate() <= getsBumped.getRadius()) {
+            bumping.getPose().incPosition(vector.getXCoordinate(), 0);
+        } else if (getsBumped.getPose().getXCoordinate() >= arena.getWidth() - getsBumped.getRadius()) {
+            bumping.getPose().incPosition(vector.getXCoordinate(), 0);
         }
-        if (getsBumped.getPose().getyCoordinate() <= bumping.getRadius()) {
-            bumping.getPose().incPosition(0, vector.getyCoordinate());
-        } else if (getsBumped.getPose().getyCoordinate() >= arena.getHeight() - getsBumped.getRadius()) {
-            bumping.getPose().incPosition(0, vector.getyCoordinate());
+        if (getsBumped.getPose().getYCoordinate() <= bumping.getRadius()) {
+            bumping.getPose().incPosition(0, vector.getYCoordinate());
+        } else if (getsBumped.getPose().getYCoordinate() >= arena.getHeight() - getsBumped.getRadius()) {
+            bumping.getPose().incPosition(0, vector.getYCoordinate());
         }
     }
 
@@ -177,6 +176,30 @@ public class Controller {
                     case KeyEvent.VK_D:
                     case KeyEvent.VK_RIGHT:
                         view.getSimView().incOffsetX(++x);
+                        break;
+                    case KeyEvent.VK_O:
+                        view.getSimView().toggleDrawRotationIndicator();
+                        break;
+                    case KeyEvent.VK_E:
+                        view.getSimView().toggleDrawRobotEngines();
+                        break;
+                    case KeyEvent.VK_R:
+                        view.getSimView().toggleDrawrobotRotationo();
+                        break;
+                    case KeyEvent.VK_C:
+                        view.getSimView().toggleDrawrobotCoordinates();
+                        break;
+                    case KeyEvent.VK_SHIFT:
+                    case KeyEvent.VK_PLUS:
+                        view.getSimView().incFontSize(1);
+                        break;
+                    case KeyEvent.VK_CONTROL:
+                    case KeyEvent.VK_MINUS:
+                        view.getSimView().incFontSize(-1);
+                        break;
+                    case KeyEvent.VK_G:
+                    case KeyEvent.VK_NUMBER_SIGN:
+                        view.getSimView().toggleDrawLines();
                         break;
                 }
             }
