@@ -9,15 +9,15 @@ public class Robot extends Thread {
     private double engineR;
     private Pose pose;
     private final double distanceE;
+    private boolean isStop = false;
     double powerTransmission = 0;
     private int diameters = 20;
     private ConcurrentLinkedQueue<Robot> threadOutputQueue;
     private final Random random;
-    private boolean isStop = false;
     final Color color;
 
-    public Robot(double motorR, double motorL, double distanceE,
-                 ConcurrentLinkedQueue<Robot> threadOutputQueue, Random random, Pose pose) {
+    public Robot(double motorR, double motorL, double distanceE, ConcurrentLinkedQueue<Robot> threadOutputQueue,
+                 Random random, Pose pose) {
         this.engineL = motorL;
         this.engineR = motorR;
         this.distanceE = distanceE;
@@ -46,11 +46,12 @@ public class Robot extends Thread {
     }
 
     private double angularVelocity() {
-        return (engineR - engineL) / distanceE;
+        return ((engineR * (1 - powerTransmission) + engineL * powerTransmission) -
+                (engineL * (1 - powerTransmission) + engineR * powerTransmission)) / distanceE;
     }
 
 
-    private void drive() {
+    private void setNextPosition() {
         pose.incRotation(angularVelocity());
 
         pose.setXCoordinate(pose.getPositionInDirection(trajectorySpeed()).getXCoordinate());
@@ -71,10 +72,10 @@ public class Robot extends Thread {
             driveToPosition(new Position(250, 250));
             if (isPositionInRobotArea(new Position(250, 250)))
                 toggleStop();
-            drive();
+            setNextPosition();
             threadOutputQueue.offer(this);
             try {
-                sleep(50);
+                sleep(20);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -96,7 +97,7 @@ public class Robot extends Thread {
 
     private void driveToPosition(Position position) {
         double angular = calcAngleforPosition(position);
-        if (rotateToAngle(angular) ) {
+        if (rotateToAngle(angular)) {
             engineR = 1;
             engineL = 1;
         }
@@ -135,6 +136,10 @@ public class Robot extends Thread {
 
     public void toggleStop() {
         isStop = !isStop;
+    }
+
+    public boolean getStop() {
+        return isStop;
     }
 
     public String toString() {

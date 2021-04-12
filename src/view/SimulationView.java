@@ -11,7 +11,7 @@ public class SimulationView extends JPanel {
     private Arena arena;
     private int offsetX, offsetY;
     boolean drawLines = false;
-    private boolean drawRotationIndicator = true;
+    private boolean drawRotationIndicator= true;
     private boolean drawRobotCoordinates = false;
     private boolean drawRobotEngines = false;
     private boolean drawRobotRotationo = false;
@@ -86,7 +86,9 @@ public class SimulationView extends JPanel {
         int x = (int) Math.round(robot.getPose().getXCoordinate()) - offsetX;
         int y = arena.getHeight() - (int) Math.round(robot.getPose().getYCoordinate()) - offsetY;
         g.setColor(robot.getColor());
-        g.fillOval(x - robot.getRadius(), y - robot.getRadius(), robot.getDiameters(), robot.getDiameters());
+        if (!robot.getStop())
+            g.fillOval(x - robot.getRadius(), y - robot.getRadius(), robot.getDiameters(), robot.getDiameters());
+        else g.drawOval(x - robot.getRadius(), y - robot.getRadius(), robot.getDiameters(), robot.getDiameters());
         g.setColor(Color.BLACK);
         if (drawRotationIndicator) {
             Position direction = robot.getPose().getPositionInDirection(robot.getRadius());
@@ -100,7 +102,7 @@ public class SimulationView extends JPanel {
         if (drawRobotCoordinates) {
             g.drawString(String.format("%,.2f", robot.getPose().getXCoordinate()) +
                             " | " + String.format("%,.2f", robot.getPose().getYCoordinate()),
-                    x - 15 - fontSize , y += fontSize);
+                    x - 15 - fontSize, y += fontSize);
         }
         if (drawRobotEngines) {
             g.drawString("R:" + String.format("%,.2f", robot.getEngineR()) +
@@ -137,4 +139,5 @@ public class SimulationView extends JPanel {
     public void incFontSize(int addend) {
         fontSize += addend + fontSize < 5 ? 0 : addend + fontSize > 100 ? 0 : addend;
     }
+
 }

@@ -38,11 +38,11 @@ class Main {
         }
         if (settings != null) {
             controller = new Controller(threadOutputQueue, robotsAndPositionOffsets, arena, random);
-            controller.visualisationLoop((int) (long) settings.get("fps"));
+            controller.visualisationTimer((int) (long) settings.get("fps"));
             controller.startRobotThreads();
         } else {
             controller = new Controller(threadOutputQueue, robotsAndPositionOffsets, arena, random);
-            controller.visualisationLoop(30);
+            controller.visualisationTimer(30);
             controller.startRobotThreads();
         }
     }

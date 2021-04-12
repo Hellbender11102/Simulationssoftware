@@ -31,11 +31,17 @@ public class Controller {
     }
 
     public void startRobotThreads() {
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                collisionDetection();
+                inArenaBounds();
+            }
+        }, 1000, 2);
         robotsAndPositionOffsets.keySet().forEach(Thread::start);
-
     }
 
-    public void visualisationLoop(int framesPerSecond) {
+    public void visualisationTimer(int framesPerSecond) {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -46,8 +52,6 @@ public class Controller {
                         robotList.add(r);
                     }
                     arena.setRobots(robotList);
-                    collisionDetection();
-                    inArenaBounds();
                 }
                 view.repaint();
             }

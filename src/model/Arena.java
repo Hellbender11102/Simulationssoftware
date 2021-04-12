@@ -2,8 +2,8 @@ package model;
 
 import java.util.LinkedList;
 
- public class Arena {
-    private LinkedList<Robot> robotList;
+public class Arena {
+    private LinkedList<Robot> robotList = new LinkedList<>();
     private final int height, width;
 
     /**
@@ -22,18 +22,19 @@ import java.util.LinkedList;
         return "width:" + width + " height:" + height;
     }
 
-   synchronized public void setRobots(LinkedList<Robot> robotList) {
+    synchronized public void setRobots(LinkedList<Robot> robotList) {
         this.robotList = robotList;
     }
-  synchronized  public LinkedList<Robot> getRobots() {
-      return robotList;
+
+    synchronized public LinkedList<Robot> getRobots() {
+        return robotList;
     }
 
- synchronized   public int getHeight() {
+     public int getHeight() {
         return height;
     }
 
-  synchronized  public int getWidth() {
+     public int getWidth() {
         return width;
     }
 }
