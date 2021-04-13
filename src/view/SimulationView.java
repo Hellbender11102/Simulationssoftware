@@ -42,10 +42,10 @@ public class SimulationView extends JPanel {
         if (drawLines) {
             g.setColor(Color.LIGHT_GRAY);
             for (int i = 10; i < arena.getWidth(); i += 10) {
-                g.drawLine(i - offsetX, 0 - offsetY, i - offsetX, arena.getHeight() - offsetY);
+                g.drawLine(i - offsetX, 1 - offsetY, i - offsetX, arena.getHeight()-1 - offsetY);
             }
             for (int i = 10; i < arena.getHeight(); i += 10) {
-                g.drawLine(0 - offsetX, i - offsetY, arena.getWidth() - offsetX, i - offsetY);
+                g.drawLine(1 - offsetX, i - offsetY, arena.getWidth()- 1 - offsetX, i - offsetY);
             }
         }
 

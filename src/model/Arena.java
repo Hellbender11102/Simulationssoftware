@@ -5,6 +5,7 @@ import java.util.LinkedList;
 public class Arena {
     private LinkedList<Robot> robotList = new LinkedList<>();
     private final int height, width;
+    private static Arena singleton;
 
     /**
      * Constructor
@@ -12,29 +13,38 @@ public class Arena {
      * @param width  in centemeter
      * @param height in centemeter
      */
-    public Arena(int width, int height) {
+    synchronized
+    public static Arena getInstance(int width, int height) {
+
+        if (singleton == null) {
+            singleton = new Arena(width, height);
+        }
+        return singleton;
+    }
+
+    private Arena(int width, int height) {
         this.width = width;
         this.height = height;
     }
 
     @Override
     public String toString() {
-        return "width:" + width + " height:" + height;
+        return "width:" + singleton.width + " height:" + singleton.height;
     }
 
     synchronized public void setRobots(LinkedList<Robot> robotList) {
-        this.robotList = robotList;
+        singleton.robotList = robotList;
     }
 
     synchronized public LinkedList<Robot> getRobots() {
-        return robotList;
+        return singleton.robotList;
     }
 
-     public int getHeight() {
-        return height;
+    public int getHeight() {
+        return singleton.height;
     }
 
-     public int getWidth() {
-        return width;
+    public int getWidth() {
+        return singleton.width;
     }
 }

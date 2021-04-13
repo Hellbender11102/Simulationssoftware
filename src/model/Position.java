@@ -66,7 +66,7 @@ public class Position {
 
     public void incPosition(double addendX, double addendY) {
         xCoordinate += addendX;
-        yCoordinate +=addendY;
+        yCoordinate += addendY;
     }
 
     public void decPosition(Position vector) {

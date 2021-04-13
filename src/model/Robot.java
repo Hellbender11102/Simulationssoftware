@@ -10,21 +10,20 @@ public class Robot extends Thread {
     private Pose pose;
     private final double distanceE;
     private boolean isStop = false;
-    double powerTransmission = 0;
+    private double powerTransmission = 0;
     private int diameters = 20;
     private ConcurrentLinkedQueue<Robot> threadOutputQueue;
     private final Random random;
-    final Color color;
+    private final Color color;
 
-    public Robot(double motorR, double motorL, double distanceE, ConcurrentLinkedQueue<Robot> threadOutputQueue,
-                 Random random, Pose pose) {
-        this.engineL = motorL;
-        this.engineR = motorR;
-        this.distanceE = distanceE;
-        this.random = random;
-        this.pose = pose;
-        this.threadOutputQueue = threadOutputQueue;
-        this.color = new Color(random.nextInt());
+    private Robot(Builder builder) {
+        this.engineL = builder.engineL;
+        this.engineR = builder.engineR;
+        this.distanceE = builder.distanceE;
+        this.random = builder.random;
+        this.pose = builder.pose;
+        this.threadOutputQueue = builder.threadOutputQueue;
+        this.color = new Color(builder.random.nextInt());
         setDaemon(true);
     }
 
@@ -64,11 +63,12 @@ public class Robot extends Thread {
         return pose;
     }
 
-    // abstract void behavior();
+    void behavior(){};
 
     @Override
     public void run() {
         while (!isStop) {
+            behavior();
             driveToPosition(new Position(250, 250));
             if (isPositionInRobotArea(new Position(250, 250)))
                 toggleStop();
@@ -144,5 +144,61 @@ public class Robot extends Thread {
 
     public String toString() {
         return "Engines: " + engineR + " - " + engineL + "\n" + pose;
+    }
+
+    public static class Builder {
+        private double engineL;
+        private double engineR;
+        private Pose pose;
+        private double distanceE;
+        double powerTransmission = 0;
+        private int diameters = 20;
+        private ConcurrentLinkedQueue<Robot> threadOutputQueue;
+        private Random random;
+        private Robot r;
+
+        public Builder engineLeft(double engineL) {
+            this.engineL = engineL;
+            return this;
+        }
+
+        public Builder engineRight(double engineR) {
+            this.engineR = engineR;
+            return this;
+        }
+
+        public Builder engineDistnace(double distanceE) {
+            this.distanceE = distanceE;
+            return this;
+        }
+
+        public Builder powerTransmission(double powerTransmission) {
+            this.powerTransmission = powerTransmission;
+            return this;
+        }
+
+        public Builder diameters(double diameters) {
+            this.diameters = (int) diameters;
+            return this;
+        }
+
+        public Builder threadOutputQueue(ConcurrentLinkedQueue<Robot> threadOutputQueue) {
+            this.threadOutputQueue = threadOutputQueue;
+            return this;
+        }
+
+        public Builder pose(Pose pose) {
+            this.pose = pose;
+            return this;
+        }
+
+        public Builder random(Random random) {
+            this.random = random;
+            return this;
+        }
+
+        public Robot build() {
+            return new Robot(this);
+        }
     }
 }
