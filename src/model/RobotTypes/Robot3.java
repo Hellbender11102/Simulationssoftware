@@ -1,7 +1,7 @@
-package model;
+package model.RobotTypes;
 
-import model.Robot.BaseRobot;
-import model.Robot.RobotBuilder;
+import model.Position;
+import model.RobotModel.RobotBuilder;
 
 public class Robot3 extends BaseRobot {
 

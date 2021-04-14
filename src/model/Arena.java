@@ -1,11 +1,11 @@
 package model;
 
-import model.Robot.RobotInterface;
+import model.RobotModel.RobotInterface;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 public class Arena {
-    private LinkedList<RobotInterface> robotList = new LinkedList<>();
+    private ArrayList<RobotInterface> robotList = new ArrayList<>();
     private final int height, width;
     private static Arena singleton;
 
@@ -34,11 +34,11 @@ public class Arena {
         return "width:" + singleton.width + " height:" + singleton.height;
     }
 
-    synchronized public void setRobots(LinkedList<RobotInterface> robotList) {
+    synchronized public void setRobots(ArrayList<RobotInterface> robotList) {
         singleton.robotList = robotList;
     }
 
-    synchronized public LinkedList<RobotInterface> getRobots() {
+    synchronized public ArrayList<RobotInterface> getRobots() {
         return singleton.robotList;
     }
 

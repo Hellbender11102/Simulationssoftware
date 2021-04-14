@@ -1,7 +1,9 @@
-package model.Robot;
+package model.RobotTypes;
 
 import model.Pose;
 import model.Position;
+import model.RobotModel.RobotBuilder;
+import model.RobotModel.RobotInterface;
 
 import java.awt.*;
 import java.util.Random;
@@ -19,40 +21,45 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
     private final Random random;
     private final Color color;
 
+    /**
+     * Constructs object via Builder
+     *
+     * @param builder
+     */
     public BaseRobot(RobotBuilder builder) {
-        this.engineL = builder.engineL;
-        this.engineR = builder.engineR;
-        this.distanceE = builder.distanceE;
-        this.random = builder.random;
-        this.pose = builder.pose;
-        this.threadOutputQueue = builder.threadOutputQueue;
-        this.color = new Color(builder.random.nextInt());
-        setDaemon(true);
+        this.engineL = builder.getEngineL();
+        this.engineR = builder.getEngineR();
+        this.distanceE = builder.getDistanceE();
+        this.random = builder.getRandom();
+        this.pose = builder.getPose();
+        this.threadOutputQueue = builder.getThreadOutputQueue();
+        this.color = new Color(random.nextInt());
     }
 
-    public BaseRobot(BaseRobot robot) {
-        setDaemon(true);
-        this.engineL = robot.engineL;
-        this.engineR = robot.engineR;
-        this.distanceE = robot.distanceE;
-        this.random = robot.random;
-        this.threadOutputQueue = robot.threadOutputQueue;
-        this.color = robot.color;
-        this.pose = robot.pose;
-    }
-
-
+    /**
+     * Calculates speed
+     *
+     * @return double
+     */
     public double trajectorySpeed() {
         return (engineR + engineL) / 2;
     }
 
-    private double angularVelocity() {
+    /**
+     * Calculates angular velocity
+     * changes dou to power transmission
+     *
+     * @return double angle velocity in degree
+     */
+     double angularVelocity() {
         return ((engineR * (1 - powerTransmission) + engineL * powerTransmission) -
                 (engineL * (1 - powerTransmission) + engineR * powerTransmission)) / distanceE;
     }
 
-
-    private void setNextPosition() {
+    /**
+     * calculates the next position and sets itself
+     */
+     void setNextPosition() {
         pose.incRotation(angularVelocity());
 
         pose.setXCoordinate(pose.getPositionInDirection(trajectorySpeed()).getXCoordinate());
@@ -61,11 +68,16 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
         // pose.decPosition(pose.getDiffrence(pose.getPositionInDirection(trajectorySpeed())));
     }
 
+    /**
+     * @return Pose
+     */
     public Pose getPose() {
         return pose;
     }
 
-
+    /**
+     * while robot is not stop calls behavior and sets to it's next position
+     */
     @Override
     public void run() {
         while (!isStop) {
@@ -80,37 +92,63 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
         }
     }
 
+    /**
+     * Calculates if position is in robots radius
+     *
+     * @param position Position
+     * @return boolean
+     */
     public boolean isPositionInRobotArea(Position position) {
         return pose.euclideanDistance(position) <= getRadius();
     }
 
+    /**
+     * @return Color
+     */
     public Color getColor() {
         return color;
     }
 
-    private double calcAngleforPosition(Position position) {
-        position.decPosition(this.pose);
+    /**
+     * Calculates the angle which the robot's pose must head to hit position
+     *
+     * @param position Posiition
+     * @return double angle in degree
+     */
+     double calcAngleforPosition(Position position) {
+        position.decPosition(pose);
         return position.getPolarAngle() < 0 ? position.getPolarAngle() + 360 : position.getPolarAngle();
     }
 
-    protected void driveToPosition(Position position) {
-        double angular = calcAngleforPosition(position);
-        if (rotateToAngle(angular)) {
+    /**
+     * Rotates to Position and if heading in the correct direction it drives full speed
+     *
+     * @param position Position
+     */
+     void driveToPosition(Position position) {
+        if (rotateToAngle(calcAngleforPosition(position),0.1)) {
             engineR = 1;
             engineL = 1;
         }
     }
 
-    private boolean rotateToAngle(double angle) {
+    /**
+     * Rotates with one engine set 0 and the other one set to rotationspeed until heading to correct angle +- 2°
+     * @param angle double heading angle
+     * @param rotationSpeed double > 0 && < 1
+     * @return boolean
+     */
+     boolean rotateToAngle(double angle, double rotationSpeed) {
+        rotationSpeed = rotationSpeed < 0 ? Math.abs(rotationSpeed) : rotationSpeed;
         if (angle - pose.getRotation() < 1. &&
                 angle - pose.getRotation() > -1.) {
             return true;
         } else if ((angle - pose.getRotation() < 0 && angle - pose.getRotation() > -180) || angle - pose.getRotation() > 180) {
             engineR = 0;
-            engineL = 0.1;
+            engineL = rotationSpeed;
             return false;
         } else {
-            engineR = 0.1;
+            engineR = rotationSpeed;
             engineL = 0;
             return false;
         }

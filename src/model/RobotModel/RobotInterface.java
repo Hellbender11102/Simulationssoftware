@@ -1,4 +1,4 @@
-package model.Robot;
+package model.RobotModel;
 
 import model.Pose;
 import model.Position;

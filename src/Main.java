@@ -1,7 +1,7 @@
 import controller.Controller;
 import model.*;
-import model.Robot.RobotBuilder;
-import model.Robot.RobotInterface;
+import model.RobotModel.RobotBuilder;
+import model.RobotModel.RobotInterface;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -38,11 +38,11 @@ class Main {
         if (settings != null) {
             controller = new Controller(threadOutputQueue, robotsAndPositionOffsets, arena, random);
             controller.visualisationTimer((int) (long) settings.get("fps"));
-            controller.startRobotThreads();
+            controller.initRobotsAndCollision();
         } else {
             controller = new Controller(threadOutputQueue, robotsAndPositionOffsets, arena, random);
             controller.visualisationTimer(30);
-            controller.startRobotThreads();
+            controller.initRobotsAndCollision();
         }
     }
 

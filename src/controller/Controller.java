@@ -1,8 +1,8 @@
 package controller;
 
 import model.*;
-import model.Robot.BaseRobot;
-import model.Robot.RobotInterface;
+import model.RobotTypes.BaseRobot;
+import model.RobotModel.RobotInterface;
 import view.View;
 
 import java.awt.event.*;
@@ -30,28 +30,40 @@ public class Controller {
         robotCount = robotsAndPositionOffsets.keySet().size();
     }
 
-    public void startRobotThreads() {
+    /**
+     * Schedules an timer that checks for robot collisions
+     * Inserts the robots in the map and pauses them
+     */
+    public void initRobotsAndCollision() {
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
                 collisionDetection();
                 inArenaBounds();
             }
-        }, 1000, 2);
+        }, 1000, 5);
         Thread t;
         for (RobotInterface robot : robotsAndPositionOffsets.keySet()) {
             t = new Thread(robot);
-            t.start();
+            t.setDaemon(true);
+            robot.toggleStop();
             threadList.add(t);
         }
+        arena.setRobots(new ArrayList<>(robotsAndPositionOffsets.keySet()));
     }
 
+    /**
+     * Starts an scheduled timer which checks for new robot locations and puts these on the arena
+     * Repaints the view after
+     *
+     * @param framesPerSecond int
+     */
     public void visualisationTimer(int framesPerSecond) {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 if (robotConcurrentQueue.size() >= robotCount) {
-                    LinkedList<RobotInterface> robotList = new LinkedList<>();
+                    ArrayList<RobotInterface> robotList = new ArrayList<>();
                     for (int i = 0; i < robotCount; i++) {
                         RobotInterface r = robotConcurrentQueue.poll();
                         robotList.add(r);
@@ -63,9 +75,15 @@ public class Controller {
         }, 1000, 1000 / framesPerSecond);
     }
 
-
-    private synchronized BaseRobot convertPoseToGlobal(Position global, BaseRobot robot) {
-        Pose pose = transPos(global, robot.getPose());
+    /**
+     * Translates the local position of an robot into an global position of the map
+     *
+     * @param globalOffset offset which the robot had when created
+     * @param robot        robot
+     * @return RobotInterface
+     */
+    private synchronized RobotInterface convertPoseToGlobal(Position globalOffset, BaseRobot robot) {
+        Pose pose = transPos(globalOffset, robot.getPose());
         robot.getPose().setXCoordinate(pose.getXCoordinate());
         robot.getPose().setYCoordinate(pose.getYCoordinate());
         robot.getPose().setRotation(pose.getRotation());
@@ -80,6 +98,9 @@ public class Controller {
         return new Pose(x, y, rotation);
     }
 
+    /**
+     * Checks if robots are in the arena bounds
+     */
     private void inArenaBounds() {
         for (RobotInterface robot : arena.getRobots()) {
             if (robot.getPose().getXCoordinate() < robot.getRadius())
@@ -93,6 +114,9 @@ public class Controller {
         }
     }
 
+    /**
+     * Checks for collision between robots
+     */
     private void collisionDetection() {
         arena.getRobots().forEach((r1) -> {
             arena.getRobots().forEach((r2) -> {
@@ -125,6 +149,11 @@ public class Controller {
         });
     }
 
+    /**
+     * @param bumping                 Robot that bumps
+     * @param getsBumped              Robot that gets bumped
+     * @param positionInBumpDirection Position in which the bump directs
+     */
     private void bump(RobotInterface bumping, RobotInterface getsBumped, Position positionInBumpDirection) {
         Position vector = bumping.getPose().getDiffrence(positionInBumpDirection);
         getsBumped.getPose().decPosition(vector);
@@ -141,10 +170,14 @@ public class Controller {
         }
     }
 
+
+    /**
+     * Adds event listener for the Simulation view
+     */
     private void addViewListener() {
         KeyListener keyListener = new KeyListener() {
             int x = 0, y = 0;
-            boolean stopped = false;
+            boolean stopped = true;
             Map<RobotInterface, Position> robots;
 
             @Override
@@ -160,6 +193,7 @@ public class Controller {
                         for (RobotInterface robot : robotsAndPositionOffsets.keySet()) {
                             if (stopped) {
                                 Thread t = new Thread(robot);
+                                t.setDaemon(true);
                                 robot.toggleStop();
                                 threadList.add(t);
                             } else {
@@ -169,7 +203,7 @@ public class Controller {
                         }
                         if (stopped) {
                             threadList.forEach(Thread::start);
-                        } else System.out.println();
+                        }
                         stopped = !stopped;
                         break;
                     case KeyEvent.VK_W:
