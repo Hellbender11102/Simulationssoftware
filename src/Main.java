@@ -1,8 +1,5 @@
 import controller.Controller;
-import model.Arena;
-import model.Pose;
-import model.Position;
-import model.Robot;
+import model.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -20,8 +17,8 @@ class Main {
     public static void main(String[] args) {
         JSONObject settings = loadJSON("resources/settings.json");
         JSONObject variables = loadJSON("resources/variables.json");
-        ConcurrentLinkedQueue<Robot> threadOutputQueue = new ConcurrentLinkedQueue<>();
-        Map<Robot, Position> robotsAndPositionOffsets = new HashMap<>();
+        ConcurrentLinkedQueue<RobotInterface> threadOutputQueue = new ConcurrentLinkedQueue<>();
+        Map<RobotInterface, Position> robotsAndPositionOffsets = new HashMap<>();
         Random random;
         Arena arena;
         Controller controller;
@@ -75,11 +72,11 @@ class Main {
      * @param random
      */
     private static void loadRobots(JSONObject robotObject,
-                                   Map<Robot, Position> robotsAndPositionOffsets,
-                                   ConcurrentLinkedQueue<Robot> threadOutputQueue, Random random) {
+                                   Map<RobotInterface, Position> robotsAndPositionOffsets,
+                                   ConcurrentLinkedQueue<RobotInterface> threadOutputQueue, Random random) {
         JSONObject positonObject = (JSONObject) robotObject.get("position");
         Pose pos = new Pose((Double) positonObject.get("x"), (Double) positonObject.get("y"), (Double) positonObject.get("rotation"));
-        Robot robot = new Robot.Builder().engineRight((Double) robotObject.get("engineR"))
+        RobotInterface robot = new RobotBuilder().engineRight((Double) robotObject.get("engineR"))
                 .engineLeft((Double) robotObject.get("engineL"))
                 .engineDistnace((Double) robotObject.get("distance"))
                 .threadOutputQueue(threadOutputQueue)
@@ -87,7 +84,7 @@ class Main {
                 .pose(pos)
                 .powerTransmission(0)
                 .diameters(20)
-                .build();
+                .buildRobot2();
         robotsAndPositionOffsets.put(robot, new Position(0, 0));
     }
 }

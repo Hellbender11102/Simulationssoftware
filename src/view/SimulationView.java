@@ -3,6 +3,7 @@ package view;
 import model.Arena;
 import model.Position;
 import model.Robot;
+import model.RobotInterface;
 
 import javax.swing.*;
 import java.awt.*;
@@ -50,7 +51,7 @@ public class SimulationView extends JPanel {
         }
 
         if (arena.getRobots() != null) {
-            for (Robot robot : arena.getRobots()) {
+            for (RobotInterface robot : arena.getRobots()) {
                 drawRobot(robot, g);
             }
         }
@@ -82,7 +83,7 @@ public class SimulationView extends JPanel {
      * @param robot
      * @param g
      */
-    private void drawRobot(Robot robot, Graphics g) {
+    private void drawRobot(RobotInterface robot, Graphics g) {
         int x = (int) Math.round(robot.getPose().getXCoordinate()) - offsetX;
         int y = arena.getHeight() - (int) Math.round(robot.getPose().getYCoordinate()) - offsetY;
         g.setColor(robot.getColor());

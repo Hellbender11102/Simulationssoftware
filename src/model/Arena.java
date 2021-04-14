@@ -3,7 +3,7 @@ package model;
 import java.util.LinkedList;
 
 public class Arena {
-    private LinkedList<Robot> robotList = new LinkedList<>();
+    private LinkedList<RobotInterface> robotList = new LinkedList<>();
     private final int height, width;
     private static Arena singleton;
 
@@ -32,11 +32,11 @@ public class Arena {
         return "width:" + singleton.width + " height:" + singleton.height;
     }
 
-    synchronized public void setRobots(LinkedList<Robot> robotList) {
+    synchronized public void setRobots(LinkedList<RobotInterface> robotList) {
         singleton.robotList = robotList;
     }
 
-    synchronized public LinkedList<Robot> getRobots() {
+    synchronized public LinkedList<RobotInterface> getRobots() {
         return singleton.robotList;
     }
 

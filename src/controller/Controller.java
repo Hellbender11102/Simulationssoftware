@@ -1,9 +1,6 @@
 package controller;
 
-import model.Arena;
-import model.Pose;
-import model.Position;
-import model.Robot;
+import model.*;
 import view.View;
 
 import java.awt.event.*;
@@ -13,14 +10,15 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class Controller {
     private View view;
     private Arena arena;
-    private Map<Robot, Position> robotsAndPositionOffsets;
-    private ConcurrentLinkedQueue<Robot> robotConcurrentQueue;
+    private Map<RobotInterface, Position> robotsAndPositionOffsets;
+    private ConcurrentLinkedQueue<RobotInterface> robotConcurrentQueue;
+    private List<Thread> threadList = new LinkedList<>();
     private final Random random;
     private final int robotCount;
     private final Timer timer = new Timer();
 
-    public Controller(ConcurrentLinkedQueue<Robot> robotConcurrentQueue,
-                      Map<Robot, Position> robotsAndPositionOffsets, Arena arena, Random random) {
+    public Controller(ConcurrentLinkedQueue<RobotInterface> robotConcurrentQueue,
+                      Map<RobotInterface, Position> robotsAndPositionOffsets, Arena arena, Random random) {
         view = new View(arena);
         addViewListener();
         this.arena = arena;
@@ -38,7 +36,12 @@ public class Controller {
                 inArenaBounds();
             }
         }, 1000, 2);
-        robotsAndPositionOffsets.keySet().forEach(Thread::start);
+        Thread t;
+        for (RobotInterface robot : robotsAndPositionOffsets.keySet()) {
+            t = new Thread(robot);
+            t.start();
+            threadList.add(t);
+        }
     }
 
     public void visualisationTimer(int framesPerSecond) {
@@ -46,9 +49,9 @@ public class Controller {
             @Override
             public void run() {
                 if (robotConcurrentQueue.size() >= robotCount) {
-                    LinkedList<Robot> robotList = new LinkedList<>();
+                    LinkedList<RobotInterface> robotList = new LinkedList<>();
                     for (int i = 0; i < robotCount; i++) {
-                        Robot r = robotConcurrentQueue.poll();
+                        RobotInterface r = robotConcurrentQueue.poll();
                         robotList.add(r);
                     }
                     arena.setRobots(robotList);
@@ -76,7 +79,7 @@ public class Controller {
     }
 
     private void inArenaBounds() {
-        for (Robot robot : arena.getRobots()) {
+        for (RobotInterface robot : arena.getRobots()) {
             if (robot.getPose().getXCoordinate() < robot.getRadius())
                 robot.getPose().setXCoordinate(robot.getRadius());
             else if (robot.getPose().getXCoordinate() > arena.getWidth() - robot.getRadius())
@@ -120,7 +123,7 @@ public class Controller {
         });
     }
 
-    private void bump(Robot bumping, Robot getsBumped, Position positionInBumpDirection) {
+    private void bump(RobotInterface bumping, RobotInterface getsBumped, Position positionInBumpDirection) {
         Position vector = bumping.getPose().getDiffrence(positionInBumpDirection);
         getsBumped.getPose().decPosition(vector);
 
@@ -140,7 +143,7 @@ public class Controller {
         KeyListener keyListener = new KeyListener() {
             int x = 0, y = 0;
             boolean stopped = false;
-            Map<Robot, Position> robots;
+            Map<RobotInterface, Position> robots;
 
             @Override
             public void keyTyped(KeyEvent e) {
@@ -152,17 +155,19 @@ public class Controller {
                 switch (e.getKeyCode()) {
                     case KeyEvent.VK_SPACE:
                         robots = new HashMap<>();
-                        for (Robot robot : robotsAndPositionOffsets.keySet()) {
+                        for (RobotInterface robot : robotsAndPositionOffsets.keySet()) {
                             if (stopped) {
-                                robots.put(new Robot(robot), robotsAndPositionOffsets.get(robot));
+                                Thread t = new Thread(robot);
+                                robot.toggleStop();
+                                threadList.add(t);
                             } else {
                                 robot.toggleStop();
+                                threadList.clear();
                             }
                         }
                         if (stopped) {
-                            robotsAndPositionOffsets = robots;
-                            robotsAndPositionOffsets.keySet().forEach(Thread::start);
-                        }
+                            threadList.forEach(Thread::start);
+                        } else System.out.println();
                         stopped = !stopped;
                         break;
                     case KeyEvent.VK_W:
