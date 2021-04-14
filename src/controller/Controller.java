@@ -1,6 +1,8 @@
 package controller;
 
 import model.*;
+import model.Robot.BaseRobot;
+import model.Robot.RobotInterface;
 import view.View;
 
 import java.awt.event.*;
@@ -62,7 +64,7 @@ public class Controller {
     }
 
 
-    private synchronized Robot convertPoseToGlobal(Position global, Robot robot) {
+    private synchronized BaseRobot convertPoseToGlobal(Position global, BaseRobot robot) {
         Pose pose = transPos(global, robot.getPose());
         robot.getPose().setXCoordinate(pose.getXCoordinate());
         robot.getPose().setYCoordinate(pose.getYCoordinate());

@@ -1,4 +1,9 @@
-package model;
+package model.Robot;
+
+import model.Pose;
+import model.Robot1;
+import model.Robot2;
+import model.Robot3;
 
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -12,7 +17,7 @@ public class RobotBuilder {
     int diameters = 20;
     ConcurrentLinkedQueue<RobotInterface> threadOutputQueue;
     Random random;
-    Robot r;
+    BaseRobot r;
 
     public RobotBuilder engineLeft(double engineL) {
         this.engineL = engineL;
@@ -54,15 +59,22 @@ public class RobotBuilder {
         return this;
     }
 
-    public Robot buildDefault() {
-        return new Robot(this) {
+    public BaseRobot buildDefault() {
+        return new BaseRobot(this) {
             @Override
             public void behavior() {
-
             }
         };
     }
-        public Robot2 buildRobot2 () {
-            return new Robot2(this);
-        }
+
+    public Robot1 buildRobot1() {
+        return new Robot1(this);
     }
+
+    public Robot2 buildRobot2() {
+        return new Robot2(this);
+    }
+    public Robot3 buildRobot3() {
+        return new Robot3(this);
+    }
+}

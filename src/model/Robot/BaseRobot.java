@@ -1,10 +1,13 @@
-package model;
+package model.Robot;
+
+import model.Pose;
+import model.Position;
 
 import java.awt.*;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-abstract public class Robot extends Thread implements RobotInterface {
+abstract public class BaseRobot extends Thread implements RobotInterface {
     private double engineL;
     private double engineR;
     private Pose pose;
@@ -16,7 +19,7 @@ abstract public class Robot extends Thread implements RobotInterface {
     private final Random random;
     private final Color color;
 
-    public Robot(RobotBuilder builder) {
+    public BaseRobot(RobotBuilder builder) {
         this.engineL = builder.engineL;
         this.engineR = builder.engineR;
         this.distanceE = builder.distanceE;
@@ -27,7 +30,7 @@ abstract public class Robot extends Thread implements RobotInterface {
         setDaemon(true);
     }
 
-    public Robot(Robot robot) {
+    public BaseRobot(BaseRobot robot) {
         setDaemon(true);
         this.engineL = robot.engineL;
         this.engineR = robot.engineR;
@@ -62,10 +65,6 @@ abstract public class Robot extends Thread implements RobotInterface {
         return pose;
     }
 
-    void behavior() {
-    }
-
-    ;
 
     @Override
     public void run() {
@@ -94,7 +93,7 @@ abstract public class Robot extends Thread implements RobotInterface {
         return position.getPolarAngle() < 0 ? position.getPolarAngle() + 360 : position.getPolarAngle();
     }
 
-    void driveToPosition(Position position) {
+    protected void driveToPosition(Position position) {
         double angular = calcAngleforPosition(position);
         if (rotateToAngle(angular)) {
             engineR = 1;

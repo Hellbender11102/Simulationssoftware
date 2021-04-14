@@ -1,5 +1,7 @@
 package model;
 
+import model.Robot.RobotInterface;
+
 import java.util.LinkedList;
 
 public class Arena {

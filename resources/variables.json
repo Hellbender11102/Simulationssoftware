@@ -6,40 +6,80 @@
   },
   "robots": [
     {
+      "type": "1",
       "engineR": 1.0,
       "engineL": 0.5,
       "distance": 1.0,
       "position": {
         "x": 400.0,
         "y": 400.0,
-       "rotation":90.0
+        "rotation": 90.0
       }
-    } ,{
+    },
+    {
+      "type": "1",
       "engineR": 1.0,
       "engineL": 0.5,
       "distance": 1.0,
       "position": {
         "x": 100.0,
         "y": 100.0,
-       "rotation":90.0
+        "rotation": 90.0
       }
-    },{
+    },
+    {
+      "type": "2",
       "engineR": 1.0,
       "engineL": 0.5,
       "distance": 1.0,
       "position": {
         "x": 100.0,
         "y": 400.0,
-       "rotation":90.0
+        "rotation": 180.0
       }
-    },{
+    },
+    {
+      "type": "2",
+      "engineR": 1.0,
+      "engineL": 0.5,
+      "distance": 1.0,
+      "position": {
+        "x": 10.0,
+        "y": 10.0,
+        "rotation": 90.0
+      }
+    },
+    {
+      "type": "default",
+      "engineR": 0.5,
+      "engineL": 1.0,
+      "distance": 1.0,
+      "position": {
+        "x": 250.0,
+        "y": 250.0,
+        "rotation": 90.0
+      }
+    },
+    {
+      "type": "3",
       "engineR": 1.0,
       "engineL": 0.5,
       "distance": 1.0,
       "position": {
         "x": 400.0,
         "y": 100.0,
-       "rotation":90.0
+        "rotation": 90.0
+      }
+    },
+    {
+      "type": "default",
+      "engineR": 1.0,
+      "engineL": 0.5,
+      "distance": 1.0,
+      "position": {
+        "x": 400.0,
+        "y": 100.0,
+        "rotation": 90.0
       }
     }
   ]

@@ -1,8 +1,13 @@
-package model;
+package model.Robot;
+
+import model.Pose;
+import model.Position;
 
 import java.awt.*;
 
-public interface RobotInterface extends Runnable{
+public interface RobotInterface extends Runnable {
+
+    abstract void behavior();
 
     abstract public Pose getPose();
 
@@ -20,6 +25,7 @@ public interface RobotInterface extends Runnable{
 
     abstract
     public double getEngineR();
+
     abstract
     public double trajectorySpeed();
 

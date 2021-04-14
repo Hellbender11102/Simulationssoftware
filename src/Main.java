@@ -1,5 +1,7 @@
 import controller.Controller;
 import model.*;
+import model.Robot.RobotBuilder;
+import model.Robot.RobotInterface;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -76,15 +78,29 @@ class Main {
                                    ConcurrentLinkedQueue<RobotInterface> threadOutputQueue, Random random) {
         JSONObject positonObject = (JSONObject) robotObject.get("position");
         Pose pos = new Pose((Double) positonObject.get("x"), (Double) positonObject.get("y"), (Double) positonObject.get("rotation"));
-        RobotInterface robot = new RobotBuilder().engineRight((Double) robotObject.get("engineR"))
+
+        RobotBuilder builder = new RobotBuilder().engineRight((Double) robotObject.get("engineR"))
                 .engineLeft((Double) robotObject.get("engineL"))
                 .engineDistnace((Double) robotObject.get("distance"))
                 .threadOutputQueue(threadOutputQueue)
                 .random(random)
                 .pose(pos)
                 .powerTransmission(0)
-                .diameters(20)
-                .buildRobot2();
+                .diameters(20);
+        RobotInterface robot;
+        switch ((String) robotObject.get("type")) {
+            case "1":
+                robot = builder.buildRobot1();
+                break;
+            case "2":
+                robot = builder.buildRobot2();
+                break;
+            case "3":
+                robot = builder.buildRobot3();
+                break;
+            default:
+                robot = builder.buildDefault();
+        }
         robotsAndPositionOffsets.put(robot, new Position(0, 0));
     }
 }

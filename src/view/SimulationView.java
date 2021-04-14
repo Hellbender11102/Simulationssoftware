@@ -2,8 +2,7 @@ package view;
 
 import model.Arena;
 import model.Position;
-import model.Robot;
-import model.RobotInterface;
+import model.Robot.RobotInterface;
 
 import javax.swing.*;
 import java.awt.*;

@@ -1,21 +1,19 @@
 package model;
 
-public class Robot2 extends Robot {
+import model.Robot.BaseRobot;
+import model.Robot.RobotBuilder;
 
-    public Robot2(Robot robot) {
-        super(robot);
-    }
+public class Robot2 extends BaseRobot {
+
     public Robot2(RobotBuilder builder) {
         super(builder);
     }
 
-
-
     @Override
-     void behavior() {
+    public void behavior() {
         driveToPosition(new Position(250, 250));
         if (isPositionInRobotArea(new Position(250, 250)))
             toggleStop();
-    };
+    }
 
 }
