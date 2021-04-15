@@ -11,9 +11,11 @@ public class Robot1 extends BaseRobot {
 
     @Override
     public void behavior() {
-        driveToPosition(new Position(100, 100));
-        if (isPositionInRobotArea(new Position(100, 100)))
-            toggleStop();
+        if (isPositionInRobotArea(new Position(400, 400))) {
+            setEngines(0, 0);
+        } else {
+            driveToPosition(new Position(400, 400));
+        }
     }
 
 }

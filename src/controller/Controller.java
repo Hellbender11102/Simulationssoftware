@@ -41,7 +41,7 @@ public class Controller {
                 collisionDetection();
                 inArenaBounds();
             }
-        }, 1000, 5);
+        }, 1000, 10);
         Thread t;
         for (RobotInterface robot : robotsAndPositionOffsets.keySet()) {
             t = new Thread(robot);
@@ -65,7 +65,8 @@ public class Controller {
                 if (robotConcurrentQueue.size() >= robotCount) {
                     ArrayList<RobotInterface> robotList = new ArrayList<>();
                     for (int i = 0; i < robotCount; i++) {
-                        RobotInterface r = robotConcurrentQueue.poll();
+                        RobotInterface r;
+                        while (!robotList.contains(r = robotConcurrentQueue.poll()) && robotConcurrentQueue.size() > 0)
                         robotList.add(r);
                     }
                     arena.setRobots(robotList);

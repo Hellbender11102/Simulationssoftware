@@ -11,52 +11,19 @@
       "engineL": 0.5,
       "distance": 1.0,
       "position": {
-        "x": 400.0,
-        "y": 400.0,
-        "rotation": 90.0
-      }
-    },
-    {
-      "type": "1",
-      "engineR": 1.0,
-      "engineL": 0.5,
-      "distance": 1.0,
-      "position": {
-        "x": 100.0,
-        "y": 100.0,
-        "rotation": 90.0
-      }
-    },
-    {
-      "type": "2",
-      "engineR": 1.0,
-      "engineL": 0.5,
-      "distance": 1.0,
-      "position": {
-        "x": 100.0,
-        "y": 400.0,
-        "rotation": 180.0
-      }
-    },
-    {
-      "type": "2",
-      "engineR": 1.0,
-      "engineL": 0.5,
-      "distance": 1.0,
-      "position": {
         "x": 10.0,
         "y": 10.0,
         "rotation": 90.0
       }
     },
     {
-      "type": "default",
-      "engineR": 0.5,
-      "engineL": 1.0,
+      "type": "2",
+      "engineR": 1.0,
+      "engineL": 0.5,
       "distance": 1.0,
       "position": {
-        "x": 250.0,
-        "y": 250.0,
+        "x": 30.0,
+        "y": 10.0,
         "rotation": 90.0
       }
     },
@@ -66,20 +33,31 @@
       "engineL": 0.5,
       "distance": 1.0,
       "position": {
-        "x": 400.0,
-        "y": 100.0,
+        "x": 50.0,
+        "y": 10.0,
         "rotation": 90.0
       }
     },
     {
       "type": "default",
-      "engineR": 1.0,
-      "engineL": 0.5,
+      "engineR": 0.2,
+      "engineL": 0.2,
       "distance": 1.0,
       "position": {
         "x": 400.0,
-        "y": 100.0,
-        "rotation": 90.0
+        "y": 250.0,
+        "rotation": 180.0
+      }
+    },
+    {
+      "type": "default",
+      "engineR": 0.3,
+      "engineL": 0.3,
+      "distance": 1.0,
+      "position": {
+        "x": 100.0,
+        "y": 250.0,
+        "rotation": 0.0
       }
     }
   ]

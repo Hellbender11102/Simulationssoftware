@@ -51,7 +51,7 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
      *
      * @return double angle velocity in degree
      */
-     double angularVelocity() {
+    double angularVelocity() {
         return ((engineR * (1 - powerTransmission) + engineL * powerTransmission) -
                 (engineL * (1 - powerTransmission) + engineR * powerTransmission)) / distanceE;
     }
@@ -59,7 +59,7 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
     /**
      * calculates the next position and sets itself
      */
-     void setNextPosition() {
+    void setNextPosition() {
         pose.incRotation(angularVelocity());
 
         pose.setXCoordinate(pose.getPositionInDirection(trajectorySpeed()).getXCoordinate());
@@ -85,7 +85,7 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
             setNextPosition();
             threadOutputQueue.offer(this);
             try {
-                sleep(20);
+                sleep(30);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -115,7 +115,7 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
      * @param position Posiition
      * @return double angle in degree
      */
-     double calcAngleforPosition(Position position) {
+    double calcAngleforPosition(Position position) {
         position.decPosition(pose);
         return position.getPolarAngle() < 0 ? position.getPolarAngle() + 360 : position.getPolarAngle();
     }
@@ -125,8 +125,8 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
      *
      * @param position Position
      */
-     void driveToPosition(Position position) {
-        if (rotateToAngle(calcAngleforPosition(position),0.1)) {
+    void driveToPosition(Position position) {
+        if (rotateToAngle(calcAngleforPosition(position), 0.1)) {
             engineR = 1;
             engineL = 1;
         }
@@ -134,11 +134,12 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
 
     /**
      * Rotates with one engine set 0 and the other one set to rotationspeed until heading to correct angle +- 2°
-     * @param angle double heading angle
+     *
+     * @param angle         double heading angle
      * @param rotationSpeed double > 0 && < 1
      * @return boolean
      */
-     boolean rotateToAngle(double angle, double rotationSpeed) {
+    boolean rotateToAngle(double angle, double rotationSpeed) {
         rotationSpeed = rotationSpeed < 0 ? Math.abs(rotationSpeed) : rotationSpeed;
         if (angle - pose.getRotation() < 1. &&
                 angle - pose.getRotation() > -1.) {
@@ -168,6 +169,19 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
 
     public double getEngineR() {
         return engineR;
+    }
+
+    public void setEngineL(double engineL) {
+        this.engineL = engineL;
+    }
+
+    public void settEngineR(double engineR) {
+        this.engineR = engineR;
+    }
+
+    public void setEngines(double rightEngine, double leftEngine) {
+        engineR = rightEngine;
+        engineL = leftEngine;
     }
 
     public void toggleStop() {
