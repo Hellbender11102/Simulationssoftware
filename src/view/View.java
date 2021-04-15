@@ -1,11 +1,9 @@
 package view;
 
 import model.Arena;
-import model.Robot;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.LinkedList;
 
 public class View extends JFrame {
     private SimulationView simView;

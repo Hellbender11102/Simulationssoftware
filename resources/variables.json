@@ -1,45 +1,85 @@
 {
   "seed": 1000,
   "arena": {
-    "width": 200,
-    "height": 200
+    "width": 500,
+    "height": 500
   },
   "robots": [
     {
-      "engineR": 0.5,
+      "type": "1",
+      "engineR": 1.0,
       "engineL": 0.5,
       "distance": 1.0,
       "position": {
-        "x": 50.0,
-        "y": 150.0,
-       "rotation":270.0
+        "x": 400.0,
+        "y": 400.0,
+        "rotation": 90.0
       }
-    },  {
-      "engineR":1.0,
+    },
+    {
+      "type": "1",
+      "engineR": 1.0,
+      "engineL": 0.5,
+      "distance": 1.0,
+      "position": {
+        "x": 100.0,
+        "y": 100.0,
+        "rotation": 90.0
+      }
+    },
+    {
+      "type": "2",
+      "engineR": 1.0,
+      "engineL": 0.5,
+      "distance": 1.0,
+      "position": {
+        "x": 100.0,
+        "y": 400.0,
+        "rotation": 180.0
+      }
+    },
+    {
+      "type": "2",
+      "engineR": 1.0,
+      "engineL": 0.5,
+      "distance": 1.0,
+      "position": {
+        "x": 10.0,
+        "y": 10.0,
+        "rotation": 90.0
+      }
+    },
+    {
+      "type": "default",
+      "engineR": 0.5,
       "engineL": 1.0,
       "distance": 1.0,
       "position": {
-        "x": 45.0,
-        "y": 50.0,
-       "rotation":90.0
+        "x": 250.0,
+        "y": 250.0,
+        "rotation": 90.0
       }
-    },  {
-      "engineR":1.0,
-      "engineL": 1.5,
+    },
+    {
+      "type": "3",
+      "engineR": 1.0,
+      "engineL": 0.5,
       "distance": 1.0,
       "position": {
-        "x": 70.0,
-        "y": 50.0,
-       "rotation":180.0
+        "x": 400.0,
+        "y": 100.0,
+        "rotation": 90.0
       }
-    },  {
-      "engineR":1.5,
-      "engineL": 1.0,
+    },
+    {
+      "type": "default",
+      "engineR": 1.0,
+      "engineL": 0.5,
       "distance": 1.0,
       "position": {
-        "x": 0.0,
-        "y": 0.0,
-       "rotation":90.0
+        "x": 400.0,
+        "y": 100.0,
+        "rotation": 90.0
       }
     }
   ]

@@ -1,9 +1,8 @@
 package controller;
 
-import model.Arena;
-import model.Pose;
-import model.Position;
-import model.Robot;
+import model.*;
+import model.RobotTypes.BaseRobot;
+import model.RobotModel.RobotInterface;
 import view.View;
 
 import java.awt.event.*;
@@ -13,14 +12,15 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class Controller {
     private View view;
     private Arena arena;
-    private Map<Robot, Position> robotsAndPositionOffsets;
-    private ConcurrentLinkedQueue<Robot> robotConcurrentQueue;
+    private Map<RobotInterface, Position> robotsAndPositionOffsets;
+    private ConcurrentLinkedQueue<RobotInterface> robotConcurrentQueue;
+    private List<Thread> threadList = new LinkedList<>();
     private final Random random;
     private final int robotCount;
     private final Timer timer = new Timer();
 
-    public Controller(ConcurrentLinkedQueue<Robot> robotConcurrentQueue,
-                      Map<Robot, Position> robotsAndPositionOffsets, Arena arena, Random random) {
+    public Controller(ConcurrentLinkedQueue<RobotInterface> robotConcurrentQueue,
+                      Map<RobotInterface, Position> robotsAndPositionOffsets, Arena arena, Random random) {
         view = new View(arena);
         addViewListener();
         this.arena = arena;
@@ -30,114 +30,155 @@ public class Controller {
         robotCount = robotsAndPositionOffsets.keySet().size();
     }
 
-    public void startRobotThreads() {
-        robotsAndPositionOffsets.keySet().forEach(Thread::start);
-
+    /**
+     * Schedules an timer that checks for robot collisions
+     * Inserts the robots in the map and pauses them
+     */
+    public void initRobotsAndCollision() {
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                collisionDetection();
+                inArenaBounds();
+            }
+        }, 1000, 5);
+        Thread t;
+        for (RobotInterface robot : robotsAndPositionOffsets.keySet()) {
+            t = new Thread(robot);
+            t.setDaemon(true);
+            robot.toggleStop();
+            threadList.add(t);
+        }
+        arena.setRobots(new ArrayList<>(robotsAndPositionOffsets.keySet()));
     }
 
-    public void visualisationLoop(int framesPerSecond) {
+    /**
+     * Starts an scheduled timer which checks for new robot locations and puts these on the arena
+     * Repaints the view after
+     *
+     * @param framesPerSecond int
+     */
+    public void visualisationTimer(int framesPerSecond) {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 if (robotConcurrentQueue.size() >= robotCount) {
-                    LinkedList<Robot> robotList = new LinkedList<>();
+                    ArrayList<RobotInterface> robotList = new ArrayList<>();
                     for (int i = 0; i < robotCount; i++) {
-                        Robot r = robotConcurrentQueue.poll();
+                        RobotInterface r = robotConcurrentQueue.poll();
                         robotList.add(r);
                     }
                     arena.setRobots(robotList);
-                    collisionDetection();
-                    inArenaBounds();
                 }
                 view.repaint();
             }
         }, 1000, 1000 / framesPerSecond);
     }
 
-
-    private synchronized Robot convertPoseToGlobal(Position global, Robot robot) {
-        Pose pose = transPos(global, robot.getPose());
-        robot.getPose().setxCoordinate(pose.getxCoordinate());
-        robot.getPose().setyCoordinate(pose.getyCoordinate());
+    /**
+     * Translates the local position of an robot into an global position of the map
+     *
+     * @param globalOffset offset which the robot had when created
+     * @param robot        robot
+     * @return RobotInterface
+     */
+    private synchronized RobotInterface convertPoseToGlobal(Position globalOffset, BaseRobot robot) {
+        Pose pose = transPos(globalOffset, robot.getPose());
+        robot.getPose().setXCoordinate(pose.getXCoordinate());
+        robot.getPose().setYCoordinate(pose.getYCoordinate());
         robot.getPose().setRotation(pose.getRotation());
         return robot;
     }
 
 
     private synchronized Pose transPos(Position pGlobal, Pose pLocal) {
-        double x = pGlobal.getxCoordinate() + pLocal.getxCoordinate();
-        double y = pGlobal.getyCoordinate() + pLocal.getyCoordinate();
+        double x = pGlobal.getXCoordinate() + pLocal.getXCoordinate();
+        double y = pGlobal.getYCoordinate() + pLocal.getYCoordinate();
         double rotation = pLocal.getRotation();
         return new Pose(x, y, rotation);
     }
 
+    /**
+     * Checks if robots are in the arena bounds
+     */
     private void inArenaBounds() {
-        for (Robot robot : arena.getRobots()) {
-            if (robot.getPose().getxCoordinate() < robot.getRadius())
-                robot.getPose().setxCoordinate(robot.getRadius());
-            else if (robot.getPose().getxCoordinate() > arena.getWidth() - robot.getRadius())
-                robot.getPose().setxCoordinate(arena.getWidth() - robot.getRadius());
-            if (robot.getPose().getyCoordinate() < robot.getRadius())
-                robot.getPose().setyCoordinate(robot.getRadius());
-            else if (robot.getPose().getyCoordinate() > arena.getHeight() - robot.getRadius())
-                robot.getPose().setyCoordinate(arena.getHeight() - robot.getRadius());
+        for (RobotInterface robot : arena.getRobots()) {
+            if (robot.getPose().getXCoordinate() < robot.getRadius())
+                robot.getPose().setXCoordinate(robot.getRadius());
+            else if (robot.getPose().getXCoordinate() > arena.getWidth() - robot.getRadius())
+                robot.getPose().setXCoordinate(arena.getWidth() - robot.getRadius());
+            if (robot.getPose().getYCoordinate() < robot.getRadius())
+                robot.getPose().setYCoordinate(robot.getRadius());
+            else if (robot.getPose().getYCoordinate() > arena.getHeight() - robot.getRadius())
+                robot.getPose().setYCoordinate(arena.getHeight() - robot.getRadius());
         }
     }
 
+    /**
+     * Checks for collision between robots
+     */
     private void collisionDetection() {
         arena.getRobots().forEach((r1) -> {
             arena.getRobots().forEach((r2) -> {
                 if (!r1.equals(r2) && r1.getPose().euclideanDistance(r2.getPose()) < r1.getDiameters()) {
                     if (r2.isPositionInRobotArea(r1.getPose().getPositionInDirection(r1.getRadius() + 0.01))) {
-                        System.out.println("!");
+
                         bump(r1, r2, r1.getPose().getPositionInDirection(r1.trajectorySpeed()));
                     } else if (r1.isPositionInRobotArea(r2.getPose().getPositionInDirection(r2.getRadius() + 0.01))) {
-                        System.out.println("!");
+
                         bump(r2, r1, r2.getPose().getPositionInDirection(r2.trajectorySpeed()));
                     } else if (!r1.isPositionInRobotArea(r2.getPose().getPositionInDirection(r2.getRadius() + 0.01))) {
-                        System.out.println("------");
-                        if (r1.getPose().getxCoordinate() < r2.getPose().getxCoordinate()) {
-                            bump(r1, r2, new Position(r1.getPose().getxCoordinate() + r1.trajectorySpeed(), r1.getPose().getyCoordinate()));
-                            bump(r2, r1, new Position(r2.getPose().getxCoordinate() - r2.trajectorySpeed(), r2.getPose().getyCoordinate()));
+
+                        if (r1.getPose().getXCoordinate() < r2.getPose().getXCoordinate()) {
+                            bump(r1, r2, new Position(r1.getPose().getXCoordinate() + r1.trajectorySpeed(), r1.getPose().getYCoordinate()));
+                            bump(r2, r1, new Position(r2.getPose().getXCoordinate() - r2.trajectorySpeed(), r2.getPose().getYCoordinate()));
                         } else {
-                            bump(r1, r2, new Position(r1.getPose().getxCoordinate() - r1.trajectorySpeed(), r1.getPose().getyCoordinate()));
-                            bump(r2, r1, new Position(r2.getPose().getxCoordinate() + r2.trajectorySpeed(), r2.getPose().getyCoordinate()));
+                            bump(r1, r2, new Position(r1.getPose().getXCoordinate() - r1.trajectorySpeed(), r1.getPose().getYCoordinate()));
+                            bump(r2, r1, new Position(r2.getPose().getXCoordinate() + r2.trajectorySpeed(), r2.getPose().getYCoordinate()));
                         }
-                        if (r1.getPose().getyCoordinate() < r2.getPose().getyCoordinate()) {
-                            bump(r1, r2, new Position(r1.getPose().getxCoordinate(), r1.getPose().getyCoordinate() + r1.trajectorySpeed()));
-                            bump(r2, r1, new Position(r2.getPose().getxCoordinate(), r2.getPose().getyCoordinate() - r2.trajectorySpeed()));
+                        if (r1.getPose().getYCoordinate() < r2.getPose().getYCoordinate()) {
+                            bump(r1, r2, new Position(r1.getPose().getXCoordinate(), r1.getPose().getYCoordinate() + r1.trajectorySpeed()));
+                            bump(r2, r1, new Position(r2.getPose().getXCoordinate(), r2.getPose().getYCoordinate() - r2.trajectorySpeed()));
                         } else {
-                            bump(r1, r2, new Position(r1.getPose().getxCoordinate(), r1.getPose().getyCoordinate() - r1.trajectorySpeed()));
-                            bump(r2, r1, new Position(r2.getPose().getxCoordinate(), r2.getPose().getyCoordinate() + r2.trajectorySpeed()));
+                            bump(r1, r2, new Position(r1.getPose().getXCoordinate(), r1.getPose().getYCoordinate() - r1.trajectorySpeed()));
+                            bump(r2, r1, new Position(r2.getPose().getXCoordinate(), r2.getPose().getYCoordinate() + r2.trajectorySpeed()));
                         }
-                    }
-                    else System.out.println("Alles doof");
+                    } else System.out.println("Alles doof");
                 }
             });
         });
     }
 
-    private void bump(Robot bumping, Robot getsBumped, Position positionInBumpDirection) {
+    /**
+     * @param bumping                 Robot that bumps
+     * @param getsBumped              Robot that gets bumped
+     * @param positionInBumpDirection Position in which the bump directs
+     */
+    private void bump(RobotInterface bumping, RobotInterface getsBumped, Position positionInBumpDirection) {
         Position vector = bumping.getPose().getDiffrence(positionInBumpDirection);
         getsBumped.getPose().decPosition(vector);
 
-        if (getsBumped.getPose().getxCoordinate() <= getsBumped.getRadius()) {
-            bumping.getPose().incPosition(vector.getxCoordinate(), 0);
-        } else if (getsBumped.getPose().getxCoordinate() >= arena.getWidth() - getsBumped.getRadius()) {
-            bumping.getPose().incPosition(vector.getxCoordinate(), 0);
+        if (getsBumped.getPose().getXCoordinate() <= getsBumped.getRadius()) {
+            bumping.getPose().incPosition(vector.getXCoordinate(), 0);
+        } else if (getsBumped.getPose().getXCoordinate() >= arena.getWidth() - getsBumped.getRadius()) {
+            bumping.getPose().incPosition(vector.getXCoordinate(), 0);
         }
-        if (getsBumped.getPose().getyCoordinate() <= bumping.getRadius()) {
-            bumping.getPose().incPosition(0, vector.getyCoordinate());
-        } else if (getsBumped.getPose().getyCoordinate() >= arena.getHeight() - getsBumped.getRadius()) {
-            bumping.getPose().incPosition(0, vector.getyCoordinate());
+        if (getsBumped.getPose().getYCoordinate() <= bumping.getRadius()) {
+            bumping.getPose().incPosition(0, vector.getYCoordinate());
+        } else if (getsBumped.getPose().getYCoordinate() >= arena.getHeight() - getsBumped.getRadius()) {
+            bumping.getPose().incPosition(0, vector.getYCoordinate());
         }
     }
 
+
+    /**
+     * Adds event listener for the Simulation view
+     */
     private void addViewListener() {
         KeyListener keyListener = new KeyListener() {
             int x = 0, y = 0;
-            boolean stopped = false;
-            Map<Robot, Position> robots;
+            boolean stopped = true;
+            Map<RobotInterface, Position> robots;
 
             @Override
             public void keyTyped(KeyEvent e) {
@@ -149,16 +190,19 @@ public class Controller {
                 switch (e.getKeyCode()) {
                     case KeyEvent.VK_SPACE:
                         robots = new HashMap<>();
-                        for (Robot robot : robotsAndPositionOffsets.keySet()) {
+                        for (RobotInterface robot : robotsAndPositionOffsets.keySet()) {
                             if (stopped) {
-                                robots.put(new Robot(robot), robotsAndPositionOffsets.get(robot));
+                                Thread t = new Thread(robot);
+                                t.setDaemon(true);
+                                robot.toggleStop();
+                                threadList.add(t);
                             } else {
                                 robot.toggleStop();
+                                threadList.clear();
                             }
                         }
                         if (stopped) {
-                            robotsAndPositionOffsets = robots;
-                            robotsAndPositionOffsets.keySet().forEach(Thread::start);
+                            threadList.forEach(Thread::start);
                         }
                         stopped = !stopped;
                         break;
@@ -177,6 +221,30 @@ public class Controller {
                     case KeyEvent.VK_D:
                     case KeyEvent.VK_RIGHT:
                         view.getSimView().incOffsetX(++x);
+                        break;
+                    case KeyEvent.VK_O:
+                        view.getSimView().toggleDrawRotationIndicator();
+                        break;
+                    case KeyEvent.VK_E:
+                        view.getSimView().toggleDrawRobotEngines();
+                        break;
+                    case KeyEvent.VK_R:
+                        view.getSimView().toggleDrawrobotRotationo();
+                        break;
+                    case KeyEvent.VK_C:
+                        view.getSimView().toggleDrawrobotCoordinates();
+                        break;
+                    case KeyEvent.VK_SHIFT:
+                    case KeyEvent.VK_PLUS:
+                        view.getSimView().incFontSize(1);
+                        break;
+                    case KeyEvent.VK_CONTROL:
+                    case KeyEvent.VK_MINUS:
+                        view.getSimView().incFontSize(-1);
+                        break;
+                    case KeyEvent.VK_G:
+                    case KeyEvent.VK_NUMBER_SIGN:
+                        view.getSimView().toggleDrawLines();
                         break;
                 }
             }

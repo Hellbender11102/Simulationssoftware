@@ -1,8 +1,7 @@
 import controller.Controller;
-import model.Arena;
-import model.Pose;
-import model.Position;
-import model.Robot;
+import model.*;
+import model.RobotModel.RobotBuilder;
+import model.RobotModel.RobotInterface;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -20,8 +19,8 @@ class Main {
     public static void main(String[] args) {
         JSONObject settings = loadJSON("resources/settings.json");
         JSONObject variables = loadJSON("resources/variables.json");
-        ConcurrentLinkedQueue<Robot> threadOutputQueue = new ConcurrentLinkedQueue<>();
-        Map<Robot, Position> robotsAndPositionOffsets = new HashMap<>();
+        ConcurrentLinkedQueue<RobotInterface> threadOutputQueue = new ConcurrentLinkedQueue<>();
+        Map<RobotInterface, Position> robotsAndPositionOffsets = new HashMap<>();
         Random random;
         Arena arena;
         Controller controller;
@@ -29,26 +28,25 @@ class Main {
         if (variables != null) {
             random = new Random((long) variables.get("seed"));
             JSONObject arenaObj = (JSONObject) variables.get("arena");
-            arena = new Arena((int) (long) arenaObj.get("width"), (int) (long) arenaObj.get("height"));
+            arena = Arena.getInstance((int) (long) arenaObj.get("width"), (int) (long) arenaObj.get("height"));
             JSONArray robots = (JSONArray) variables.get("robots");
-            robots.forEach(entry -> loadRobots( (JSONObject) entry, robotsAndPositionOffsets, threadOutputQueue, random));
+            robots.forEach(entry -> loadRobots((JSONObject) entry, robotsAndPositionOffsets, threadOutputQueue, random));
         } else {
             random = new Random();
-            arena = new Arena(500, 500);
+            arena = Arena.getInstance(500, 500);
         }
         if (settings != null) {
             controller = new Controller(threadOutputQueue, robotsAndPositionOffsets, arena, random);
-            controller.visualisationLoop((int) (long) settings.get("fps"));
-            controller.startRobotThreads();
+            controller.visualisationTimer((int) (long) settings.get("fps"));
+            controller.initRobotsAndCollision();
         } else {
             controller = new Controller(threadOutputQueue, robotsAndPositionOffsets, arena, random);
-            controller.visualisationLoop(30);
-            controller.startRobotThreads();
+            controller.visualisationTimer(30);
+            controller.initRobotsAndCollision();
         }
     }
 
     /**
-     *
      * @param filePath
      * @return
      */
@@ -70,23 +68,39 @@ class Main {
     }
 
     /**
-     *
      * @param robotObject
      * @param robotsAndPositionOffsets
      * @param threadOutputQueue
      * @param random
      */
     private static void loadRobots(JSONObject robotObject,
-                                   Map<Robot, Position> robotsAndPositionOffsets,
-                                   ConcurrentLinkedQueue<Robot> threadOutputQueue, Random random) {
+                                   Map<RobotInterface, Position> robotsAndPositionOffsets,
+                                   ConcurrentLinkedQueue<RobotInterface> threadOutputQueue, Random random) {
         JSONObject positonObject = (JSONObject) robotObject.get("position");
-        Pose pos = new Pose(
-                (Double) positonObject.get("x"), (Double) positonObject.get("y"), (Double) positonObject.get("rotation"));
-        Robot robot = new Robot(
-                (Double) robotObject.get("engineR"),
-                (Double) robotObject.get("engineL"),
-                (Double) robotObject.get("distance"),
-                threadOutputQueue, random,pos);
+        Pose pos = new Pose((Double) positonObject.get("x"), (Double) positonObject.get("y"), (Double) positonObject.get("rotation"));
+
+        RobotBuilder builder = new RobotBuilder().engineRight((Double) robotObject.get("engineR"))
+                .engineLeft((Double) robotObject.get("engineL"))
+                .engineDistnace((Double) robotObject.get("distance"))
+                .threadOutputQueue(threadOutputQueue)
+                .random(random)
+                .pose(pos)
+                .powerTransmission(0)
+                .diameters(20);
+        RobotInterface robot;
+        switch ((String) robotObject.get("type")) {
+            case "1":
+                robot = builder.buildRobot1();
+                break;
+            case "2":
+                robot = builder.buildRobot2();
+                break;
+            case "3":
+                robot = builder.buildRobot3();
+                break;
+            default:
+                robot = builder.buildDefault();
+        }
         robotsAndPositionOffsets.put(robot, new Position(0, 0));
     }
 }

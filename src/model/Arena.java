@@ -1,10 +1,13 @@
 package model;
 
-import java.util.LinkedList;
+import model.RobotModel.RobotInterface;
 
- public class Arena {
-    private LinkedList<Robot> robotList;
+import java.util.ArrayList;
+
+public class Arena {
+    private ArrayList<RobotInterface> robotList = new ArrayList<>();
     private final int height, width;
+    private static Arena singleton;
 
     /**
      * Constructor
@@ -12,28 +15,38 @@ import java.util.LinkedList;
      * @param width  in centemeter
      * @param height in centemeter
      */
-    public Arena(int width, int height) {
+    synchronized
+    public static Arena getInstance(int width, int height) {
+
+        if (singleton == null) {
+            singleton = new Arena(width, height);
+        }
+        return singleton;
+    }
+
+    private Arena(int width, int height) {
         this.width = width;
         this.height = height;
     }
 
     @Override
     public String toString() {
-        return "width:" + width + " height:" + height;
+        return "width:" + singleton.width + " height:" + singleton.height;
     }
 
-   synchronized public void setRobots(LinkedList<Robot> robotList) {
-        this.robotList = robotList;
-    }
-  synchronized  public LinkedList<Robot> getRobots() {
-      return robotList;
+    synchronized public void setRobots(ArrayList<RobotInterface> robotList) {
+        singleton.robotList = robotList;
     }
 
- synchronized   public int getHeight() {
-        return height;
+    synchronized public ArrayList<RobotInterface> getRobots() {
+        return singleton.robotList;
     }
 
-  synchronized  public int getWidth() {
-        return width;
+    public int getHeight() {
+        return singleton.height;
+    }
+
+    public int getWidth() {
+        return singleton.width;
     }
 }

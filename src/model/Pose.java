@@ -32,29 +32,29 @@ public class Pose extends Position {
         double x = 0, y = 0;
         double small = rotation % 90;
         if (rotation == 90) {
-            x = getxCoordinate();
-            y = getyCoordinate() + distance;
+            x = getXCoordinate();
+            y = getYCoordinate() + distance;
         } else if (rotation == 180) {
-            x = getxCoordinate() - distance;
-            y = getyCoordinate();
+            x = getXCoordinate() - distance;
+            y = getYCoordinate();
         } else if (rotation == 270) {
-            x = getxCoordinate();
-            y = getyCoordinate() - distance;
+            x = getXCoordinate();
+            y = getYCoordinate() - distance;
         } else if (rotation == 0) {
-            x = getxCoordinate() + distance;
-            y = getyCoordinate();
+            x = getXCoordinate() + distance;
+            y = getYCoordinate();
         } else if (rotation < 90.0) {
-            x = getxCoordinate() + (distance * (1 - small / 90));
-            y = getyCoordinate() + (distance * (small / 90));
+            x = getXCoordinate() + (distance * (1 - small / 90));
+            y = getYCoordinate() + (distance * (small / 90));
         } else if (rotation < 180.0) {
-            x = getxCoordinate() - (distance * (small / 90));
-            y = getyCoordinate() + (distance * (1 - small / 90));
+            x = getXCoordinate() - (distance * (small / 90));
+            y = getYCoordinate() + (distance * (1 - small / 90));
         } else if (rotation < 270.0) {
-            x = getxCoordinate() - (distance * (1 - small / 90));
-            y = getyCoordinate() - (distance * (small / 90));
+            x = getXCoordinate() - (distance * (1 - small / 90));
+            y = getYCoordinate() - (distance * (small / 90));
         } else if (rotation < 360.0) {
-            x = getxCoordinate() + (distance * (small / 90));
-            y = getyCoordinate() - (distance * (1 - small / 90));
+            x = getXCoordinate() + (distance * (small / 90));
+            y = getYCoordinate() - (distance * (1 - small / 90));
         }
         return new Position(x, y);
     }
