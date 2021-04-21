@@ -19,7 +19,6 @@ class Main {
     public static void main(String[] args) {
         JSONObject settings = loadJSON("resources/settings.json");
         JSONObject variables = loadJSON("resources/variables.json");
-        ConcurrentLinkedQueue<RobotInterface> threadOutputQueue = new ConcurrentLinkedQueue<>();
         Map<RobotInterface, Position> robotsAndPositionOffsets = new HashMap<>();
         Random random;
         Arena arena;
@@ -30,17 +29,17 @@ class Main {
             JSONObject arenaObj = (JSONObject) variables.get("arena");
             arena = Arena.getInstance((int) (long) arenaObj.get("width"), (int) (long) arenaObj.get("height"));
             JSONArray robots = (JSONArray) variables.get("robots");
-            robots.forEach(entry -> loadRobots((JSONObject) entry, robotsAndPositionOffsets, threadOutputQueue, random));
+            robots.forEach(entry -> loadRobots((JSONObject) entry, robotsAndPositionOffsets, random));
         } else {
             random = new Random();
             arena = Arena.getInstance(500, 500);
         }
         if (settings != null) {
-            controller = new Controller(threadOutputQueue, robotsAndPositionOffsets, arena, random);
+            controller = new Controller(robotsAndPositionOffsets, arena, random);
             controller.visualisationTimer((int) (long) settings.get("fps"));
             controller.initRobotsAndCollision();
         } else {
-            controller = new Controller(threadOutputQueue, robotsAndPositionOffsets, arena, random);
+            controller = new Controller( robotsAndPositionOffsets, arena, random);
             controller.visualisationTimer(30);
             controller.initRobotsAndCollision();
         }
@@ -70,19 +69,16 @@ class Main {
     /**
      * @param robotObject
      * @param robotsAndPositionOffsets
-     * @param threadOutputQueue
      * @param random
      */
     private static void loadRobots(JSONObject robotObject,
-                                   Map<RobotInterface, Position> robotsAndPositionOffsets,
-                                   ConcurrentLinkedQueue<RobotInterface> threadOutputQueue, Random random) {
+                                   Map<RobotInterface, Position> robotsAndPositionOffsets, Random random) {
         JSONObject positonObject = (JSONObject) robotObject.get("position");
         Pose pos = new Pose((Double) positonObject.get("x"), (Double) positonObject.get("y"), (Double) positonObject.get("rotation"));
 
         RobotBuilder builder = new RobotBuilder().engineRight((Double) robotObject.get("engineR"))
                 .engineLeft((Double) robotObject.get("engineL"))
                 .engineDistnace((Double) robotObject.get("distance"))
-                .threadOutputQueue(threadOutputQueue)
                 .random(random)
                 .pose(pos)
                 .powerTransmission(0)

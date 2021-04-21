@@ -17,7 +17,6 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
     private boolean isStop = false;
     private double powerTransmission = 0;
     private int diameters = 20;
-    private ConcurrentLinkedQueue<RobotInterface> threadOutputQueue;
     private final Random random;
     private final Color color;
 
@@ -32,7 +31,6 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
         this.distanceE = builder.getDistanceE();
         this.random = builder.getRandom();
         this.pose = builder.getPose();
-        this.threadOutputQueue = builder.getThreadOutputQueue();
         this.color = new Color(random.nextInt());
     }
 
@@ -83,9 +81,8 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
         while (!isStop) {
             behavior();
             setNextPosition();
-            threadOutputQueue.offer(this);
             try {
-                sleep(30);
+                sleep(25);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -115,8 +112,10 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
      * @param position Posiition
      * @return double angle in degree
      */
-    double calcAngleforPosition(Position position) {
+    double calcAngleForPosition(Position position) {
+                System.out.println("1 "+position.getPolarAngle());
         position.decPosition(pose);
+        System.out.println("2 "+position.getPolarAngle());
         return position.getPolarAngle() < 0 ? position.getPolarAngle() + 360 : position.getPolarAngle();
     }
 
@@ -126,7 +125,7 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
      * @param position Position
      */
     void driveToPosition(Position position) {
-        if (rotateToAngle(calcAngleforPosition(position), 0.1)) {
+        if (rotateToAngle(calcAngleForPosition(position), 0.1)) {
             engineR = 1;
             engineL = 1;
         }

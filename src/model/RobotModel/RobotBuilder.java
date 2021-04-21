@@ -36,9 +36,6 @@ public class RobotBuilder {
         return diameters;
     }
 
-    public ConcurrentLinkedQueue<RobotInterface> getThreadOutputQueue() {
-        return threadOutputQueue;
-    }
 
     public Random getRandom() {
         return random;
@@ -74,11 +71,6 @@ public class RobotBuilder {
 
     public RobotBuilder diameters(double diameters) {
         this.diameters = (int) diameters;
-        return this;
-    }
-
-    public RobotBuilder threadOutputQueue(ConcurrentLinkedQueue<RobotInterface> threadOutputQueue) {
-        this.threadOutputQueue = threadOutputQueue;
         return this;
     }
 

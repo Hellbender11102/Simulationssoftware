@@ -28,16 +28,15 @@ public class Position {
         this.yCoordinate = yCoordinate;
     }
 
-
     public double getPolarAngle() {
         if (getPolarDistance() != 0.0)
-            return  (Math.atan2(yCoordinate, xCoordinate) / Math.PI) * 180;
+            return Math.toDegrees(Math.atan2(yCoordinate, xCoordinate));
         else return Double.NaN;
     }
 
     synchronized
     public double getPolarDistance() {
-        return Math.sqrt(Math.exp(xCoordinate) + Math.exp(yCoordinate));
+        return Math.hypot(xCoordinate, yCoordinate);
     }
 
     synchronized
@@ -48,8 +47,8 @@ public class Position {
 
     synchronized
     public double euclideanDistance(Position position) {
-        return Math.sqrt((Math.pow(position.xCoordinate - xCoordinate, 2)) +
-                (Math.pow(position.yCoordinate - yCoordinate, 2)));
+        return Math.sqrt((position.xCoordinate - xCoordinate) * (position.xCoordinate - xCoordinate) +
+                         (position.yCoordinate - yCoordinate) * (position.yCoordinate - yCoordinate));
     }
 
     @Override
@@ -74,8 +73,11 @@ public class Position {
         yCoordinate -= vector.yCoordinate;
     }
 
-
-    public Position getDiffrence(Position position) {
-        return new Position(xCoordinate - position.xCoordinate, yCoordinate - position.yCoordinate);
+    /**
+     * @param vector Position
+     * @return position - position
+     */
+    public Position creatPositionByDecreasing(Position vector) {
+        return new Position(xCoordinate - vector.xCoordinate, yCoordinate - vector.yCoordinate);
     }
 }

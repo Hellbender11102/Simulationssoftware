@@ -7,25 +7,21 @@ import view.View;
 
 import java.awt.event.*;
 import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Controller {
     private View view;
     private Arena arena;
     private Map<RobotInterface, Position> robotsAndPositionOffsets;
-    private ConcurrentLinkedQueue<RobotInterface> robotConcurrentQueue;
     private List<Thread> threadList = new LinkedList<>();
     private final Random random;
     private final int robotCount;
     private final Timer timer = new Timer();
 
-    public Controller(ConcurrentLinkedQueue<RobotInterface> robotConcurrentQueue,
-                      Map<RobotInterface, Position> robotsAndPositionOffsets, Arena arena, Random random) {
+    public Controller(Map<RobotInterface, Position> robotsAndPositionOffsets, Arena arena, Random random) {
         view = new View(arena);
         addViewListener();
         this.arena = arena;
         this.robotsAndPositionOffsets = robotsAndPositionOffsets;
-        this.robotConcurrentQueue = robotConcurrentQueue;
         this.random = random;
         robotCount = robotsAndPositionOffsets.keySet().size();
     }
@@ -62,15 +58,6 @@ public class Controller {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                if (robotConcurrentQueue.size() >= robotCount) {
-                    ArrayList<RobotInterface> robotList = new ArrayList<>();
-                    for (int i = 0; i < robotCount; i++) {
-                        RobotInterface r;
-                        while (!robotList.contains(r = robotConcurrentQueue.poll()) && robotConcurrentQueue.size() > 0)
-                        robotList.add(r);
-                    }
-                    arena.setRobots(robotList);
-                }
                 view.repaint();
             }
         }, 1000, 1000 / framesPerSecond);
@@ -156,7 +143,7 @@ public class Controller {
      * @param positionInBumpDirection Position in which the bump directs
      */
     private void bump(RobotInterface bumping, RobotInterface getsBumped, Position positionInBumpDirection) {
-        Position vector = bumping.getPose().getDiffrence(positionInBumpDirection);
+        Position vector = bumping.getPose().creatPositionByDecreasing(positionInBumpDirection);
         getsBumped.getPose().decPosition(vector);
 
         if (getsBumped.getPose().getXCoordinate() <= getsBumped.getRadius()) {
