@@ -31,13 +31,6 @@ public class Controller {
      * Inserts the robots in the map and pauses them
      */
     public void initRobotsAndCollision() {
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                collisionDetection();
-                inArenaBounds();
-            }
-        }, 1000, 10);
         Thread t;
         for (RobotInterface robot : robotsAndPositionOffsets.keySet()) {
             t = new Thread(robot);
@@ -85,79 +78,6 @@ public class Controller {
         double rotation = pLocal.getRotation();
         return new Pose(x, y, rotation);
     }
-
-    /**
-     * Checks if robots are in the arena bounds
-     */
-    private void inArenaBounds() {
-        for (RobotInterface robot : arena.getRobots()) {
-            if (robot.getPose().getXCoordinate() < robot.getRadius())
-                robot.getPose().setXCoordinate(robot.getRadius());
-            else if (robot.getPose().getXCoordinate() > arena.getWidth() - robot.getRadius())
-                robot.getPose().setXCoordinate(arena.getWidth() - robot.getRadius());
-            if (robot.getPose().getYCoordinate() < robot.getRadius())
-                robot.getPose().setYCoordinate(robot.getRadius());
-            else if (robot.getPose().getYCoordinate() > arena.getHeight() - robot.getRadius())
-                robot.getPose().setYCoordinate(arena.getHeight() - robot.getRadius());
-        }
-    }
-
-    /**
-     * Checks for collision between robots
-     */
-    private void collisionDetection() {
-        arena.getRobots().forEach((r1) -> {
-            arena.getRobots().forEach((r2) -> {
-                if (!r1.equals(r2) && r1.getPose().euclideanDistance(r2.getPose()) < r1.getDiameters()) {
-                    if (r2.isPositionInRobotArea(r1.getPose().getPositionInDirection(r1.getRadius() + 0.01))) {
-
-                        bump(r1, r2, r1.getPose().getPositionInDirection(r1.trajectorySpeed()));
-                    } else if (r1.isPositionInRobotArea(r2.getPose().getPositionInDirection(r2.getRadius() + 0.01))) {
-
-                        bump(r2, r1, r2.getPose().getPositionInDirection(r2.trajectorySpeed()));
-                    } else if (!r1.isPositionInRobotArea(r2.getPose().getPositionInDirection(r2.getRadius() + 0.01))) {
-
-                        if (r1.getPose().getXCoordinate() < r2.getPose().getXCoordinate()) {
-                            bump(r1, r2, new Position(r1.getPose().getXCoordinate() + r1.trajectorySpeed(), r1.getPose().getYCoordinate()));
-                            bump(r2, r1, new Position(r2.getPose().getXCoordinate() - r2.trajectorySpeed(), r2.getPose().getYCoordinate()));
-                        } else {
-                            bump(r1, r2, new Position(r1.getPose().getXCoordinate() - r1.trajectorySpeed(), r1.getPose().getYCoordinate()));
-                            bump(r2, r1, new Position(r2.getPose().getXCoordinate() + r2.trajectorySpeed(), r2.getPose().getYCoordinate()));
-                        }
-                        if (r1.getPose().getYCoordinate() < r2.getPose().getYCoordinate()) {
-                            bump(r1, r2, new Position(r1.getPose().getXCoordinate(), r1.getPose().getYCoordinate() + r1.trajectorySpeed()));
-                            bump(r2, r1, new Position(r2.getPose().getXCoordinate(), r2.getPose().getYCoordinate() - r2.trajectorySpeed()));
-                        } else {
-                            bump(r1, r2, new Position(r1.getPose().getXCoordinate(), r1.getPose().getYCoordinate() - r1.trajectorySpeed()));
-                            bump(r2, r1, new Position(r2.getPose().getXCoordinate(), r2.getPose().getYCoordinate() + r2.trajectorySpeed()));
-                        }
-                    } else System.out.println("Alles doof");
-                }
-            });
-        });
-    }
-
-    /**
-     * @param bumping                 Robot that bumps
-     * @param getsBumped              Robot that gets bumped
-     * @param positionInBumpDirection Position in which the bump directs
-     */
-    private void bump(RobotInterface bumping, RobotInterface getsBumped, Position positionInBumpDirection) {
-        Position vector = bumping.getPose().creatPositionByDecreasing(positionInBumpDirection);
-        getsBumped.getPose().decPosition(vector);
-
-        if (getsBumped.getPose().getXCoordinate() <= getsBumped.getRadius()) {
-            bumping.getPose().incPosition(vector.getXCoordinate(), 0);
-        } else if (getsBumped.getPose().getXCoordinate() >= arena.getWidth() - getsBumped.getRadius()) {
-            bumping.getPose().incPosition(vector.getXCoordinate(), 0);
-        }
-        if (getsBumped.getPose().getYCoordinate() <= bumping.getRadius()) {
-            bumping.getPose().incPosition(0, vector.getYCoordinate());
-        } else if (getsBumped.getPose().getYCoordinate() >= arena.getHeight() - getsBumped.getRadius()) {
-            bumping.getPose().incPosition(0, vector.getYCoordinate());
-        }
-    }
-
 
     /**
      * Adds event listener for the Simulation view

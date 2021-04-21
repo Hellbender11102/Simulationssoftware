@@ -4,6 +4,7 @@ import model.Position;
 import model.RobotModel.RobotBuilder;
 
 public class Robot1 extends BaseRobot {
+    boolean driveToCenter = true;
 
     public Robot1(RobotBuilder builder) {
         super(builder);
@@ -11,10 +12,14 @@ public class Robot1 extends BaseRobot {
 
     @Override
     public void behavior() {
-        if (isPositionInRobotArea(new Position(400, 400))) {
-            setEngines(0, 0);
+        if (driveToCenter) {
+            Position center = centerOfGroup(Robot1.class);
+                 stayGroupedWithType(15, Robot1.class);
+            if (isPositionInRobotArea(center))
+                driveToCenter = false;
         } else {
-            driveToPosition(new Position(400, 400));
+            setEngineL(0);
+            setEngineR(0);
         }
     }
 

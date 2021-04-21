@@ -2,6 +2,7 @@ package model.RobotTypes;
 
 import model.Position;
 import model.RobotModel.RobotBuilder;
+import model.RobotModel.RobotInterface;
 
 public class Robot3 extends BaseRobot {
 
@@ -11,11 +12,7 @@ public class Robot3 extends BaseRobot {
 
     @Override
     public void behavior() {
-        if (isPositionInRobotArea(new Position(100, 400))) {
-            setEngines(0, 0);
-        } else {
-            driveToPosition(new Position(100, 400));
-        }
+    stayGroupedWithType(15,Robot3.class);
     }
 
 }

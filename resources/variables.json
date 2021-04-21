@@ -10,54 +10,36 @@
       "engineR": 1.0,
       "engineL": 0.5,
       "distance": 1.0,
-      "position": {
-        "x": 10.0,
-        "y": 10.0,
-        "rotation": 90.0
-      }
-    },
-    {
-      "type": "2",
-      "engineR": 1.0,
-      "engineL": 0.5,
-      "distance": 1.0,
-      "position": {
-        "x": 30.0,
-        "y": 10.0,
-        "rotation": 90.0
-      }
-    },
-    {
-      "type": "3",
-      "engineR": 1.0,
-      "engineL": 0.5,
-      "distance": 1.0,
-      "position": {
-        "x": 50.0,
-        "y": 10.0,
-        "rotation": 90.0
-      }
-    },
-    {
-      "type": "default",
-      "engineR": 0.2,
-      "engineL": 0.2,
-      "distance": 1.0,
-      "position": {
-        "x": 400.0,
-        "y": 250.0,
-        "rotation": 180.0
-      }
-    },
-    {
-      "type": "default",
-      "engineR": 0.3,
-      "engineL": 0.3,
-      "distance": 1.0,
+            "diameters": 20.0,
+      "powerTransmission": 0.0,
       "position": {
         "x": 100.0,
-        "y": 250.0,
-        "rotation": 0.0
+        "y": 100.0,
+        "rotation": 90.0
+      }
+    },    {
+      "type": "1",
+      "engineR": 1.0,
+      "engineL": 0.5,
+      "distance": 1.0,
+            "diameters": 20.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 400.0,
+        "y": 400.0,
+        "rotation": 180.0
+      }
+    },    {
+      "type": "1",
+      "engineR": 1.0,
+      "engineL": 0.5,
+      "distance": 1.0,
+            "diameters": 20.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 100.0,
+        "y": 400.0,
+        "rotation": 180.0
       }
     }
   ]

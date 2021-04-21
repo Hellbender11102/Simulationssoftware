@@ -35,4 +35,6 @@ public interface RobotInterface extends Runnable {
     abstract
     public boolean getStop();
 
+abstract
+   public Position centerOfGroup(Class c) ;
 }

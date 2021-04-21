@@ -29,7 +29,7 @@ class Main {
             JSONObject arenaObj = (JSONObject) variables.get("arena");
             arena = Arena.getInstance((int) (long) arenaObj.get("width"), (int) (long) arenaObj.get("height"));
             JSONArray robots = (JSONArray) variables.get("robots");
-            robots.forEach(entry -> loadRobots((JSONObject) entry, robotsAndPositionOffsets, random));
+            robots.forEach(entry -> loadRobots((JSONObject) entry, robotsAndPositionOffsets, random, arena));
         } else {
             random = new Random();
             arena = Arena.getInstance(500, 500);
@@ -71,18 +71,21 @@ class Main {
      * @param robotsAndPositionOffsets
      * @param random
      */
-    private static void loadRobots(JSONObject robotObject,
-                                   Map<RobotInterface, Position> robotsAndPositionOffsets, Random random) {
+    private static void loadRobots(
+            JSONObject robotObject, Map<RobotInterface, Position> robotsAndPositionOffsets, Random random, Arena arena
+    ) {
         JSONObject positonObject = (JSONObject) robotObject.get("position");
         Pose pos = new Pose((Double) positonObject.get("x"), (Double) positonObject.get("y"), (Double) positonObject.get("rotation"));
 
-        RobotBuilder builder = new RobotBuilder().engineRight((Double) robotObject.get("engineR"))
+        RobotBuilder builder = new RobotBuilder()
+                .engineRight((Double) robotObject.get("engineR"))
                 .engineLeft((Double) robotObject.get("engineL"))
                 .engineDistnace((Double) robotObject.get("distance"))
                 .random(random)
                 .pose(pos)
-                .powerTransmission(0)
-                .diameters(20);
+                .arena(arena)
+                .powerTransmission((Double) robotObject.get("powerTransmission"))
+                .diameters((Double) robotObject.get("diameters"));
         RobotInterface robot;
         switch ((String) robotObject.get("type")) {
             case "1":

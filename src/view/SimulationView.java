@@ -3,6 +3,8 @@ package view;
 import model.Arena;
 import model.Position;
 import model.RobotModel.RobotInterface;
+import model.RobotTypes.BaseRobot;
+import model.RobotTypes.Robot1;
 
 import javax.swing.*;
 import java.awt.*;
@@ -33,8 +35,6 @@ public class SimulationView extends JPanel {
         g2d.drawString(arena.getHeight() + ",0", 0 - offsetX, -3 - offsetY);
 
         g2d.drawLine(0 - offsetX, 0 - offsetY, 0 - offsetX, arena.getHeight() - offsetY);
-        g2d.drawLine(249 - offsetX, 249 - offsetY, 251 - offsetX, 251 - offsetY);
-        g2d.drawLine(251 - offsetX, 249 - offsetY, 249 - offsetX, 251 - offsetY);
         g2d.drawLine(0 - offsetX, 0 - offsetY, arena.getWidth() - offsetX, 0 - offsetY);
         g2d.drawLine(arena.getWidth() - offsetX, arena.getHeight() - offsetY, 0 - offsetX, arena.getHeight() - offsetY);
         g2d.drawLine(arena.getWidth() - offsetX, arena.getHeight() - offsetY, arena.getWidth() - offsetX, 0 - offsetY);
@@ -114,6 +114,10 @@ public class SimulationView extends JPanel {
             g.drawString(String.format("%,.2f", robot.getPose().getRotation()) + "°",
                     x + 8 - fontSize, y + fontSize);
         }
+        Position po = robot.centerOfGroup(Robot1.class);
+        g.drawOval((int)po.getXCoordinate() - offsetX,
+                   arena.getHeight() - (int)po.getYCoordinate()  - offsetY,
+                2,2);
     }
 
     public void toggleDrawrobotCoordinates() {
