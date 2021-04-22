@@ -143,7 +143,7 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
      * @return boolean
      */
     boolean rotateToAngle(double angle, double rotationSpeed) {
-        double angleDiff = angle - pose.getRotation() <= -360 ? angle - pose.getRotation() +360 :angle - pose.getRotation() %360;
+        double angleDiff = angle - pose.getRotation() <= -360 ? angle - pose.getRotation() +360 :angle - pose.getRotation();
         if (angleDiff < 1. &&
                angleDiff > -1.) {
             return true;
