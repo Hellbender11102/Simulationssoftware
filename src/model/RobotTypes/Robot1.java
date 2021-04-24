@@ -3,6 +3,9 @@ package model.RobotTypes;
 import model.Position;
 import model.RobotModel.RobotBuilder;
 
+import java.awt.*;
+import java.util.List;
+
 public class Robot1 extends BaseRobot {
     boolean driveToCenter = true;
 
@@ -12,15 +15,10 @@ public class Robot1 extends BaseRobot {
 
     @Override
     public void behavior() {
-        if (driveToCenter) {
-            Position center = centerOfGroup(Robot1.class);
-                 stayGroupedWithType(15, Robot1.class);
-            if (isPositionInRobotArea(center))
-                driveToCenter = false;
-        } else {
-            setEngineL(0);
-            setEngineR(0);
-        }
+                 stayGroupedWithType(100, List.of(Robot1.class),0.5);
     }
-
+    @Override
+    public Color getClassColor() {
+        return Color.GREEN;
+    }
 }

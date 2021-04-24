@@ -4,6 +4,7 @@ import model.Pose;
 import model.Position;
 
 import java.awt.*;
+import java.util.List;
 
 public interface RobotInterface extends Runnable {
 
@@ -17,24 +18,29 @@ public interface RobotInterface extends Runnable {
 
     abstract public int getDiameters();
 
-    abstract
-    public int getRadius();
+    abstract public int getRadius();
 
-    abstract
-    public double getEngineL();
+    abstract public double getEngineL();
 
-    abstract
-    public double getEngineR();
+    abstract public double getEngineR();
 
-    abstract
-    public double trajectorySpeed();
+    abstract public double trajectorySpeed();
 
-    abstract
-    public void toggleStop();
+    abstract public void toggleStop();
 
-    abstract
-    public boolean getStop();
+    abstract public boolean getStop();
 
-abstract
-   public Position centerOfGroup(Class c) ;
+    abstract Position centerOfGroupWithClasses(List<Class> classList);
+
+    abstract public boolean equals(RobotInterface robot);
+
+    abstract public Color getClassColor();
+
+    abstract public List<Pose> getPosesFromMemmory();
+
+    abstract public void setPrevPose();
+
+    abstract public void setNextPose();
+
+    abstract public void resetToOrigin();
 }

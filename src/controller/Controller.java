@@ -14,8 +14,8 @@ public class Controller {
     private Map<RobotInterface, Position> robotsAndPositionOffsets;
     private List<Thread> threadList = new LinkedList<>();
     private final Random random;
-    private final int robotCount;
-    private final Timer timer = new Timer();
+    private final Timer repaintTimer = new Timer();
+    private final Timer pastTimeTimer = new Timer();
 
     public Controller(Map<RobotInterface, Position> robotsAndPositionOffsets, Arena arena, Random random) {
         view = new View(arena);
@@ -23,22 +23,17 @@ public class Controller {
         this.arena = arena;
         this.robotsAndPositionOffsets = robotsAndPositionOffsets;
         this.random = random;
-        robotCount = robotsAndPositionOffsets.keySet().size();
     }
 
     /**
      * Schedules an timer that checks for robot collisions
      * Inserts the robots in the map and pauses them
      */
-    public void initRobotsAndCollision() {
-        Thread t;
-        for (RobotInterface robot : robotsAndPositionOffsets.keySet()) {
-            t = new Thread(robot);
-            t.setDaemon(true);
-            robot.toggleStop();
-            threadList.add(t);
-        }
+    public void initRobots() {
         arena.setRobots(new ArrayList<>(robotsAndPositionOffsets.keySet()));
+        for (RobotInterface robot : robotsAndPositionOffsets.keySet()) {
+            startThread(robot);
+        }
     }
 
     /**
@@ -48,7 +43,7 @@ public class Controller {
      * @param framesPerSecond int
      */
     public void visualisationTimer(int framesPerSecond) {
-        timer.schedule(new TimerTask() {
+        repaintTimer.schedule(new TimerTask() {
             @Override
             public void run() {
                 view.repaint();
@@ -90,7 +85,6 @@ public class Controller {
 
             @Override
             public void keyTyped(KeyEvent e) {
-
             }
 
             @Override
@@ -100,19 +94,27 @@ public class Controller {
                         robots = new HashMap<>();
                         for (RobotInterface robot : robotsAndPositionOffsets.keySet()) {
                             if (stopped) {
-                                Thread t = new Thread(robot);
-                                t.setDaemon(true);
+                                robot.resetToOrigin();
                                 robot.toggleStop();
-                                threadList.add(t);
+                                startThread(robot);
                             } else {
                                 robot.toggleStop();
                                 threadList.clear();
                             }
                         }
-                        if (stopped) {
-                            threadList.forEach(Thread::start);
-                        }
                         stopped = !stopped;
+                        break;
+                    case KeyEvent.VK_B:
+                        if (stopped)
+                            for (RobotInterface robot : robotsAndPositionOffsets.keySet()) {
+                                robot.setPrevPose();
+                            }
+                        break;
+                    case KeyEvent.VK_N:
+                        if (stopped)
+                            for (RobotInterface robot : robotsAndPositionOffsets.keySet()) {
+                                robot.setNextPose();
+                            }
                         break;
                     case KeyEvent.VK_W:
                     case KeyEvent.VK_UP:
@@ -154,6 +156,12 @@ public class Controller {
                     case KeyEvent.VK_NUMBER_SIGN:
                         view.getSimView().toggleDrawLines();
                         break;
+                    case KeyEvent.VK_T:
+                        view.getSimView().toggleDrawTypeInColor();
+                        break;
+                    case KeyEvent.VK_L:
+                        view.getSimView().toggleDrawInfosLeft();
+                        break;
                 }
             }
 
@@ -177,5 +185,12 @@ public class Controller {
         };
 
         view.addKeyListener(keyListener);
+    }
+
+    private void startThread(RobotInterface robot) {
+        Thread t = new Thread(robot);
+        t.setDaemon(true);
+        threadList.add(t);
+        t.start();
     }
 }

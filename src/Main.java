@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 class Main {
 
@@ -37,11 +36,11 @@ class Main {
         if (settings != null) {
             controller = new Controller(robotsAndPositionOffsets, arena, random);
             controller.visualisationTimer((int) (long) settings.get("fps"));
-            controller.initRobotsAndCollision();
+            controller.initRobots();
         } else {
             controller = new Controller( robotsAndPositionOffsets, arena, random);
             controller.visualisationTimer(30);
-            controller.initRobotsAndCollision();
+            controller.initRobots();
         }
     }
 

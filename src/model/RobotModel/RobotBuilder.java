@@ -7,6 +7,7 @@ import model.RobotTypes.Robot1;
 import model.RobotTypes.Robot2;
 import model.RobotTypes.Robot3;
 
+import java.awt.*;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -104,6 +105,11 @@ public class RobotBuilder {
         return new BaseRobot(this) {
             @Override
             public void behavior() {
+            }
+
+            @Override
+            public Color getClassColor() {
+                return Color.BLUE;
             }
         };
     }
