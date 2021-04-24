@@ -51,15 +51,20 @@ public class SimulationView extends JPanel {
         }
 
         if (arena.getRobots() != null) {
-            int x = 0, y = -offsetY;
+            int x = arena.getWidth() - offsetX + 35 + fontSize, y = -offsetY - fontSize * 5, n = 0;
             for (RobotInterface robot : arena.getRobots()) {
+                n++;
                 drawRobot(robot, g);
                 if (!infosLeft) {
                     x = (int) Math.round(robot.getPose().getXCoordinate()) - offsetX - robot.getRadius();
                     y = arena.getHeight() - (int) Math.round(robot.getPose().getYCoordinate()) - offsetY + robot.getRadius();
                 } else {
-                    x = arena.getWidth() + 50 - offsetX;
-                    y += (4 * fontSize);
+                    x += 0;
+                    y += fontSize * 5;
+                    if (n % 7 == 0) {
+                        y -= 6 * 5 * fontSize;
+                        x += 5 + fontSize * 10;
+                    }
                 }
                 drawInfos(g, robot, x, y);
             }
@@ -87,10 +92,6 @@ public class SimulationView extends JPanel {
             Position direction = robot.getPose().getPositionInDirection(robot.getRadius());
             g.drawLine(x, y, (int) direction.getXCoordinate() - offsetX, arena.getHeight() - (int) direction.getYCoordinate() - offsetY);
         }
-        y += robot.getRadius();
-        x -= robot.getRadius();
-
-        g.setFont(new Font("TimesRoman", Font.PLAIN, fontSize));
 
      /*   Position po = robot.centerOfGroupWithClasses(List.of(robot.getClass()));
         g.drawOval((int) po.getXCoordinate() - offsetX,
@@ -99,10 +100,10 @@ public class SimulationView extends JPanel {
     }
 
     private void drawInfos(Graphics g, RobotInterface robot, int x, int y) {
-
-        if (infosLeft) {
+        g.setFont(new Font("TimesRoman", Font.PLAIN, fontSize));
+        if (infosLeft && (drawRobotCoordinates || drawRobotEngines || drawRobotRotationo)) {
             g.setColor(robot.getColor());
-            g.drawOval(x, y += fontSize, fontSize, fontSize);
+            g.fillOval(x, y, fontSize, fontSize);
             y += fontSize;
         }
         g.setColor(Color.black);
@@ -125,10 +126,15 @@ public class SimulationView extends JPanel {
 
     public void incOffsetX(int amount) {
         Rectangle rectangle = this.getBounds();
-        if (-rectangle.width / 2 <= offsetX + amount && arena.getWidth() - rectangle.width / 2 >= offsetX + amount)
+        if (-rectangle.width / 2 <= offsetX + amount &&
+                (arena.getWidth() >= offsetX + amount && infosLeft) ||
+                (arena.getWidth() - rectangle.width / 2 >= offsetX + amount))
             offsetX += amount;
         else if (amount > 0)
-            offsetX = arena.getWidth() - rectangle.width / 2;
+            if (infosLeft)
+                offsetX = arena.getWidth();
+            else
+                offsetX = arena.getWidth() - rectangle.width / 2;
         else
             offsetX = -rectangle.width / 2;
     }

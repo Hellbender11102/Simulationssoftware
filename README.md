@@ -17,6 +17,7 @@ Key bindings
 - 'e'              : toggle display engines and trajectory velocity
 - 'o'              : toggle display direction orientation
 - '#' | 'g'        : toggle display grid 
+- 'l'              : toggle display information on the left side 
 - '+' | shift      : increase font size 
 - '-' | ctrl Strg  : decrease font size
 - 't'              : draw robots in ClassColor
