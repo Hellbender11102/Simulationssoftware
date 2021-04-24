@@ -2,6 +2,10 @@ package model.RobotTypes;
 
 import model.Position;
 import model.RobotModel.RobotBuilder;
+import model.RobotModel.RobotInterface;
+
+import java.awt.*;
+import java.util.List;
 
 public class Robot3 extends BaseRobot {
 
@@ -11,11 +15,10 @@ public class Robot3 extends BaseRobot {
 
     @Override
     public void behavior() {
-        if (isPositionInRobotArea(new Position(100, 400))) {
-            setEngines(0, 0);
-        } else {
-            driveToPosition(new Position(100, 400));
-        }
+    stayGroupedWithType(10, List.of(Robot3.class),1);
     }
-
+    @Override
+    public Color getClassColor() {
+        return Color.RED;
+    }
 }

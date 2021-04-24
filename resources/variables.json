@@ -1,63 +1,151 @@
 {
-  "seed": 1000,
+  "seed": 100,
   "arena": {
-    "width": 500,
-    "height": 500
+    "width": 800,
+    "height": 400
   },
   "robots": [
     {
-      "type": "1",
+      "type": "2",
       "engineR": 1.0,
-      "engineL": 0.5,
+      "engineL": 1.0,
       "distance": 1.0,
+      "diameters": 15.0,
+      "powerTransmission": 0.0,
       "position": {
         "x": 10.0,
-        "y": 10.0,
+        "y": 100.0,
         "rotation": 90.0
       }
     },
     {
       "type": "2",
       "engineR": 1.0,
-      "engineL": 0.5,
+      "engineL": 1.0,
       "distance": 1.0,
+      "diameters": 15.0,
+      "powerTransmission": 0.0,
       "position": {
         "x": 30.0,
-        "y": 10.0,
+        "y": 100.0,
         "rotation": 90.0
       }
     },
     {
-      "type": "3",
+      "type": "2",
       "engineR": 1.0,
-      "engineL": 0.5,
+      "engineL": 1.0,
       "distance": 1.0,
+      "diameters": 15.0,
+      "powerTransmission": 0.0,
       "position": {
         "x": 50.0,
-        "y": 10.0,
+        "y": 100.0,
         "rotation": 90.0
       }
     },
     {
-      "type": "default",
-      "engineR": 0.2,
-      "engineL": 0.2,
+      "type": "2",
+      "engineR": 1.0,
+      "engineL": 1.0,
       "distance": 1.0,
+      "diameters": 15.0,
+      "powerTransmission": 0.0,
       "position": {
-        "x": 400.0,
-        "y": 250.0,
-        "rotation": 180.0
+        "x": 70.0,
+        "y": 100.0,
+        "rotation": 90.0
       }
     },
     {
-      "type": "default",
-      "engineR": 0.3,
-      "engineL": 0.3,
+      "type": "2",
+      "engineR": 1.0,
+      "engineL": 1.0,
       "distance": 1.0,
+      "diameters": 15.0,
+      "powerTransmission": 0.0,
       "position": {
-        "x": 100.0,
-        "y": 250.0,
-        "rotation": 0.0
+        "x": 90.0,
+        "y": 100.0,
+        "rotation": 90.0
+      }
+    },
+    {
+      "type": "2",
+      "engineR": 1.0,
+      "engineL": 1.0,
+      "distance": 1.0,
+      "diameters": 15.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 110.0,
+        "y": 100.0,
+        "rotation": 90.0
+      }
+    },
+    {
+      "type": "2",
+      "engineR": 1.0,
+      "engineL": 1.0,
+      "distance": 1.0,
+      "diameters": 15.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 130.0,
+        "y": 100.0,
+        "rotation": 90.0
+      }
+    },
+    {
+      "type": "2",
+      "engineR": 1.0,
+      "engineL": 1.0,
+      "distance": 1.0,
+      "diameters": 15.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 150.0,
+        "y": 100.0,
+        "rotation": 90.0
+      }
+    },
+    {
+      "type": "2",
+      "engineR": 1.0,
+      "engineL": 1.0,
+      "distance": 1.0,
+      "diameters": 15.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 170.0,
+        "y": 100.0,
+        "rotation": 90.0
+      }
+    },
+    {
+      "type": "2",
+      "engineR": 1.0,
+      "engineL": 1.0,
+      "distance": 1.0,
+      "diameters": 15.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 190.0,
+        "y": 100.0,
+        "rotation": 90.0
+      }
+    },
+    {
+      "type": "2",
+      "engineR": 1.0,
+      "engineL": 1.0,
+      "distance": 1.0,
+      "diameters": 15.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 210.0,
+        "y": 100.0,
+        "rotation": 90.0
       }
     }
   ]

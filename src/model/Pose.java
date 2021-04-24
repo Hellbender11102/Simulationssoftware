@@ -8,6 +8,10 @@ public class Pose extends Position {
         this.rotation = rotation % 360;
     }
 
+    public Pose clone() {
+      return    new Pose(xCoordinate, yCoordinate,rotation);
+    }
+
     public void setRotation(double rotation) {
         if (rotation < 0) rotation += 360;
         if (rotation >= 360) this.rotation = rotation % 360;
@@ -29,32 +33,34 @@ public class Pose extends Position {
     }
 
     public Position getPositionInDirection(double distance) {
-        double x = 0, y = 0;
+        return getPositionInDirection(distance, rotation, xCoordinate, yCoordinate);
+    }
+    public Position getPositionInDirection(double distance, double rotation) {
+        return getPositionInDirection(distance, rotation, xCoordinate, yCoordinate);
+    }
+
+    public static Position getPositionInDirection(double distance, double rotation, double x, double y) {
         double small = rotation % 90;
         if (rotation == 90) {
-            x = getXCoordinate();
-            y = getYCoordinate() + distance;
+            y += distance;
         } else if (rotation == 180) {
-            x = getXCoordinate() - distance;
-            y = getYCoordinate();
+            x -= distance;
         } else if (rotation == 270) {
-            x = getXCoordinate();
-            y = getYCoordinate() - distance;
+            y -= distance;
         } else if (rotation == 0) {
-            x = getXCoordinate() + distance;
-            y = getYCoordinate();
+            x += distance;
         } else if (rotation < 90.0) {
-            x = getXCoordinate() + (distance * (1 - small / 90));
-            y = getYCoordinate() + (distance * (small / 90));
+            x += (distance * (1 - small / 90));
+            y += (distance * (small / 90));
         } else if (rotation < 180.0) {
-            x = getXCoordinate() - (distance * (small / 90));
-            y = getYCoordinate() + (distance * (1 - small / 90));
+            x -= (distance * (small / 90));
+            y += (distance * (1 - small / 90));
         } else if (rotation < 270.0) {
-            x = getXCoordinate() - (distance * (1 - small / 90));
-            y = getYCoordinate() - (distance * (small / 90));
+            x -= (distance * (1 - small / 90));
+            y -= (distance * (small / 90));
         } else if (rotation < 360.0) {
-            x = getXCoordinate() + (distance * (small / 90));
-            y = getYCoordinate() - (distance * (1 - small / 90));
+            x += (distance * (small / 90));
+            y -= (distance * (1 - small / 90));
         }
         return new Position(x, y);
     }
