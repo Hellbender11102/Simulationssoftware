@@ -1,12 +1,154 @@
 {
-  "seed": 100,
+  "seed": 400,
   "arena": {
     "width": 800,
-    "height": 400
+    "height": 600
   },
   "robots": [
     {
-      "type": "2",
+      "type": "1",
+      "engineR": 1.0,
+      "engineL": 1.0,
+      "distance": 1.0,
+      "diameters": 15.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 10.0,
+        "y": 400.0,
+        "rotation": 180.0
+      }
+    },
+    {
+      "type": "1",
+      "engineR": 1.0,
+      "engineL": 1.0,
+      "distance": 1.0,
+      "diameters": 15.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 30.0,
+        "y": 400.0,
+        "rotation": 180.0
+      }
+    },
+    {
+      "type": "1",
+      "engineR": 1.0,
+      "engineL": 1.0,
+      "distance": 1.0,
+      "diameters": 15.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 50.0,
+        "y": 400.0,
+        "rotation": 180.0
+      }
+    },
+    {
+      "type": "1",
+      "engineR": 1.0,
+      "engineL": 1.0,
+      "distance": 1.0,
+      "diameters": 15.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 70.0,
+        "y": 400.0,
+        "rotation": 180.0
+      }
+    },
+    {
+      "type": "1",
+      "engineR": 1.0,
+      "engineL": 1.0,
+      "distance": 1.0,
+      "diameters": 15.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 180.0,
+        "y": 400.0,
+        "rotation": 180.0
+      }
+    },
+    {
+      "type": "1",
+      "engineR": 1.0,
+      "engineL": 1.0,
+      "distance": 1.0,
+      "diameters": 15.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 110.0,
+        "y": 400.0,
+        "rotation": 180.0
+      }
+    },
+    {
+      "type": "1",
+      "engineR": 1.0,
+      "engineL": 1.0,
+      "distance": 1.0,
+      "diameters": 15.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 130.0,
+        "y": 400.0,
+        "rotation": 180.0
+      }
+    },
+    {
+      "type": "1",
+      "engineR": 1.0,
+      "engineL": 1.0,
+      "distance": 1.0,
+      "diameters": 15.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 150.0,
+        "y": 400.0,
+        "rotation": 180.0
+      }
+    },
+    {
+      "type": "1",
+      "engineR": 1.0,
+      "engineL": 1.0,
+      "distance": 1.0,
+      "diameters": 15.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 170.0,
+        "y": 400.0,
+        "rotation": 180.0
+      }
+    },
+    {
+      "type": "1",
+      "engineR": 1.0,
+      "engineL": 1.0,
+      "distance": 1.0,
+      "diameters": 15.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 1180.0,
+        "y": 400.0,
+        "rotation": 180.0
+      }
+    },
+    {
+      "type": "1",
+      "engineR": 1.0,
+      "engineL": 1.0,
+      "distance": 1.0,
+      "diameters": 15.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 210.0,
+        "y": 400.0,
+        "rotation": 180.0
+      }
+    },  {
+      "type": "1",
       "engineR": 1.0,
       "engineL": 1.0,
       "distance": 1.0,
@@ -19,7 +161,7 @@
       }
     },
     {
-      "type": "2",
+      "type": "1",
       "engineR": 1.0,
       "engineL": 1.0,
       "distance": 1.0,
@@ -32,7 +174,7 @@
       }
     },
     {
-      "type": "2",
+      "type": "1",
       "engineR": 1.0,
       "engineL": 1.0,
       "distance": 1.0,
@@ -45,7 +187,7 @@
       }
     },
     {
-      "type": "2",
+      "type": "1",
       "engineR": 1.0,
       "engineL": 1.0,
       "distance": 1.0,
@@ -58,7 +200,7 @@
       }
     },
     {
-      "type": "2",
+      "type": "1",
       "engineR": 1.0,
       "engineL": 1.0,
       "distance": 1.0,
@@ -71,7 +213,7 @@
       }
     },
     {
-      "type": "2",
+      "type": "1",
       "engineR": 1.0,
       "engineL": 1.0,
       "distance": 1.0,
@@ -84,7 +226,7 @@
       }
     },
     {
-      "type": "2",
+      "type": "1",
       "engineR": 1.0,
       "engineL": 1.0,
       "distance": 1.0,
@@ -97,7 +239,7 @@
       }
     },
     {
-      "type": "2",
+      "type": "1",
       "engineR": 1.0,
       "engineL": 1.0,
       "distance": 1.0,
@@ -110,7 +252,7 @@
       }
     },
     {
-      "type": "2",
+      "type": "1",
       "engineR": 1.0,
       "engineL": 1.0,
       "distance": 1.0,
@@ -123,7 +265,7 @@
       }
     },
     {
-      "type": "2",
+      "type": "1",
       "engineR": 1.0,
       "engineL": 1.0,
       "distance": 1.0,
@@ -136,7 +278,7 @@
       }
     },
     {
-      "type": "2",
+      "type": "1",
       "engineR": 1.0,
       "engineL": 1.0,
       "distance": 1.0,

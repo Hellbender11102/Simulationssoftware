@@ -1,20 +1,18 @@
 package model.RobotTypes;
 
-import model.Position;
-import model.RobotModel.RobotBuilder;
+import model.AbstractModel.EntityBuilder;
 
 import java.awt.*;
-import java.util.List;
 
 public class Robot2 extends BaseRobot {
 
-    public Robot2(RobotBuilder builder) {
+    public Robot2(EntityBuilder builder) {
         super(builder);
     }
 
     @Override
     public void behavior(){
-        moveRandom(10,getRandom().nextDouble(),20);
+        moveRandom(10,getRandom().nextDouble(),120);
     }
 
     @Override

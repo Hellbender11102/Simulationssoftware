@@ -2,11 +2,10 @@ package view;
 
 import model.Arena;
 import model.Position;
-import model.RobotModel.RobotInterface;
+import model.AbstractModel.RobotInterface;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.List;
 
 public class SimulationView extends JPanel {
     private Arena arena;
@@ -53,7 +52,6 @@ public class SimulationView extends JPanel {
         if (arena.getRobots() != null) {
             int x = arena.getWidth() - offsetX + 35 + fontSize, y = -offsetY - fontSize * 5, n = 0;
             for (RobotInterface robot : arena.getRobots()) {
-                n++;
                 drawRobot(robot, g);
                 if (!infosLeft) {
                     x = (int) Math.round(robot.getPose().getXCoordinate()) - offsetX - robot.getRadius();
@@ -61,11 +59,12 @@ public class SimulationView extends JPanel {
                 } else {
                     x += 0;
                     y += fontSize * 5;
-                    if (n % 7 == 0) {
-                        y -= 6 * 5 * fontSize;
+                    if (n % 7 == 0 && n!=0) {
+                        y -= 35 * fontSize;
                         x += 5 + fontSize * 10;
                     }
                 }
+                   n++;
                 drawInfos(g, robot, x, y);
             }
         }
@@ -178,7 +177,7 @@ public class SimulationView extends JPanel {
     }
 
     public void incFontSize(int addend) {
-        fontSize += addend + fontSize < 5 ? 0 : addend + fontSize > 100 ? 0 : addend;
+        fontSize += addend + fontSize < 10 ? 0 : addend + fontSize > 30 ? 0 : addend;
     }
 
 }

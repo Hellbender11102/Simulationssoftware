@@ -2,7 +2,7 @@ package controller;
 
 import model.*;
 import model.RobotTypes.BaseRobot;
-import model.RobotModel.RobotInterface;
+import model.AbstractModel.RobotInterface;
 import view.View;
 
 import java.awt.event.*;

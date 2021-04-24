@@ -1,4 +1,4 @@
-package model.RobotModel;
+package model.AbstractModel;
 
 import model.Arena;
 import model.Pose;
@@ -9,9 +9,8 @@ import model.RobotTypes.Robot3;
 
 import java.awt.*;
 import java.util.Random;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class RobotBuilder {
+public class EntityBuilder {
     private double engineL;
 
     private double engineR;
@@ -56,42 +55,42 @@ public class RobotBuilder {
     }
 
 
-    public RobotBuilder engineLeft(double engineL) {
+    public EntityBuilder engineLeft(double engineL) {
         this.engineL = engineL;
         return this;
     }
 
-    public RobotBuilder engineRight(double engineR) {
+    public EntityBuilder engineRight(double engineR) {
         this.engineR = engineR;
         return this;
     }
 
-    public RobotBuilder engineDistnace(double distanceE) {
+    public EntityBuilder engineDistnace(double distanceE) {
         this.distanceE = distanceE;
         return this;
     }
 
-    public RobotBuilder powerTransmission(double powerTransmission) {
+    public EntityBuilder powerTransmission(double powerTransmission) {
         this.powerTransmission = powerTransmission;
         return this;
     }
 
-    public RobotBuilder diameters(double diameters) {
+    public EntityBuilder diameters(double diameters) {
         this.diameters = (int) diameters;
         return this;
     }
 
-    public RobotBuilder arena(Arena arena) {
+    public EntityBuilder arena(Arena arena) {
         this.arena = arena;
         return this;
     }
 
-    public RobotBuilder pose(Pose pose) {
+    public EntityBuilder pose(Pose pose) {
         this.pose = pose;
         return this;
     }
 
-    public RobotBuilder random(Random random) {
+    public EntityBuilder random(Random random) {
         this.random = random;
         return this;
     }

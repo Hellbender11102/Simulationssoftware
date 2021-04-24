@@ -1,7 +1,7 @@
 import controller.Controller;
 import model.*;
-import model.RobotModel.RobotBuilder;
-import model.RobotModel.RobotInterface;
+import model.AbstractModel.EntityBuilder;
+import model.AbstractModel.RobotInterface;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -76,7 +76,7 @@ class Main {
         JSONObject positonObject = (JSONObject) robotObject.get("position");
         Pose pos = new Pose((Double) positonObject.get("x"), (Double) positonObject.get("y"), (Double) positonObject.get("rotation"));
 
-        RobotBuilder builder = new RobotBuilder()
+        EntityBuilder builder = new EntityBuilder()
                 .engineRight((Double) robotObject.get("engineR"))
                 .engineLeft((Double) robotObject.get("engineL"))
                 .engineDistnace((Double) robotObject.get("distance"))

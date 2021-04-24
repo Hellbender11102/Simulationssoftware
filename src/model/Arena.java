@@ -1,6 +1,6 @@
 package model;
 
-import model.RobotModel.RobotInterface;
+import model.AbstractModel.RobotInterface;
 
 import java.util.ArrayList;
 

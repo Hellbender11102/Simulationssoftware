@@ -3,8 +3,8 @@ package model.RobotTypes;
 import model.Arena;
 import model.Pose;
 import model.Position;
-import model.RobotModel.RobotBuilder;
-import model.RobotModel.RobotInterface;
+import model.AbstractModel.EntityBuilder;
+import model.AbstractModel.RobotInterface;
 import org.uncommons.maths.random.GaussianGenerator;
 
 import java.awt.*;
@@ -23,7 +23,7 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
     private final Color color;
     private final Arena arena;
     private boolean isInTurn = false;
-    private double rotation = 0;
+    private double rotation;
     private int ringMemorySize = 100;
     private Pose[] poseRingMemory;
     private int poseRingMemoryHead = 0;
@@ -34,7 +34,7 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
      *
      * @param builder
      */
-    public BaseRobot(RobotBuilder builder) {
+    public BaseRobot(EntityBuilder builder) {
         poseRingMemory = new Pose[ringMemorySize];
         this.engineL = builder.getEngineL();
         this.engineR = builder.getEngineR();
@@ -214,7 +214,6 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
         if (isInTurn) {
             if (rotateToAngle(rotation, 2, speed, 0)) {
                 isInTurn = false;
-                System.out.println("rotation done for " + rotation);
             }
         } else if (nextD < 1 / (pathLength / trajectorySpeed())) {
             isInTurn = true;
@@ -358,8 +357,8 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
                 && diameters == robot.getDiameters() && color == robot.getColor();
     }
 
-    @Override
-    public List<Pose> getPosesFromMemmory() {
+
+    List<Pose> getPosesFromMemory() {
         List<Pose> poseList = new LinkedList<>();
         for (int i = poseRingMemoryHead -1; 0 <= i; i--) {
             if (poseRingMemory[i] != null) poseList.add(poseRingMemory[i]);
@@ -372,7 +371,7 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
 
     @Override
     public void setPrevPose() {
-        List<Pose> positions = getPosesFromMemmory();
+        List<Pose> positions = getPosesFromMemory();
         if (poseRingMemoryPointer < positions.size())
             pose = positions.get(poseRingMemoryPointer);
         poseRingMemoryPointer += poseRingMemoryPointer < positions.size() - 1 ? 1 : 0;
@@ -381,7 +380,7 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
 
     @Override
     public void setNextPose() {
-        List<Pose> positions = getPosesFromMemmory();
+        List<Pose> positions = getPosesFromMemory();
         if (0 < poseRingMemoryPointer) {
             if (poseRingMemoryPointer < positions.size())
                 pose = positions.get(poseRingMemoryPointer);
