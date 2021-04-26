@@ -1,6 +1,7 @@
 package model.RobotTypes;
 
 import model.AbstractModel.EntityBuilder;
+import model.Position;
 
 import java.awt.*;
 import java.util.List;
@@ -13,7 +14,9 @@ public class Robot3 extends BaseRobot {
 
     @Override
     public void behavior() {
-    stayGroupedWithType(10, List.of(Robot3.class),1);
+    driveToPosition(new Position(250,250),1,0.01);
+    if(isPositionInRobotArea(new Position(250,250)))
+     toggleStop();
     }
     @Override
     public Color getClassColor() {

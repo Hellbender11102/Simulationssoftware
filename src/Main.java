@@ -74,7 +74,8 @@ class Main {
             JSONObject robotObject, Map<RobotInterface, Position> robotsAndPositionOffsets, Random random, Arena arena
     ) {
         JSONObject positonObject = (JSONObject) robotObject.get("position");
-        Pose pos = new Pose((Double) positonObject.get("x"), (Double) positonObject.get("y"), (Double) positonObject.get("rotation"));
+        Pose pos = new Pose((Double) positonObject.get("x"), (Double) positonObject.get("y"),
+                Math.toRadians((Double) positonObject.get("rotation")));
 
         EntityBuilder builder = new EntityBuilder()
                 .engineRight((Double) robotObject.get("engineR"))

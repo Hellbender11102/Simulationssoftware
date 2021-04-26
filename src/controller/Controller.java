@@ -94,7 +94,7 @@ public class Controller {
                         robots = new HashMap<>();
                         for (RobotInterface robot : robotsAndPositionOffsets.keySet()) {
                             if (stopped) {
-                                robot.resetToOrigin();
+                                robot.setToLatestPose();
                                 robot.toggleStop();
                                 startThread(robot);
                             } else {

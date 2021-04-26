@@ -73,9 +73,7 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
      */
     void setNextPosition() {
         pose.incRotation(angularVelocity());
-
-        pose.setXCoordinate(pose.getPositionInDirection(trajectorySpeed()).getXCoordinate());
-        pose.setYCoordinate(pose.getPositionInDirection(trajectorySpeed()).getYCoordinate());
+        pose = pose.getPoseInDirection(trajectorySpeed());
     }
 
     /**
@@ -126,28 +124,30 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
     /**
      * Rotates to Position and if heading in the correct direction it drives full speed
      *
-     * @param position Position
+     * @param position
+     * @param precision [0,360]
+     * @param speed
      */
-    void driveToPosition(Position position, double speed) {
-        if (rotateToAngle(pose.calcAngleForPosition(position), 2, speed, 0)) {
+    void driveToPosition(Position position, double precision, double speed) {
+        if (rotateToAngle(pose.calcAngleForPosition(position), Math.toRadians(precision), speed, 0)) {
             engineR = speed;
             engineL = speed;
         }
     }
 
     /**
-     * Rotates with to correct angle +- 2°
+     * Rotates with to correct angle +- (precision / 2)°
      *
      * @param angle         double heading angle
-     *                      Radians angle in degree [0.0°,360.0°]
      * @param rotationSpeed double > 0 && < 1
      * @return boolean
      */
     boolean rotateToAngle(double angle, double precision, double rotationSpeed, double secondEngine) {
-        double angleDiff = (angle - pose.getRotation() + 720) % 360;
-        if (angleDiff < precision / 2 || 360 - precision / 2 < angleDiff) {
+        double angleDiff = pose.getRotation() - angle % (2 * Math.PI);
+        angleDiff += angleDiff < 0 ? 2 * Math.PI : 0;
+        if (angleDiff <= precision / 2 || 2 * Math.PI - angleDiff <= precision / 2) {
             return true;
-        } else if (180 < angleDiff) {
+        } else if (angleDiff <= Math.PI) {
             engineR = secondEngine;
             engineL = rotationSpeed;
             return false;
@@ -160,7 +160,7 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
 
 
     public void follow(RobotInterface robot, double speed) {
-        driveToPosition(robot.getPose(), speed);
+        driveToPosition(robot.getPose(), 2, speed);
     }
 
 
@@ -182,9 +182,9 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
         }
         dummyPose.setRotation(dummyPose.getRotation());
         if (isEnoughDistance) {
-            driveToPosition(center, speed);
+            driveToPosition(center, 2, speed);
         } else {
-            driveToPosition(dummyPose, speed);
+            driveToPosition(dummyPose, 2, speed);
         }
     }
 
@@ -360,7 +360,7 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
 
     List<Pose> getPosesFromMemory() {
         List<Pose> poseList = new LinkedList<>();
-        for (int i = poseRingMemoryHead -1; 0 <= i; i--) {
+        for (int i = poseRingMemoryHead - 1; 0 <= i; i--) {
             if (poseRingMemory[i] != null) poseList.add(poseRingMemory[i]);
         }
         for (int i = ringMemorySize - 1; poseRingMemoryHead < i; i--) {
@@ -397,7 +397,7 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
     }
 
     @Override
-    public void resetToOrigin() {
+    public void setToLatestPose() {
         if (poseRingMemoryHead - 1 < poseRingMemory.length && 0 <= poseRingMemoryHead - 1)
             pose = poseRingMemory[poseRingMemoryHead - 1];
         poseRingMemoryPointer = 0;

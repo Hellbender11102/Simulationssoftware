@@ -15,7 +15,7 @@ public interface PhysicalEntity extends Entity {
 
     abstract public void setNextPose();
 
-    abstract public void resetToOrigin();
+    abstract public void setToLatestPose();
 
     abstract public Color getColor();
 

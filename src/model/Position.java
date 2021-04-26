@@ -34,7 +34,7 @@ synchronized
     
     public double getPolarAngle() {
         if (getPolarDistance() != 0.0)
-            return Math.toDegrees(Math.atan2(yCoordinate, xCoordinate));
+            return Math.atan2(yCoordinate, xCoordinate);
         else return Double.NaN;
     }
 
