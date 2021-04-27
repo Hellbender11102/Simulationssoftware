@@ -14,10 +14,10 @@ public class Robot3 extends BaseRobot {
 
     @Override
     public void behavior() {
-    driveToPosition(new Position(250,250),1,0.01);
-    if(isPositionInRobotArea(new Position(250,250)))
-     toggleStop();
+        moveRandom(5, 0.5, 60);
+
     }
+
     @Override
     public Color getClassColor() {
         return Color.RED;

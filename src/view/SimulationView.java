@@ -15,7 +15,7 @@ public class SimulationView extends JPanel {
     private boolean drawRobotCoordinates = false;
     private boolean drawRobotEngines = false;
     private boolean drawRobotRotationo = false;
-    private boolean changeColor = false;
+    private boolean drawInClassColor = false;
     private boolean infosLeft = false;
     private int fontSize = 10;
 
@@ -82,7 +82,7 @@ public class SimulationView extends JPanel {
     private void drawRobot(RobotInterface robot, Graphics g) {
         int x = (int) Math.round(robot.getPose().getXCoordinate()) - offsetX;
         int y = arena.getHeight() - (int) Math.round(robot.getPose().getYCoordinate()) - offsetY;
-        if (!changeColor)
+        if (!drawInClassColor)
             g.setColor(robot.getColor());
         else g.setColor(robot.getClassColor());
         if (!robot.getStop())
@@ -105,6 +105,10 @@ public class SimulationView extends JPanel {
         if (infosLeft && (drawRobotCoordinates || drawRobotEngines || drawRobotRotationo)) {
             g.setColor(robot.getColor());
             g.fillOval(x, y, fontSize, fontSize);
+            if (drawInClassColor) {
+                g.setColor(robot.getClassColor());
+                g.fillOval(x+fontSize, y, fontSize, fontSize);
+            }
             y += fontSize;
         }
         g.setColor(Color.black);
@@ -122,7 +126,7 @@ public class SimulationView extends JPanel {
         if (drawRobotRotationo) {
             g.drawString(String.format("%,.2f", robot.getPose().getRotation()/Math.PI*180) + "° | "+
                             String.format("%,.2f", robot.getPose().getRotation()/Math.PI)+ " *Pi",
-                    x -17 - fontSize, y + fontSize);
+                    x -16 - fontSize, y + fontSize);
         }
     }
 
@@ -172,7 +176,7 @@ public class SimulationView extends JPanel {
     }
 
     public void toggleDrawTypeInColor() {
-        changeColor = !changeColor;
+        drawInClassColor = !drawInClassColor;
     }
 
     public void toggleDrawInfosLeft() {

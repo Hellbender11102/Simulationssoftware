@@ -22,5 +22,10 @@ public class Vector {
                 destination.getYCoordinate()));
     }
 
-    public Vector(Position origin,double length, double polarAngle){}
+    public Vector(Position origin,double length, double polarAngle){
+        this.origin = origin;
+        this.length = length;
+        this.polarAngle = polarAngle;
+        this.destination = new Pose(origin,polarAngle).getPositionInDirection(length);
+    }
 }

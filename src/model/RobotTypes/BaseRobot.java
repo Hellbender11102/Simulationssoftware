@@ -63,7 +63,7 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
      *
      * @return double angle velocity in degree
      */
-    double angularVelocity() {
+    public double angularVelocity() {
         return ((engineR * (1 - powerTransmission) + engineL * powerTransmission) -
                 (engineL * (1 - powerTransmission) + engineR * powerTransmission)) / distanceE;
     }
@@ -71,7 +71,7 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
     /**
      * calculates the next position and sets itself
      */
-    void setNextPosition() {
+    public void setNextPosition() {
         pose.incRotation(angularVelocity());
         pose = pose.getPoseInDirection(trajectorySpeed());
     }
@@ -208,11 +208,17 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
         stayGroupedWithType(distanceToClosestRobot, List.of(RobotInterface.class), speed);
     }
 
+    /**
+     *
+     * @param pathLength distance the robot will take in average
+     * @param speed
+     * @param standardDeviation [0,360]° the robot shall turn
+     */
     public void moveRandom(double pathLength, double speed, int standardDeviation) {
-        GaussianGenerator gaussianGenerator = new GaussianGenerator(0, standardDeviation, random);
+        GaussianGenerator gaussianGenerator = new GaussianGenerator(0, Math.toRadians(standardDeviation), random);
         double nextD = random.nextDouble();
         if (isInTurn) {
-            if (rotateToAngle(rotation, 2, speed, 0)) {
+            if (rotateToAngle(rotation, 2, speed, speed/2)) {
                 isInTurn = false;
             }
         } else if (nextD < 1 / (pathLength / trajectorySpeed())) {

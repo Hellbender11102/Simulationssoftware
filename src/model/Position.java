@@ -63,9 +63,9 @@ synchronized
     @Override
     
     public String toString() {
-        return "Position:" +
-                "X:" + String.format("%,.2f", xCoordinate) +
-                ", Y:" + String.format("%,.2f", yCoordinate);
+        return "Position: " +
+                "x:" + String.format("%,.2f", xCoordinate) +
+                ", y:" + String.format("%,.2f", yCoordinate);
     }
 
     synchronized

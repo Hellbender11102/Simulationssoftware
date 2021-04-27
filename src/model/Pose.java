@@ -8,7 +8,7 @@ public class Pose extends Position {
         setRotation(rotation);
     }
 
-    private Pose(Position position, double rotation) {
+    Pose(Position position, double rotation) {
         super(position.xCoordinate, position.yCoordinate);
         setRotation(rotation);
     }
