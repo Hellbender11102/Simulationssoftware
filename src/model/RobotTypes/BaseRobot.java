@@ -130,7 +130,7 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
      * @param speed
      */
     void driveToPosition(Position position, double precision, double speed) {
-        if (rotateToAngle(pose.calcAngleForPosition(position), Math.toRadians(precision), speed, speed/2)) {
+        if (rotateToAngle(pose.calcAngleForPosition(position), Math.toRadians(precision), speed, speed / 2)) {
             engineR = speed;
             engineL = speed;
         }
@@ -159,9 +159,9 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
     }
 
 
-    double getAngleDiff(double angle){
-        double angleDiff = pose.getRotation() - angle % (2 * Math.PI);
-       return  angleDiff < 0 ? angleDiff + 2 * Math.PI :angleDiff;
+    double getAngleDiff(double angle) {
+      double angleDiff = (pose.getRotation() - angle) % (2 * Math.PI);
+        return angleDiff < 0 ? angleDiff + (2 * Math.PI) : angleDiff;
     }
 
     public void follow(RobotInterface robot, double speed) {
@@ -213,8 +213,7 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
     }
 
     /**
-     *
-     * @param pathLength distance the robot will take in average
+     * @param pathLength        distance the robot will take in average
      * @param speed
      * @param standardDeviation [0,360]° the robot shall turn
      */
@@ -222,7 +221,7 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
         GaussianGenerator gaussianGenerator = new GaussianGenerator(0, Math.toRadians(standardDeviation), random);
         double nextD = random.nextDouble();
         if (isInTurn) {
-            if (rotateToAngle(rotation, 2, speed, speed/2)) {
+            if (rotateToAngle(rotation, 2, speed, speed / 2)) {
                 isInTurn = false;
             }
         } else if (nextD < 1 / (pathLength / trajectorySpeed())) {

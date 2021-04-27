@@ -12,7 +12,6 @@ public class Controller {
     private View view;
     private Arena arena;
     private Map<RobotInterface, Position> robotsAndPositionOffsets;
-    private List<Thread> threadList = new LinkedList<>();
     private Random random;
     private JsonLoader jsonLoader = new JsonLoader();
     private final Timer repaintTimer = new Timer();
@@ -95,7 +94,6 @@ public class Controller {
                                 startThread(robot);
                             } else {
                                 robot.toggleStop();
-                                threadList.clear();
                             }
                         }
                         stopped = !stopped;
@@ -158,9 +156,11 @@ public class Controller {
                     case KeyEvent.VK_L:
                         view.getSimView().toggleDrawInfosLeft();
                         break;
+                    case KeyEvent.VK_K:
+                        view.getSimView().toggleDrawCenter();
+                        break;
                     case KeyEvent.VK_F1:
                         if (stopped) {
-                                 threadList.clear();
                             init();
                         }
                         break;
@@ -192,7 +192,6 @@ public class Controller {
     private void startThread(RobotInterface robot) {
         Thread t = new Thread(robot);
         t.setDaemon(true);
-        threadList.add(t);
         t.start();
     }
 }
