@@ -3,9 +3,10 @@ package model;
 import model.AbstractModel.RobotInterface;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Arena {
-    private ArrayList<RobotInterface> robotList = new ArrayList<>();
+    private List<RobotInterface> robotList = new ArrayList<>();
     private final int height, width;
     private static Arena singleton;
 
@@ -34,11 +35,11 @@ public class Arena {
         return "width:" + singleton.width + " height:" + singleton.height;
     }
 
-    synchronized public void setRobots(ArrayList<RobotInterface> robotList) {
+    synchronized public void setRobots(List<RobotInterface> robotList) {
         singleton.robotList = robotList;
     }
 
-    synchronized public ArrayList<RobotInterface> getRobots() {
+    synchronized public List<RobotInterface> getRobots() {
         return singleton.robotList;
     }
 

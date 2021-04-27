@@ -13,27 +13,23 @@ public class Controller {
     private Arena arena;
     private Map<RobotInterface, Position> robotsAndPositionOffsets;
     private List<Thread> threadList = new LinkedList<>();
-    private final Random random;
+    private Random random;
+    private JsonLoader jsonLoader = new JsonLoader();
     private final Timer repaintTimer = new Timer();
     private final Timer pastTimeTimer = new Timer();
 
-    public Controller(Map<RobotInterface, Position> robotsAndPositionOffsets, Arena arena, Random random) {
+    public Controller() {
+        arena = jsonLoader.initArena();
+        init();
         view = new View(arena);
+        visualisationTimer(jsonLoader.loadFps());
         addViewListener();
-        this.arena = arena;
-        this.robotsAndPositionOffsets = robotsAndPositionOffsets;
-        this.random = random;
     }
 
-    /**
-     * Schedules an timer that checks for robot collisions
-     * Inserts the robots in the map and pauses them
-     */
-    public void initRobots() {
+    void init() {
+        random = jsonLoader.loadRandom();
+        robotsAndPositionOffsets = jsonLoader.loadRobots(random);
         arena.setRobots(new ArrayList<>(robotsAndPositionOffsets.keySet()));
-        for (RobotInterface robot : robotsAndPositionOffsets.keySet()) {
-            startThread(robot);
-        }
     }
 
     /**
@@ -161,6 +157,12 @@ public class Controller {
                         break;
                     case KeyEvent.VK_L:
                         view.getSimView().toggleDrawInfosLeft();
+                        break;
+                    case KeyEvent.VK_F1:
+                        if (stopped) {
+                                 threadList.clear();
+                            init();
+                        }
                         break;
                 }
             }

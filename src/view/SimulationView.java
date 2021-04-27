@@ -8,9 +8,9 @@ import javax.swing.*;
 import java.awt.*;
 
 public class SimulationView extends JPanel {
-    private Arena arena;
+    private final Arena arena;
     private int offsetX, offsetY;
-    boolean drawLines = false;
+    private boolean drawLines = false;
     private boolean drawRotationIndicator = true;
     private boolean drawRobotCoordinates = false;
     private boolean drawRobotEngines = false;
@@ -76,8 +76,8 @@ public class SimulationView extends JPanel {
     /**
      * Draws the robot and adds an extra infomation
      *
-     * @param robot
-     * @param g
+     * @param robot RobotInterface
+     * @param g Graphics
      */
     private void drawRobot(RobotInterface robot, Graphics g) {
         int x = (int) Math.round(robot.getPose().getXCoordinate()) - offsetX;

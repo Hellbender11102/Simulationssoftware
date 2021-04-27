@@ -28,6 +28,7 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
     private Pose[] poseRingMemory;
     private int poseRingMemoryHead = 0;
     private int poseRingMemoryPointer = 0;
+    private int turnModification = 10;
 
     /**
      * Constructs object via Builder
@@ -72,7 +73,7 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
      * calculates the next position and sets itself
      */
     public void setNextPosition() {
-        pose.incRotation(angularVelocity());
+        pose.incRotation(angularVelocity() / turnModification);
         pose = pose.getPoseInDirection(trajectorySpeed());
     }
 
@@ -129,7 +130,7 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
      * @param speed
      */
     void driveToPosition(Position position, double precision, double speed) {
-        if (rotateToAngle(pose.calcAngleForPosition(position), Math.toRadians(precision), speed, 0)) {
+        if (rotateToAngle(pose.calcAngleForPosition(position), Math.toRadians(precision), speed, speed/2)) {
             engineR = speed;
             engineL = speed;
         }
@@ -143,8 +144,7 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
      * @return boolean
      */
     boolean rotateToAngle(double angle, double precision, double rotationSpeed, double secondEngine) {
-        double angleDiff = pose.getRotation() - angle % (2 * Math.PI);
-        angleDiff += angleDiff < 0 ? 2 * Math.PI : 0;
+        double angleDiff = getAngleDiff(angle);
         if (angleDiff <= precision / 2 || 2 * Math.PI - angleDiff <= precision / 2) {
             return true;
         } else if (angleDiff <= Math.PI) {
@@ -158,6 +158,11 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
         }
     }
 
+
+    double getAngleDiff(double angle){
+        double angleDiff = pose.getRotation() - angle % (2 * Math.PI);
+       return  angleDiff < 0 ? angleDiff + 2 * Math.PI :angleDiff;
+    }
 
     public void follow(RobotInterface robot, double speed) {
         driveToPosition(robot.getPose(), 2, speed);
@@ -189,7 +194,6 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
     }
 
     public Position centerOfGroupWithClasses(List<Class> classList) {
-        Position center = new Position(0, 0);
         LinkedList<RobotInterface> group = robotGroupbyClasses(classList);
         return centerOfGroupWithRobots(group);
     }
@@ -381,7 +385,6 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
         if (poseRingMemoryPointer < positions.size())
             pose = positions.get(poseRingMemoryPointer);
         poseRingMemoryPointer += poseRingMemoryPointer < positions.size() - 1 ? 1 : 0;
-        System.out.println("pointer " + poseRingMemoryPointer);
     }
 
     @Override
@@ -391,7 +394,6 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
             if (poseRingMemoryPointer < positions.size())
                 pose = positions.get(poseRingMemoryPointer);
             poseRingMemoryPointer -= 1;
-            System.out.println("pointer " + poseRingMemoryPointer);
         } else {
             behavior();
             setNextPosition();
