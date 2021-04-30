@@ -12,7 +12,7 @@ public class Robot2 extends BaseRobot {
 
     @Override
     public void behavior(){
-        moveRandom(10,getRandom().nextDouble(),4);
+        moveRandom(10,getRandom().nextDouble(),90);
     }
 
     @Override

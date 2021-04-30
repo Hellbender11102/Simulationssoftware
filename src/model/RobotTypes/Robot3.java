@@ -15,7 +15,7 @@ public class Robot3 extends BaseRobot {
     @Override
     public void behavior() {
        // moveRandom(5, 0.5, 60);
-        driveToPosition(new Position(250,250),1,.5);
+        stayGroupedWithAll(50,.75);
     }
 
     @Override

@@ -42,10 +42,10 @@ class JsonLoader {
         else return 30;
     }
 
-    Map<RobotInterface, Position> loadRobots(Random random) {
+    Map<RobotInterface, Position> loadRobots(Random random,Logger logger) {
         JSONArray robots = (JSONArray) variables.get("robots");
         Map<RobotInterface, Position> robotsAndPositionOffsets = new HashMap<>();
-        robots.forEach(entry -> loadRobots((JSONObject) entry, robotsAndPositionOffsets, random, arena));
+        robots.forEach(entry -> loadRobots((JSONObject) entry, robotsAndPositionOffsets, random, arena,logger));
         return robotsAndPositionOffsets;
     }
 
@@ -76,8 +76,8 @@ class JsonLoader {
      * @param random
      */
     private static void loadRobots(
-            JSONObject robotObject, Map<RobotInterface, Position> robotsAndPositionOffsets, Random random, Arena arena
-    ) {
+            JSONObject robotObject, Map<RobotInterface, Position> robotsAndPositionOffsets, Random random, Arena arena,
+   Logger logger ) {
         JSONObject positionObject = (JSONObject) robotObject.get("position");
         Pose pos = new Pose((Double) positionObject.get("x"), (Double) positionObject.get("y"),
                 Math.toRadians((Double) positionObject.get("rotation")));
@@ -90,7 +90,8 @@ class JsonLoader {
                 .pose(pos)
                 .arena(arena)
                 .powerTransmission((Double) robotObject.get("powerTransmission"))
-                .diameters((Double) robotObject.get("diameters"));
+                .diameters((Double) robotObject.get("diameters"))
+                .logger(logger);
         RobotInterface robot;
         switch ((String) robotObject.get("type")) {
             case "1":

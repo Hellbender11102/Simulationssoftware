@@ -6,6 +6,7 @@ import model.AbstractModel.RobotInterface;
 import view.View;
 
 import java.awt.event.*;
+import java.io.IOException;
 import java.util.*;
 
 public class Controller {
@@ -15,7 +16,8 @@ public class Controller {
     private Random random;
     private JsonLoader jsonLoader = new JsonLoader();
     private final Timer repaintTimer = new Timer();
-    private final Timer pastTimeTimer = new Timer();
+    private final Timer logTimer = new Timer();
+    private final Logger logger = new Logger();
 
     public Controller() {
         arena = jsonLoader.initArena();
@@ -27,7 +29,7 @@ public class Controller {
 
     void init() {
         random = jsonLoader.loadRandom();
-        robotsAndPositionOffsets = jsonLoader.loadRobots(random);
+        robotsAndPositionOffsets = jsonLoader.loadRobots(random,logger);
         arena.setRobots(new ArrayList<>(robotsAndPositionOffsets.keySet()));
     }
 
@@ -162,6 +164,13 @@ public class Controller {
                     case KeyEvent.VK_F1:
                         if (stopped) {
                             init();
+                        }
+                        break;
+                    case KeyEvent.VK_F2:
+                        try {
+                            logger.saveLogFile();
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
                         }
                         break;
                 }

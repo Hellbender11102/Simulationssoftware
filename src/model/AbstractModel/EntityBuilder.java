@@ -1,5 +1,6 @@
 package model.AbstractModel;
 
+import controller.Logger;
 import model.Arena;
 import model.Pose;
 import model.RobotTypes.BaseRobot;
@@ -21,6 +22,7 @@ public class EntityBuilder {
     private int diameters = 20;
     private Random random;
     private Arena arena;
+    private Logger logger;
 
     public double getEngineL() {
         return engineL;
@@ -52,6 +54,10 @@ public class EntityBuilder {
 
     public Arena getArena() {
         return arena;
+    }
+
+    public Logger getLogger() {
+        return logger;
     }
 
 
@@ -92,6 +98,11 @@ public class EntityBuilder {
 
     public EntityBuilder random(Random random) {
         this.random = random;
+        return this;
+    }
+
+    public EntityBuilder logger(Logger logger) {
+        this.logger = logger;
         return this;
     }
 

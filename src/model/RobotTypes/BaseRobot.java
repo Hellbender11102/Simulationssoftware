@@ -1,10 +1,12 @@
 package model.RobotTypes;
 
+import controller.Logger;
 import model.Arena;
 import model.Pose;
 import model.Position;
 import model.AbstractModel.EntityBuilder;
 import model.AbstractModel.RobotInterface;
+import org.uncommons.maths.random.ExponentialGenerator;
 import org.uncommons.maths.random.GaussianGenerator;
 
 import java.awt.*;
@@ -22,10 +24,13 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
     private final Random random;
     private final Color color;
     private final Arena arena;
+    private final Logger logger;
     private boolean isInTurn = false;
     private double rotation;
     private int ringMemorySize = 100;
     private Pose[] poseRingMemory;
+    private Pose afterTurn;
+    private int straight;
     private int poseRingMemoryHead = 0;
     private int poseRingMemoryPointer = 0;
     private int turnModification = 10;
@@ -47,6 +52,7 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
         this.arena = builder.getArena();
         this.powerTransmission = builder.getPowerTransmission();
         this.color = new Color(random.nextInt());
+        this.logger = builder.getLogger();
     }
 
     /**
@@ -160,7 +166,7 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
 
 
     double getAngleDiff(double angle) {
-      double angleDiff = (pose.getRotation() - angle) % (2 * Math.PI);
+        double angleDiff = (pose.getRotation() - angle) % (2 * Math.PI);
         return angleDiff < 0 ? angleDiff + (2 * Math.PI) : angleDiff;
     }
 
@@ -214,21 +220,32 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
 
     /**
      * @param pathLength        distance the robot will take in average
-     * @param speed
+     * @param speed             settings for both engines
      * @param standardDeviation [0,360]° the robot shall turn
      */
     public void moveRandom(double pathLength, double speed, int standardDeviation) {
+        double steps = pathLength / trajectorySpeed();
+        ExponentialGenerator exponentialGenerator = new ExponentialGenerator(1 / steps, random);
         GaussianGenerator gaussianGenerator = new GaussianGenerator(0, Math.toRadians(standardDeviation), random);
         double nextD = random.nextDouble();
+        double nextDE = exponentialGenerator.nextValue();
         if (isInTurn) {
             if (rotateToAngle(rotation, 2, speed, speed / 2)) {
                 isInTurn = false;
+                afterTurn = pose;
             }
-        } else if (nextD < 1 / (pathLength / trajectorySpeed())) {
+        } else if (nextD < 1 / (steps)) {
+            straight += 0;
             isInTurn = true;
+            if (afterTurn != null)
+                logger.log("Robot - "+color.getRGB() + " Distance to last Position", ((Math.round(pose.euclideanDistance(afterTurn) *100)) /100)+ "");
+                logger.log("Robot - "+color.getRGB() + " straight moves", ((Math.round(straight *100)) /100)+ "");
+                logger.log("Robot - "+color.getRGB() + " speed", ((Math.round(speed *100)) /100)+ "");
             rotation = pose.getRotation() + gaussianGenerator.nextValue();
         } else {
+            //     System.out.println("Rand:"+(int)nextDE +" Steps" + (int)steps +" = "+(exponentialGenerator.nextValue() >= steps));
             setEngines(speed, speed);
+            straight += 1;
         }
     }
 

@@ -47,8 +47,6 @@ public class SimulationView extends JPanel {
         g2d.drawLine(arena.getWidth() - offsetX, arena.getHeight() - offsetY, 0 - offsetX, arena.getHeight() - offsetY);
         g2d.drawLine(arena.getWidth() - offsetX, arena.getHeight() - offsetY, arena.getWidth() - offsetX, 0 - offsetY);
 
-        g.drawOval(250 - offsetX, 250 - offsetY, 2, 2);
-
         if (drawLines) {
             g.setColor(Color.LIGHT_GRAY);
             for (int i = 10; i < arena.getWidth(); i += 10) {
