@@ -11,7 +11,7 @@ public class View extends JFrame {
     private JMenuItem itemHelp = new JMenuItem("Hilfe",1);
     private JMenuItem itemLog = new JMenuItem("Log erstellen",2);
     private JMenuItem itemLogEditor = new JMenuItem("Log einsehen",3);
-    private JMenuItem itemVariablesEditor = new JMenuItem("Variablen",4);
+    private JMenuItem itemVariablesEditor = new JMenuItem("Einstellung",4);
     private JMenuItem itemSettingsEditor = new JMenuItem("Simulationsvariablen",5);
     private JMenuItem itemRestart = new JMenuItem("Versuch neu starten",6);
     private JMenuItem itemFullRestart= new JMenuItem("Neu laden und neu Starten",7);
