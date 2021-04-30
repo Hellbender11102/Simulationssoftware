@@ -5,20 +5,20 @@ import model.Arena;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 
 public class View extends JFrame {
     private SimulationView simView;
-    private JMenuItem itemHelp = new JMenuItem("Hilfe");
-    private JMenuItem itemRestart = new JMenuItem("Versuch neu starten");
-    private JMenuItem itemLog = new JMenuItem("Log erstellen");
-    private JMenuItem itemLogEditor = new JMenuItem("Log einsehen");
-    private JMenuItem itemVariablesEditor = new JMenuItem("Variablen");
-    private JMenuItem itemSettingsEditor = new JMenuItem("Settings");
-    private JMenuItem itemFullRestart= new JMenuItem("Neu laden und neu Starten");
+    private JMenuItem itemHelp = new JMenuItem("Hilfe",1);
+    private JMenuItem itemLog = new JMenuItem("Log erstellen",2);
+    private JMenuItem itemLogEditor = new JMenuItem("Log einsehen",3);
+    private JMenuItem itemVariablesEditor = new JMenuItem("Variablen",4);
+    private JMenuItem itemSettingsEditor = new JMenuItem("Simulationsvariablen",5);
+    private JMenuItem itemRestart = new JMenuItem("Versuch neu starten",6);
+    private JMenuItem itemFullRestart= new JMenuItem("Neu laden und neu Starten",7);
+    private TextView settings;
+    private TextView log;
+    private TextView variabls;
+    private TextView help;
     private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
     public View(Arena arena) {
@@ -56,25 +56,33 @@ public class View extends JFrame {
 
     private void setJmenuItemlogic() {
         ActionListener helpAction = e -> {
-            new TextView("Hilfe","README.md", 0, false);
+            if(help==null)
+           help = new TextView("Hilfe","README.md", 0, false);
+            else help.setVisible(true);
         };
         itemHelp.addActionListener(helpAction);
 
         ActionListener settingsAction = e -> {
-            new TextView("variables.json","resources/variables.json",
+                 if(variabls==null)
+          variabls=  new TextView("variables.json","resources/variables.json",
                     (int) (screenSize.width * 0.75), true);
+            else variabls.setVisible(true);
         };
         itemSettingsEditor.addActionListener(settingsAction);
 
         ActionListener variablesAction = e -> {
-            new TextView("settings.json","resources/settings.json",
+                 if(settings==null)
+           settings= new TextView("settings.json","resources/settings.json",
                     (int) (screenSize.width * 0.75), true);
+            else settings.setVisible(true);
         };
         itemVariablesEditor.addActionListener(variablesAction);
 
         ActionListener logAction = e -> {
-            new TextView("log.csv","out/log.csv",
+                 if(log==null)
+          log =  new TextView("log.csv","out/log.csv",
                     (int) (screenSize.width * 0.75), true);
+            else log.setVisible(true);
         };
         itemLogEditor.addActionListener(logAction);
     }

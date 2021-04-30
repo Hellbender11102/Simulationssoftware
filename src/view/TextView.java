@@ -8,8 +8,8 @@ import java.io.*;
 
 public class TextView extends JFrame {
     JTextPane jTextPane;
-    private JMenuItem itemSave = new JMenuItem("Speichern");
-    private JMenuItem itemReload = new JMenuItem("Neu laden");
+    private JMenuItem itemSave = new JMenuItem("Datei speichern",1);
+    private JMenuItem itemReload = new JMenuItem("Datei neu laden",2);
 
     TextView(String title, String filePath, int posX, boolean editable) {
         try {
@@ -32,9 +32,7 @@ public class TextView extends JFrame {
         scrollPane.setViewportView(jTextPane);
         jTextPane.setCaretPosition(0);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-
         if (editable) {
-            setTitle("Vibrobot Simulation");
             JMenuBar bar = new JMenuBar();
             JMenu menu = new JMenu("Optionen");
             menu.add(itemSave);

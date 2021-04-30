@@ -1,8 +1,10 @@
 import controller.Controller;
 
+import java.io.IOException;
+
 class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         Controller con = new Controller();
     }
 

@@ -50,7 +50,7 @@ public class Logger {
                 if (i < logMap.get(key).size())
                     stringBuilder.append(logMap.get(key).get(i)).append(", ");
                 else stringBuilder.append("-NONE-, ");
-                if (i % logMap.keySet().size() == 0 && i != 0) stringBuilder.append('\n');
+                if (i % logMap.keySet().size()-1 == 0 && i != 0) stringBuilder.append('\n');
                 i++;
             }
         }

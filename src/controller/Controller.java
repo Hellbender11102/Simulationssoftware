@@ -20,7 +20,7 @@ public class Controller {
     private final Timer logTimer = new Timer();
     private final Logger logger = new Logger();
 
-    public Controller() {
+    public Controller() throws IOException {
         arena = jsonLoader.initArena();
         init();
         view = new View(arena);
@@ -221,7 +221,11 @@ public class Controller {
                 }
             }
             stopped = true;
-            jsonLoader = new JsonLoader();
+            try {
+                jsonLoader = new JsonLoader();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             arena = jsonLoader.initArena();
             visualisationTimer(jsonLoader.loadFps());
             init();

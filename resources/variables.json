@@ -1,12 +1,12 @@
 {
   "seed": 20,
   "arena": {
-    "width": 800,
-    "height": 600
+    "width": 700,
+    "height": 700
   },
   "robots": [
     {
-      "type": "2",
+      "type": "1",
       "engineR": 1.0,
       "engineL": 1.0,
       "distance": 1.0,

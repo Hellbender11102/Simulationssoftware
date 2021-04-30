@@ -39,8 +39,8 @@ public class SimulationView extends JPanel {
         g2d.setStroke(new BasicStroke(2));
 
         g2d.drawString("0,0", -3 - offsetX, arena.getHeight() + 10 - offsetY);
-        g2d.drawString("0," + arena.getWidth(), arena.getWidth() - offsetX, arena.getHeight() + 10 - offsetY);
-        g2d.drawString(arena.getHeight() + ",0", 0 - offsetX, -3 - offsetY);
+        g2d.drawString(arena.getWidth() + ",0", arena.getWidth() - offsetX, arena.getHeight() + 10 - offsetY);
+        g2d.drawString("0,"arena.getHeight(), 0 - offsetX, -3 - offsetY);
 
         g2d.drawLine(0 - offsetX, 0 - offsetY, 0 - offsetX, arena.getHeight() - offsetY);
         g2d.drawLine(0 - offsetX, 0 - offsetY, arena.getWidth() - offsetX, 0 - offsetY);
