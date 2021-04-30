@@ -9,7 +9,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
-import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -20,6 +19,9 @@ class JsonLoader {
     private JSONObject variables = loadJSON("resources/variables.json");
     private Arena arena;
 
+    JsonLoader() throws IOException {
+    }
+
     Arena initArena() {
         if (variables != null) {
             JSONObject arenaObj = (JSONObject) variables.get("arena");
@@ -28,6 +30,17 @@ class JsonLoader {
             arena = Arena.getInstance(500, 500);
         }
         return arena;
+    }
+
+    Arena reloadArena() {
+        if (arena == null)
+            if (variables != null) {
+                JSONObject arenaObj = (JSONObject) variables.get("arena");
+                arena.resetArena((int) (long) arenaObj.get("width"), (int) (long) arenaObj.get("height"));
+            } else {
+                arena.resetArena(500, 500);
+            }
+        return initArena();
     }
 
     Random loadRandom() {
@@ -42,10 +55,10 @@ class JsonLoader {
         else return 30;
     }
 
-    Map<RobotInterface, Position> loadRobots(Random random,Logger logger) {
+    Map<RobotInterface, Position> loadRobots(Random random, Logger logger) {
         JSONArray robots = (JSONArray) variables.get("robots");
         Map<RobotInterface, Position> robotsAndPositionOffsets = new HashMap<>();
-        robots.forEach(entry -> loadRobots((JSONObject) entry, robotsAndPositionOffsets, random, arena,logger));
+        robots.forEach(entry -> loadRobots((JSONObject) entry, robotsAndPositionOffsets, random, arena, logger));
         return robotsAndPositionOffsets;
     }
 
@@ -53,7 +66,7 @@ class JsonLoader {
      * @param filePath
      * @return
      */
-    private static JSONObject loadJSON(String filePath) {
+    private static JSONObject loadJSON(String filePath) throws IOException {
         JSONObject object = null;
         try {
             FileReader inputFile = new FileReader(filePath);
@@ -63,9 +76,8 @@ class JsonLoader {
             while ((line = bufferedReader.readLine()) != null)
                 stringBuilder.append(line);
             object = (JSONObject) JSONValue.parse(stringBuilder.toString());
-            System.out.println(filePath + " " + object.entrySet());
         } catch (IOException e) {
-            System.out.println(e);
+            throw e;
         }
         return object;
     }
@@ -77,7 +89,7 @@ class JsonLoader {
      */
     private static void loadRobots(
             JSONObject robotObject, Map<RobotInterface, Position> robotsAndPositionOffsets, Random random, Arena arena,
-   Logger logger ) {
+            Logger logger) {
         JSONObject positionObject = (JSONObject) robotObject.get("position");
         Pose pos = new Pose((Double) positionObject.get("x"), (Double) positionObject.get("y"),
                 Math.toRadians((Double) positionObject.get("rotation")));

@@ -25,6 +25,17 @@ public class Arena {
         return singleton;
     }
 
+    /**
+     * Constructor
+     *
+     * @param width  in centemeter
+     * @param height in centemeter
+     */
+    synchronized
+    public void resetArena(int width, int height) {
+        singleton = new Arena(width, height);
+    }
+
     private Arena(int width, int height) {
         this.width = width;
         this.height = height;

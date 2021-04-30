@@ -2,7 +2,7 @@
   "seed": 20,
   "arena": {
     "width": 800,
-    "height": 800
+    "height": 600
   },
   "robots": [
     {

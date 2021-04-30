@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.*;
 
 public class Controller {
+    private boolean stopped = true;
     private View view;
     private Arena arena;
     private Map<RobotInterface, Position> robotsAndPositionOffsets;
@@ -29,7 +30,7 @@ public class Controller {
 
     void init() {
         random = jsonLoader.loadRandom();
-        robotsAndPositionOffsets = jsonLoader.loadRobots(random,logger);
+        robotsAndPositionOffsets = jsonLoader.loadRobots(random, logger);
         arena.setRobots(new ArrayList<>(robotsAndPositionOffsets.keySet()));
     }
 
@@ -77,7 +78,7 @@ public class Controller {
     private void addViewListener() {
         KeyListener keyListener = new KeyListener() {
             int x = 0, y = 0;
-            boolean stopped = true;
+
             Map<RobotInterface, Position> robots;
 
             @Override
@@ -194,8 +195,38 @@ public class Controller {
                 }
             }
         };
-
         view.addKeyListener(keyListener);
+
+        //Menu listener
+        view.getLog().addActionListener(actionListener -> {
+            try {
+                logger.saveLogFile();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
+        view.getRestart().addActionListener(actionListener -> {
+            for (RobotInterface robot : robotsAndPositionOffsets.keySet()) {
+                if (!stopped) {
+                    robot.toggleStop();
+                }
+            }
+            stopped = true;
+            init();
+        });
+        view.getFullRestart().addActionListener(actionListener -> {
+            for (RobotInterface robot : robotsAndPositionOffsets.keySet()) {
+                if (!stopped) {
+                    robot.toggleStop();
+                }
+            }
+            stopped = true;
+            jsonLoader = new JsonLoader();
+            arena = jsonLoader.initArena();
+            visualisationTimer(jsonLoader.loadFps());
+            init();
+        });
+
     }
 
     private void startThread(RobotInterface robot) {

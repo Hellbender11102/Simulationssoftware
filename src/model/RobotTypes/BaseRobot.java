@@ -238,12 +238,11 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
             straight += 0;
             isInTurn = true;
             if (afterTurn != null)
-                logger.log("Robot - "+color.getRGB() + " Distance to last Position", ((Math.round(pose.euclideanDistance(afterTurn) *100)) /100)+ "");
-                logger.log("Robot - "+color.getRGB() + " straight moves", ((Math.round(straight *100)) /100)+ "");
-                logger.log("Robot - "+color.getRGB() + " speed", ((Math.round(speed *100)) /100)+ "");
+                logger.logDouble(color.getBlue() + " Distance", pose.euclideanDistance(afterTurn), 3);
+            logger.log(color.getBlue()  + " straight moves", straight + "");
+            logger.logDouble(color.getBlue()  + " speed", speed, 3);
             rotation = pose.getRotation() + gaussianGenerator.nextValue();
         } else {
-            //     System.out.println("Rand:"+(int)nextDE +" Steps" + (int)steps +" = "+(exponentialGenerator.nextValue() >= steps));
             setEngines(speed, speed);
             straight += 1;
         }
