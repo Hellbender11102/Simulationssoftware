@@ -1,10 +1,12 @@
 package model.RobotTypes;
 
+import controller.Logger;
 import model.Arena;
 import model.Pose;
 import model.Position;
-import model.RobotModel.RobotBuilder;
-import model.RobotModel.RobotInterface;
+import model.AbstractModel.EntityBuilder;
+import model.AbstractModel.RobotInterface;
+import org.uncommons.maths.random.ExponentialGenerator;
 import org.uncommons.maths.random.GaussianGenerator;
 
 import java.awt.*;
@@ -22,19 +24,23 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
     private final Random random;
     private final Color color;
     private final Arena arena;
+    private final Logger logger;
     private boolean isInTurn = false;
-    private double rotation = 0;
+    private double rotation;
     private int ringMemorySize = 100;
     private Pose[] poseRingMemory;
+    private Pose afterTurn;
+    private int straight;
     private int poseRingMemoryHead = 0;
     private int poseRingMemoryPointer = 0;
+    private int turnModification = 10;
 
     /**
      * Constructs object via Builder
      *
      * @param builder
      */
-    public BaseRobot(RobotBuilder builder) {
+    public BaseRobot(EntityBuilder builder) {
         poseRingMemory = new Pose[ringMemorySize];
         this.engineL = builder.getEngineL();
         this.engineR = builder.getEngineR();
@@ -46,6 +52,7 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
         this.arena = builder.getArena();
         this.powerTransmission = builder.getPowerTransmission();
         this.color = new Color(random.nextInt());
+        this.logger = builder.getLogger();
     }
 
     /**
@@ -63,7 +70,7 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
      *
      * @return double angle velocity in degree
      */
-    double angularVelocity() {
+    public double angularVelocity() {
         return ((engineR * (1 - powerTransmission) + engineL * powerTransmission) -
                 (engineL * (1 - powerTransmission) + engineR * powerTransmission)) / distanceE;
     }
@@ -71,11 +78,9 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
     /**
      * calculates the next position and sets itself
      */
-    void setNextPosition() {
-        pose.incRotation(angularVelocity());
-
-        pose.setXCoordinate(pose.getPositionInDirection(trajectorySpeed()).getXCoordinate());
-        pose.setYCoordinate(pose.getPositionInDirection(trajectorySpeed()).getYCoordinate());
+    public void setNextPosition() {
+        pose.incRotation(angularVelocity() / turnModification);
+        pose = pose.getPoseInDirection(trajectorySpeed());
     }
 
     /**
@@ -126,28 +131,29 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
     /**
      * Rotates to Position and if heading in the correct direction it drives full speed
      *
-     * @param position Position
+     * @param position
+     * @param precision [0,360]
+     * @param speed
      */
-    void driveToPosition(Position position, double speed) {
-        if (rotateToAngle(pose.calcAngleForPosition(position), 2, speed, 0)) {
+    void driveToPosition(Position position, double precision, double speed) {
+        if (rotateToAngle(pose.calcAngleForPosition(position), Math.toRadians(precision), speed, speed / 2)) {
             engineR = speed;
             engineL = speed;
         }
     }
 
     /**
-     * Rotates with to correct angle +- 2°
+     * Rotates with to correct angle +- (precision / 2)°
      *
      * @param angle         double heading angle
-     *                      Radians angle in degree [0.0°,360.0°]
      * @param rotationSpeed double > 0 && < 1
      * @return boolean
      */
     boolean rotateToAngle(double angle, double precision, double rotationSpeed, double secondEngine) {
-        double angleDiff = (angle - pose.getRotation() + 720) % 360;
-        if (angleDiff < precision / 2 || 360 - precision / 2 < angleDiff) {
+        double angleDiff = getAngleDiff(angle);
+        if (angleDiff <= precision / 2 || 2 * Math.PI - angleDiff <= precision / 2) {
             return true;
-        } else if (180 < angleDiff) {
+        } else if (angleDiff <= Math.PI) {
             engineR = secondEngine;
             engineL = rotationSpeed;
             return false;
@@ -159,8 +165,13 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
     }
 
 
+    double getAngleDiff(double angle) {
+        double angleDiff = (pose.getRotation() - angle) % (2 * Math.PI);
+        return angleDiff < 0 ? angleDiff + (2 * Math.PI) : angleDiff;
+    }
+
     public void follow(RobotInterface robot, double speed) {
-        driveToPosition(robot.getPose(), speed);
+        driveToPosition(robot.getPose(), 2, speed);
     }
 
 
@@ -182,14 +193,13 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
         }
         dummyPose.setRotation(dummyPose.getRotation());
         if (isEnoughDistance) {
-            driveToPosition(center, speed);
+            driveToPosition(center, 2, speed);
         } else {
-            driveToPosition(dummyPose, speed);
+            driveToPosition(dummyPose, 2, speed);
         }
     }
 
     public Position centerOfGroupWithClasses(List<Class> classList) {
-        Position center = new Position(0, 0);
         LinkedList<RobotInterface> group = robotGroupbyClasses(classList);
         return centerOfGroupWithRobots(group);
     }
@@ -208,19 +218,33 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
         stayGroupedWithType(distanceToClosestRobot, List.of(RobotInterface.class), speed);
     }
 
+    /**
+     * @param pathLength        distance the robot will take in average
+     * @param speed             settings for both engines
+     * @param standardDeviation [0,360]° the robot shall turn
+     */
     public void moveRandom(double pathLength, double speed, int standardDeviation) {
-        GaussianGenerator gaussianGenerator = new GaussianGenerator(0, standardDeviation, random);
+        double steps = pathLength / trajectorySpeed();
+        ExponentialGenerator exponentialGenerator = new ExponentialGenerator(1 / steps, random);
+        GaussianGenerator gaussianGenerator = new GaussianGenerator(0, Math.toRadians(standardDeviation), random);
         double nextD = random.nextDouble();
+        double nextDE = exponentialGenerator.nextValue();
         if (isInTurn) {
-            if (rotateToAngle(rotation, 2, speed, 0)) {
+            if (rotateToAngle(rotation, 2, speed, speed / 2)) {
                 isInTurn = false;
-                System.out.println("rotation done for " + rotation);
+                afterTurn = pose;
             }
-        } else if (nextD < 1 / (pathLength / trajectorySpeed())) {
+        } else if (nextD < 1 / (steps)) {
+            straight += 0;
             isInTurn = true;
+            if (afterTurn != null)
+                logger.logDouble(color.getBlue() + " Distance", pose.euclideanDistance(afterTurn), 3);
+            logger.log(color.getBlue()  + " straight moves", straight + "");
+            logger.logDouble(color.getBlue()  + " speed", speed, 3);
             rotation = pose.getRotation() + gaussianGenerator.nextValue();
         } else {
             setEngines(speed, speed);
+            straight += 1;
         }
     }
 
@@ -358,10 +382,10 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
                 && diameters == robot.getDiameters() && color == robot.getColor();
     }
 
-    @Override
-    public List<Pose> getPosesFromMemmory() {
+
+    List<Pose> getPosesFromMemory() {
         List<Pose> poseList = new LinkedList<>();
-        for (int i = poseRingMemoryHead -1; 0 <= i; i--) {
+        for (int i = poseRingMemoryHead - 1; 0 <= i; i--) {
             if (poseRingMemory[i] != null) poseList.add(poseRingMemory[i]);
         }
         for (int i = ringMemorySize - 1; poseRingMemoryHead < i; i--) {
@@ -372,21 +396,19 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
 
     @Override
     public void setPrevPose() {
-        List<Pose> positions = getPosesFromMemmory();
+        List<Pose> positions = getPosesFromMemory();
         if (poseRingMemoryPointer < positions.size())
             pose = positions.get(poseRingMemoryPointer);
         poseRingMemoryPointer += poseRingMemoryPointer < positions.size() - 1 ? 1 : 0;
-        System.out.println("pointer " + poseRingMemoryPointer);
     }
 
     @Override
     public void setNextPose() {
-        List<Pose> positions = getPosesFromMemmory();
+        List<Pose> positions = getPosesFromMemory();
         if (0 < poseRingMemoryPointer) {
             if (poseRingMemoryPointer < positions.size())
                 pose = positions.get(poseRingMemoryPointer);
             poseRingMemoryPointer -= 1;
-            System.out.println("pointer " + poseRingMemoryPointer);
         } else {
             behavior();
             setNextPosition();
@@ -398,7 +420,7 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
     }
 
     @Override
-    public void resetToOrigin() {
+    public void setToLatestPose() {
         if (poseRingMemoryHead - 1 < poseRingMemory.length && 0 <= poseRingMemoryHead - 1)
             pose = poseRingMemory[poseRingMemoryHead - 1];
         poseRingMemoryPointer = 0;

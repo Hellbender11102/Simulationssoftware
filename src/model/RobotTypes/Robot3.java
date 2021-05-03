@@ -1,22 +1,23 @@
 package model.RobotTypes;
 
+import model.AbstractModel.EntityBuilder;
 import model.Position;
-import model.RobotModel.RobotBuilder;
-import model.RobotModel.RobotInterface;
 
 import java.awt.*;
 import java.util.List;
 
 public class Robot3 extends BaseRobot {
 
-    public Robot3(RobotBuilder builder) {
+    public Robot3(EntityBuilder builder) {
         super(builder);
     }
 
     @Override
     public void behavior() {
-    stayGroupedWithType(10, List.of(Robot3.class),1);
+       // moveRandom(5, 0.5, 60);
+        stayGroupedWithAll(50,.75);
     }
+
     @Override
     public Color getClassColor() {
         return Color.RED;

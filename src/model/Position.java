@@ -34,7 +34,7 @@ synchronized
     
     public double getPolarAngle() {
         if (getPolarDistance() != 0.0)
-            return Math.toDegrees(Math.atan2(yCoordinate, xCoordinate));
+            return Math.atan2(yCoordinate, xCoordinate);
         else return Double.NaN;
     }
 
@@ -63,9 +63,9 @@ synchronized
     @Override
     
     public String toString() {
-        return "Position:" +
-                "X:" + String.format("%,.2f", xCoordinate) +
-                ", Y:" + String.format("%,.2f", yCoordinate);
+        return "Position: " +
+                "x:" + String.format("%,.2f", xCoordinate) +
+                ", y:" + String.format("%,.2f", yCoordinate);
     }
 
     synchronized

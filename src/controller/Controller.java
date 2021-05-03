@@ -2,38 +2,36 @@ package controller;
 
 import model.*;
 import model.RobotTypes.BaseRobot;
-import model.RobotModel.RobotInterface;
+import model.AbstractModel.RobotInterface;
 import view.View;
 
 import java.awt.event.*;
+import java.io.IOException;
 import java.util.*;
 
 public class Controller {
+    private boolean stopped = true;
     private View view;
     private Arena arena;
     private Map<RobotInterface, Position> robotsAndPositionOffsets;
-    private List<Thread> threadList = new LinkedList<>();
-    private final Random random;
+    private Random random;
+    private JsonLoader jsonLoader = new JsonLoader();
     private final Timer repaintTimer = new Timer();
-    private final Timer pastTimeTimer = new Timer();
+    private final Timer logTimer = new Timer();
+    private final Logger logger = new Logger();
 
-    public Controller(Map<RobotInterface, Position> robotsAndPositionOffsets, Arena arena, Random random) {
+    public Controller() throws IOException {
+        arena = jsonLoader.initArena();
+        init();
         view = new View(arena);
+        visualisationTimer(jsonLoader.loadFps());
         addViewListener();
-        this.arena = arena;
-        this.robotsAndPositionOffsets = robotsAndPositionOffsets;
-        this.random = random;
     }
 
-    /**
-     * Schedules an timer that checks for robot collisions
-     * Inserts the robots in the map and pauses them
-     */
-    public void initRobots() {
+    void init() {
+        random = jsonLoader.loadRandom();
+        robotsAndPositionOffsets = jsonLoader.loadRobots(random, logger);
         arena.setRobots(new ArrayList<>(robotsAndPositionOffsets.keySet()));
-        for (RobotInterface robot : robotsAndPositionOffsets.keySet()) {
-            startThread(robot);
-        }
     }
 
     /**
@@ -80,7 +78,7 @@ public class Controller {
     private void addViewListener() {
         KeyListener keyListener = new KeyListener() {
             int x = 0, y = 0;
-            boolean stopped = true;
+
             Map<RobotInterface, Position> robots;
 
             @Override
@@ -94,12 +92,11 @@ public class Controller {
                         robots = new HashMap<>();
                         for (RobotInterface robot : robotsAndPositionOffsets.keySet()) {
                             if (stopped) {
-                                robot.resetToOrigin();
+                                robot.setToLatestPose();
                                 robot.toggleStop();
                                 startThread(robot);
                             } else {
                                 robot.toggleStop();
-                                threadList.clear();
                             }
                         }
                         stopped = !stopped;
@@ -162,6 +159,21 @@ public class Controller {
                     case KeyEvent.VK_L:
                         view.getSimView().toggleDrawInfosLeft();
                         break;
+                    case KeyEvent.VK_K:
+                        view.getSimView().toggleDrawCenter();
+                        break;
+                    case KeyEvent.VK_F1:
+                        if (stopped) {
+                            init();
+                        }
+                        break;
+                    case KeyEvent.VK_F2:
+                        try {
+                            logger.saveLogFile();
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
+                        break;
                 }
             }
 
@@ -183,14 +195,47 @@ public class Controller {
                 }
             }
         };
-
         view.addKeyListener(keyListener);
+
+        //Menu listener
+        view.getLog().addActionListener(actionListener -> {
+            try {
+                logger.saveLogFile();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
+        view.getRestart().addActionListener(actionListener -> {
+            for (RobotInterface robot : robotsAndPositionOffsets.keySet()) {
+                if (!stopped) {
+                    robot.toggleStop();
+                }
+            }
+            stopped = true;
+            init();
+        });
+        view.getFullRestart().addActionListener(actionListener -> {
+            for (RobotInterface robot : robotsAndPositionOffsets.keySet()) {
+                if (!stopped) {
+                    robot.toggleStop();
+                }
+            }
+            stopped = true;
+            try {
+                jsonLoader = new JsonLoader();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            arena = jsonLoader.reloadArena();
+            visualisationTimer(jsonLoader.loadFps());
+            init();
+        });
+
     }
 
     private void startThread(RobotInterface robot) {
         Thread t = new Thread(robot);
         t.setDaemon(true);
-        threadList.add(t);
         t.start();
     }
 }

@@ -12,6 +12,7 @@ Key bindings
 - 's' | down       : move view up
 - 'd' | right      : move view up
 - space            : pause
+- F1               : resets the simulation (also resets random)
 - 'r'              : toggle display rotation
 - 'c'              : toggle display coordinates
 - 'e'              : toggle display engines and trajectory velocity
@@ -25,6 +26,7 @@ Key bindings
                      only functional when paused
 - 'n'              : sets the robots to the next position
                      only functional when paused
+- 'k'              : draws the center of any robot class
                    
 Functionality
 Robots 'drive' through different settings on the two engines.

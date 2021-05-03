@@ -5,23 +5,26 @@ public class Pose extends Position {
 
     public Pose(double xCoordinate, double yCoordinate, double rotation) {
         super(xCoordinate, yCoordinate);
-        this.rotation = rotation % 360;
+        setRotation(rotation);
+    }
+
+    Pose(Position position, double rotation) {
+        super(position.xCoordinate, position.yCoordinate);
+        setRotation(rotation);
     }
 
     public Pose clone() {
-      return    new Pose(xCoordinate, yCoordinate,rotation);
+        return new Pose(xCoordinate, yCoordinate, rotation);
     }
 
     public void setRotation(double rotation) {
-        if (rotation < 0) rotation += 360;
-        if (rotation >= 360) this.rotation = rotation % 360;
+        if (rotation < 0) rotation += 2 * Math.PI;
+        if (rotation >= 2 * Math.PI) this.rotation = rotation - 2 * Math.PI;
         else this.rotation = rotation;
     }
 
     public void incRotation(double rotation) {
-        if (rotation < 0) rotation += 360;
-        if (this.rotation + rotation >= 360) this.rotation = (this.rotation + rotation) % 360;
-        else this.rotation = this.rotation + rotation % 360;
+        setRotation(this.rotation + rotation);
     }
 
     public double getRotation() {
@@ -35,33 +38,18 @@ public class Pose extends Position {
     public Position getPositionInDirection(double distance) {
         return getPositionInDirection(distance, rotation, xCoordinate, yCoordinate);
     }
+
+    public Pose getPoseInDirection(double distance) {
+        return new Pose(getPositionInDirection(distance, rotation, xCoordinate, yCoordinate), rotation);
+    }
+
     public Position getPositionInDirection(double distance, double rotation) {
         return getPositionInDirection(distance, rotation, xCoordinate, yCoordinate);
     }
 
     public static Position getPositionInDirection(double distance, double rotation, double x, double y) {
-        double small = rotation % 90;
-        if (rotation == 90) {
-            y += distance;
-        } else if (rotation == 180) {
-            x -= distance;
-        } else if (rotation == 270) {
-            y -= distance;
-        } else if (rotation == 0) {
-            x += distance;
-        } else if (rotation < 90.0) {
-            x += (distance * (1 - small / 90));
-            y += (distance * (small / 90));
-        } else if (rotation < 180.0) {
-            x -= (distance * (small / 90));
-            y += (distance * (1 - small / 90));
-        } else if (rotation < 270.0) {
-            x -= (distance * (1 - small / 90));
-            y -= (distance * (small / 90));
-        } else if (rotation < 360.0) {
-            x += (distance * (small / 90));
-            y -= (distance * (1 - small / 90));
-        }
+        x += distance * Math.cos(rotation);
+        y += distance * Math.sin(rotation);
         return new Position(x, y);
     }
 
