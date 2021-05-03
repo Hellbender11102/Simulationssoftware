@@ -33,14 +33,11 @@ class JsonLoader {
     }
 
     Arena reloadArena() {
-        if (arena == null)
-            if (variables != null) {
-                JSONObject arenaObj = (JSONObject) variables.get("arena");
-                arena.resetArena((int) (long) arenaObj.get("width"), (int) (long) arenaObj.get("height"));
-            } else {
-                arena.resetArena(500, 500);
-            }
-        return initArena();
+        if (variables != null) {
+            JSONObject arenaObj = (JSONObject) variables.get("arena");
+            arena = Arena.overWriteInstance((int) (long) arenaObj.get("width"), (int) (long) arenaObj.get("height"));
+        }
+        return arena;
     }
 
     Random loadRandom() {

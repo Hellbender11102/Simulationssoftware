@@ -32,8 +32,9 @@ public class Arena {
      * @param height in centemeter
      */
     synchronized
-    public void resetArena(int width, int height) {
+    public static Arena overWriteInstance(int width, int height) {
         singleton = new Arena(width, height);
+        return singleton;
     }
 
     private Arena(int width, int height) {

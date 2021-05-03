@@ -226,7 +226,7 @@ public class Controller {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            arena = jsonLoader.initArena();
+            arena = jsonLoader.reloadArena();
             visualisationTimer(jsonLoader.loadFps());
             init();
         });
