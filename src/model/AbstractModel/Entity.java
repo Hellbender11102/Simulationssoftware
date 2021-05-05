@@ -9,9 +9,9 @@ public interface Entity {
 
     abstract public Pose getPose();
 
-    abstract public void toggleStop();
+    abstract public void togglePause();
 
-    abstract public boolean getStop();
+    abstract public boolean getPaused();
 
     abstract Position centerOfGroupWithClasses(List<Class> classList);
 

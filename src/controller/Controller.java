@@ -32,6 +32,7 @@ public class Controller {
         random = jsonLoader.loadRandom();
         robotsAndPositionOffsets = jsonLoader.loadRobots(random, logger);
         arena.setRobots(new ArrayList<>(robotsAndPositionOffsets.keySet()));
+        arena.setPhysicalEntities(new ArrayList<>(robotsAndPositionOffsets.keySet()));
     }
 
     /**
@@ -93,10 +94,10 @@ public class Controller {
                         for (RobotInterface robot : robotsAndPositionOffsets.keySet()) {
                             if (stopped) {
                                 robot.setToLatestPose();
-                                robot.toggleStop();
+                                robot.togglePause();
                                 startThread(robot);
                             } else {
-                                robot.toggleStop();
+                                robot.togglePause();
                             }
                         }
                         stopped = !stopped;
@@ -212,7 +213,7 @@ public class Controller {
         view.getRestart().addActionListener(actionListener -> {
             for (RobotInterface robot : robotsAndPositionOffsets.keySet()) {
                 if (!stopped) {
-                    robot.toggleStop();
+                    robot.togglePause();
                 }
             }
             stopped = true;
@@ -221,7 +222,7 @@ public class Controller {
         view.getFullRestart().addActionListener(actionListener -> {
             for (RobotInterface robot : robotsAndPositionOffsets.keySet()) {
                 if (!stopped) {
-                    robot.toggleStop();
+                    robot.togglePause();
                 }
             }
             stopped = true;

@@ -23,13 +23,12 @@ public class SimulationView extends JPanel {
     private boolean drawCenter = false;
     private boolean infosLeft = false;
     private int fontSize = 10;
-    private boolean zoomer = false;
-    private double zoomFactor = 3;
+    private double zoomFactor = 1;
 
     SimulationView(Arena arena) {
         this.arena = arena;
-        offsetX = -arena.getWidth() / 2;
-        offsetY = -50;
+        offsetX = 0;
+        offsetY = 0;
         for (RobotInterface robot : arena.getRobots()) {
             if (!classList.contains(robot.getClass()))
                 classList.add(robot);
@@ -38,39 +37,33 @@ public class SimulationView extends JPanel {
 
     public void paint(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
-        if (zoomer) {
-            AffineTransform at = new AffineTransform();
-            at.scale(zoomFactor, zoomFactor);
-            g2d.transform(at);
-        }
         g2d.setColor(Color.RED);
         g2d.setStroke(new BasicStroke(2));
+        g2d.drawString("0,0", convertZoom(-3 - offsetX), convertZoom(arena.getHeight() + 10 - offsetY));
+        g2d.drawString(arena.getWidth() + ",0", convertZoom(arena.getWidth() - offsetX), convertZoom(arena.getHeight() + 10 - offsetY));
+        g2d.drawString("0," + arena.getHeight(), convertZoom(0 - offsetX), convertZoom(-3 - offsetY));
 
-        g2d.drawString("0,0", -3 - offsetX, arena.getHeight() + 10 - offsetY);
-        g2d.drawString(arena.getWidth() + ",0", arena.getWidth() - offsetX, arena.getHeight() + 10 - offsetY);
-        g2d.drawString("0," + arena.getHeight(), 0 - offsetX, -3 - offsetY);
-
-        g2d.drawLine(0 - offsetX, 0 - offsetY, 0 - offsetX, arena.getHeight() - offsetY);
-        g2d.drawLine(0 - offsetX, 0 - offsetY, arena.getWidth() - offsetX, 0 - offsetY);
-        g2d.drawLine(arena.getWidth() - offsetX, arena.getHeight() - offsetY, 0 - offsetX, arena.getHeight() - offsetY);
-        g2d.drawLine(arena.getWidth() - offsetX, arena.getHeight() - offsetY, arena.getWidth() - offsetX, 0 - offsetY);
+        g2d.drawLine(convertZoom(0 - offsetX), convertZoom(0 - offsetY), convertZoom(0 - offsetX), convertZoom(arena.getHeight() - offsetY));
+        g2d.drawLine(convertZoom(0 - offsetX), convertZoom(0 - offsetY), convertZoom(arena.getWidth() - offsetX), convertZoom(0 - offsetY));
+        g2d.drawLine(convertZoom(arena.getWidth() - offsetX), convertZoom(arena.getHeight() - offsetY), convertZoom(0 - offsetX), convertZoom(arena.getHeight() - offsetY));
+        g2d.drawLine(convertZoom(arena.getWidth() - offsetX), convertZoom(arena.getHeight() - offsetY), convertZoom(arena.getWidth() - offsetX), convertZoom(0 - offsetY));
 
         if (drawLines) {
             g2d.setColor(Color.LIGHT_GRAY);
             for (int i = 10; i < arena.getWidth(); i += 10) {
-                g2d.drawLine(i - offsetX, 1 - offsetY, i - offsetX, arena.getHeight() - 1 - offsetY);
+                g2d.drawLine(convertZoom(i - offsetX), convertZoom(1 - offsetY), convertZoom(i - offsetX), convertZoom(arena.getHeight() - 1 - offsetY));
             }
             for (int i = 10; i < arena.getHeight(); i += 10) {
-                g2d.drawLine(1 - offsetX, i - offsetY, arena.getWidth() - 1 - offsetX, i - offsetY);
+                g2d.drawLine(convertZoom(1 - offsetX), convertZoom(i - offsetY), convertZoom(arena.getWidth() - 1 - offsetX), convertZoom(i - offsetY));
             }
         }
         if (drawCenter)
             for (RobotInterface robot : classList) {
                 Position position = robot.centerOfGroupWithClasses(List.of(robot.getClass()));
                 g2d.setColor(robot.getClassColor());
-                g2d.drawOval((int) position.getXCoordinate() - offsetX,
-                        arena.getHeight() - (int) position.getYCoordinate() - offsetY,
-                        2, 2);
+                g2d.drawOval(convertZoom((int) position.getXCoordinate() - offsetX),
+                        convertZoom(arena.getHeight() - (int) position.getYCoordinate() - offsetY)
+                        , convertZoom(2), convertZoom(2));
             }
 
         if (arena.getRobots() != null) {
@@ -107,14 +100,14 @@ public class SimulationView extends JPanel {
         if (!drawInClassColor)
             g2d.setColor(robot.getColor());
         else g2d.setColor(robot.getClassColor());
-        if (!robot.getStop())
-            g2d.fillOval(x - (int)robot.getRadius(), y - (int) robot.getRadius(), (int) robot.getDiameters(), (int) robot.getDiameters());
+        if (!robot.getPaused())
+            g2d.fillOval(convertZoom(x - (int) robot.getRadius()), convertZoom(y - (int) robot.getRadius()), convertZoom((int) robot.getDiameters()), convertZoom((int) robot.getDiameters()));
         else
-            g2d.drawOval(x - (int)robot.getRadius(), y - (int) robot.getRadius(), (int) robot.getDiameters(), (int) robot.getDiameters());
+            g2d.drawOval(convertZoom(x - (int) robot.getRadius()), convertZoom(y - (int) robot.getRadius()), convertZoom((int) robot.getDiameters()), convertZoom((int) robot.getDiameters()));
         g2d.setColor(Color.BLACK);
         if (drawRotationIndicator) {
             Position direction = robot.getPose().getPositionInDirection(robot.getRadius());
-            g2d.drawLine(x, y, (int) direction.getXCoordinate() - offsetX, arena.getHeight() - (int) direction.getYCoordinate() - offsetY);
+            g2d.drawLine(convertZoom(x), convertZoom(y), convertZoom((int) direction.getXCoordinate() - offsetX), convertZoom(arena.getHeight() - (int) direction.getYCoordinate() - offsetY));
         }
     }
 
@@ -122,54 +115,52 @@ public class SimulationView extends JPanel {
         g2d.setFont(new Font("TimesRoman", Font.PLAIN, fontSize));
         if (infosLeft && (drawRobotCoordinates || drawRobotEngines || drawRobotRotationo)) {
             g2d.setColor(robot.getColor());
-            g2d.fillOval(x, y, fontSize, fontSize);
+            g2d.fillOval(convertZoom(x), convertZoom(y), convertZoom(fontSize), convertZoom(fontSize));
             if (drawInClassColor) {
                 g2d.setColor(robot.getClassColor());
-                g2d.fillOval(x + fontSize, y, fontSize, fontSize);
+                g2d.fillOval(convertZoom(x + fontSize), convertZoom(y), convertZoom(fontSize), convertZoom(fontSize));
             }
             y += fontSize;
         }
         g2d.setColor(Color.black);
         if (drawRobotCoordinates) {
+            y += fontSize;
             g2d.drawString(String.format("%,.2f", robot.getPose().getXCoordinate()) +
-                            " | " + String.format("%,.2f", robot.getPose().getYCoordinate()),
-                    x - 15 - fontSize, y += fontSize);
+                            " | " + String.format("%,.2f", robot.getPose().getYCoordinate())
+                    , convertZoom(x - 15 - fontSize), convertZoom(y));
         }
         if (drawRobotEngines) {
+            y += fontSize;
             g2d.drawString("R:" + String.format("%,.2f", robot.getEngineR()) +
                             " L:" + String.format("%,.2f", robot.getEngineL()) +
-                            " V:" + String.format("%,.2f", robot.trajectorySpeed()),
-                    x - 28 - fontSize, y += fontSize);
+                            " V:" + String.format("%,.2f", robot.trajectorySpeed())
+                    , convertZoom(x - 28 - fontSize), convertZoom(y));
         }
         if (drawRobotRotationo) {
             g2d.drawString(String.format("%,.2f", robot.getPose().getRotation() / Math.PI * 180) + "° | " +
-                            String.format("%,.2f", robot.getPose().getRotation() / Math.PI) + " *Pi",
-                    x - 16 - fontSize, y + fontSize);
+                            String.format("%,.2f", robot.getPose().getRotation() / Math.PI) + " *Pi"
+                    , convertZoom(x - 16 - fontSize), convertZoom(y + fontSize));
         }
     }
 
     public void incOffsetX(int amount) {
-        Rectangle rectangle = this.getBounds();
-        offsetX = calcBorders(amount, arena.getWidth(), rectangle.width, offsetX);
+        offsetX = calcBorders(amount, arena.getWidth(), offsetX);
     }
 
     public void incOffsetY(int amount) {
-        Rectangle rectangle = this.getBounds();
-        offsetY = calcBorders(amount, arena.getHeight(), rectangle.height, offsetY);
+        offsetY = calcBorders(amount, arena.getHeight(), offsetY);
     }
 
-    int calcBorders(int amount, int border, int screenSize, int offset) {
-        if (-screenSize / 2 <= offset + amount &&
-                (border >= offset + amount && infosLeft) ||
-                (border - screenSize / 2 >= offset + amount))
+    private int convertZoom(int numer) {
+        return (int) (numer * zoomFactor);
+    }
+
+    private int calcBorders(int amount, int border, int offset) {
+        if (-border / 2 < offset + amount && offset + amount < border + border / 2)
             return offset + amount;
-        else if (amount > 0)
-            if (infosLeft)
-                return border;
-            else
-                return border - screenSize / 2;
-        else
-            return -screenSize / 2;
+        else if (-border / 2 > offset + amount) return -border / 2;
+        else if (offset + amount > border + border / 2) return border + border / 2;
+        else return offset;
     }
 
     public void toggleDrawrobotCoordinates() {
@@ -209,13 +200,11 @@ public class SimulationView extends JPanel {
     }
 
     public void incZoom() {
-        zoomer = true;
         zoomFactor *= 1.1;
         repaint();
     }
 
     public void decZoom() {
-        zoomer = true;
         zoomFactor /= 1.1;
         repaint();
     }

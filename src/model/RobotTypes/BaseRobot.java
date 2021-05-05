@@ -1,6 +1,7 @@
 package model.RobotTypes;
 
-import controller.Logger;
+import model.AbstractModel.BasePhysicalEntity;
+import model.AbstractModel.PhysicalEntity;
 import model.Arena;
 import model.Pose;
 import model.Position;
@@ -13,17 +14,32 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-abstract public class BaseRobot extends Thread implements RobotInterface {
+abstract public class BaseRobot extends BasePhysicalEntity implements RobotInterface {
     private double engineL, engineR;
+    /**
+     * If the simulation is startet without view this will be set on how many seconds will be simulated.
+     */
     private int timeToSimulate;
-    private final int ticsPerSimulatedSecond = 1000;
+    /**
+     * Since all values implemented are working in seconds
+     * this ensures the atomic actions of the robot will be changed to the action result / ticsPerSimulatedSecond
+     * thus 1000 will mean a single robot run() call will simulate 1 ms of time.
+     * to simulate coarser time intervals reduce this number.
+     * 2000 = 0.5 ms
+     * 1000 = 1 ms
+     * 100 = 10ms
+     * 1 = 1 second
+     */
+    private final int ticsPerSimulatedSecond = 500;
+    /**
+     * in centimeters
+     */
     private final double maxSpeed = 8.0, minSpeed = 0.0;
-    private Pose pose;
     /**
      * distance between the engines
      */
     private final double distanceE;
-    private boolean isStop = true;
+    private boolean isPaused = true;
     private double powerTransmission = 0;
     /**
      * in cm
@@ -31,11 +47,7 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
     private double diameters;
     private final Random random;
     private final Color color;
-    private final Arena arena;
-    private final Logger logger;
     private double rotation;
-    private int ringMemorySize = 100;
-    private Pose[] poseRingMemory;
     private Pose afterTurn;
     /**
      * flag for moveRandom()
@@ -46,12 +58,6 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
      * moveRandom()
      */
     private int straight;
-    private int poseRingMemoryHead = 0;
-    private int poseRingMemoryPointer = 0;
-    /**
-     * slows the turn speed
-     */
-    private int turnModification = 10;
 
     /**
      * Constructs object via Builder
@@ -59,15 +65,14 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
      * @param builder
      */
     public BaseRobot(RobotBuilder builder) {
-        poseRingMemory = new Pose[ringMemorySize];
+        super(builder.getArena(),builder.getDiameters(),builder.getDiameters());
+        poseRingMemory[poseRingMemoryHead] = builder.getPose();
+        pose = builder.getPose();
         engineL = builder.getEngineL();
         engineR = builder.getEngineR();
         distanceE = builder.getDistanceE();
         diameters = builder.getDiameters();
         random = builder.getRandom();
-        pose = builder.getPose();
-        poseRingMemory[poseRingMemoryHead] = builder.getPose();
-        arena = builder.getArena();
         powerTransmission = builder.getPowerTransmission();
         color = new Color(random.nextInt());
         logger = builder.getLogger();
@@ -90,8 +95,10 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
      * @return double angle velocity [-MaxSpeed/Distance , MaxSpeed/Distance]
      */
     public double angularVelocity() {
-        return (((engineR * (1 - powerTransmission) + engineL * powerTransmission) -
-                (engineL * (1 - powerTransmission) + engineR * powerTransmission)) / distanceE)/ ticsPerSimulatedSecond;
+        return (((engineR * (1 - powerTransmission) + engineL * powerTransmission)
+                - (engineL * (1 - powerTransmission) + engineR * powerTransmission))
+                / distanceE)
+                / ticsPerSimulatedSecond;
     }
 
     /**
@@ -103,28 +110,18 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
     }
 
     /**
-     * @return Pose
-     */
-    synchronized
-    public Pose getPose() {
-        return pose;
-    }
-
-    /**
      * while robot is not stop calls behavior and sets to it's next position
      */
     @Override
     public void run() {
-        while (!isStop || timeToSimulate >= 0) {
+        while (!isPaused || timeToSimulate >= 0) {
             behavior();
             setNextPosition();
-            inArenaBounds();
             collisionDetection();
-            poseRingMemory[poseRingMemoryHead] = pose.clone();
-            poseRingMemoryHead = (poseRingMemoryHead + 1) % (ringMemorySize - 1);
+            updatePositionMemory();
             if (timeToSimulate <= 0) {
                 try {
-                    sleep(1000/ ticsPerSimulatedSecond);
+                    sleep(1000 / ticsPerSimulatedSecond);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -139,16 +136,8 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
      * @param position Position
      * @return boolean
      */
-    public boolean isPositionInRobotArea(Position position) {
+    public boolean isPositionInEntity(Position position) {
         return pose.euclideanDistance(position) <= getRadius();
-
-    }
-
-    /**
-     * @return Color
-     */
-    public Color getColor() {
-        return color;
     }
 
     /**
@@ -280,31 +269,18 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
         return robotsInGroup;
     }
 
-    /**
-     * Checks if robots are in the arena bounds
-     */
-    private void inArenaBounds() {
-        if (getPose().getXCoordinate() < getRadius())
-            getPose().setXCoordinate(getRadius());
-        else if (getPose().getXCoordinate() > arena.getWidth() - getRadius())
-            getPose().setXCoordinate(arena.getWidth() - getRadius());
-        if (getPose().getYCoordinate() < getRadius())
-            getPose().setYCoordinate(getRadius());
-        else if (getPose().getYCoordinate() > arena.getHeight() - getRadius())
-            getPose().setYCoordinate(arena.getHeight() - getRadius());
-    }
 
     /**
      * Checks for collision between robots
-     */
+
     private void collisionDetection() {
         arena.getRobots().forEach((r2) -> {
             if (getPose().euclideanDistance(r2.getPose()) < getRadius() + r2.getRadius()) {
-                if (r2.isPositionInRobotArea(getPose().getPositionInDirection(getRadius() + 0.01))) {
+                if (r2.isPositionInEntity(getPose().getPositionInDirection(getRadius() + 0.01))) {
                     //r2 gets bumped
                     bump(this, r2, getPose().getPositionInDirection(trajectorySpeed()));
 
-                } else if (isPositionInRobotArea(r2.getPose().getPositionInDirection(r2.getRadius() + 0.01))) {
+                } else if (isPositionInEntity(r2.getPose().getPositionInDirection(r2.getRadius() + 0.01))) {
                     //this gets pumped
                     bump(r2, this, r2.getPose().getPositionInDirection(r2.trajectorySpeed()));
 
@@ -329,11 +305,12 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
         });
     }
 
-    /**
+
+
      * @param bumping                 Robot that bumps
      * @param getsBumped              Robot that gets bumped
      * @param positionInBumpDirection Position in which the bump directs
-     */
+
     private void bump(RobotInterface bumping, RobotInterface getsBumped, Position positionInBumpDirection) {
         Position vector = bumping.getPose().creatPositionByDecreasing(positionInBumpDirection);
         getsBumped.getPose().decPosition(vector);
@@ -349,28 +326,10 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
             bumping.getPose().incPosition(0, vector.getYCoordinate());
         }
     }
-
-//Getter & Setter
-
-
-    public double getDiameters() {
-        return diameters;
-    }
-
-    public double getRadius() {
-        return diameters / 2.0;
-    }
-
-    public double getEngineL() {
-        return engineL;
-    }
-
-    public double getEngineR() {
-        return engineR;
-    }
-
-    public Random getRandom() {
-        return random;
+  */
+    double increaseSpeed(double speed) {
+        setEngines(engineR + speed / 2, engineL + speed / 2);
+        return trajectorySpeed();
     }
 
     public void setEngineL(double leftEngine) {
@@ -410,11 +369,6 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
         }
     }
 
-    double increaseSpeed(double speed) {
-        setEngines(engineR + speed / 2, engineL + speed / 2);
-        return trajectorySpeed();
-    }
-
     private boolean isEngineLowerOrMaxSpeed(double engine) {
         return engine <= maxSpeed / 2;
     }
@@ -423,43 +377,7 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
         return minSpeed <= engine;
     }
 
-    public void toggleStop() {
-        isStop = !isStop;
-    }
-
-    public boolean getStop() {
-        return isStop;
-    }
-
-    public String toString() {
-        return "Engines: " + engineR + " - " + engineL + "\n" + pose;
-    }
-
-    @Override
-    public boolean equals(RobotInterface robot) {
-        return pose.equals(robot.getPose()) && engineL == robot.getEngineL() && engineR == robot.getEngineR()
-                && diameters == robot.getDiameters() && color == robot.getColor();
-    }
-
     // Ring memory logic
-    private List<Pose> getPosesFromMemory() {
-        List<Pose> poseList = new LinkedList<>();
-        for (int i = poseRingMemoryHead - 1; 0 <= i; i--) {
-            if (poseRingMemory[i] != null) poseList.add(poseRingMemory[i]);
-        }
-        for (int i = ringMemorySize - 1; poseRingMemoryHead < i; i--) {
-            if (poseRingMemory[i] != null) poseList.add(poseRingMemory[i]);
-        }
-        return poseList;
-    }
-
-    @Override
-    public void setPrevPose() {
-        List<Pose> positions = getPosesFromMemory();
-        if (poseRingMemoryPointer < positions.size())
-            pose = positions.get(poseRingMemoryPointer);
-        poseRingMemoryPointer += poseRingMemoryPointer < positions.size() - 1 ? 1 : 0;
-    }
 
     @Override
     public void setNextPose() {
@@ -473,15 +391,58 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
             setNextPosition();
             inArenaBounds();
             collisionDetection();
-            poseRingMemory[poseRingMemoryHead] = pose.clone();
-            poseRingMemoryHead = (poseRingMemoryHead + 1) % (ringMemorySize - 1);
+            updatePositionMemory();
         }
     }
 
+
+//Getter & Setter
+
     @Override
-    public void setToLatestPose() {
-        if (poseRingMemoryHead - 1 < poseRingMemory.length && 0 <= poseRingMemoryHead - 1)
-            pose = poseRingMemory[poseRingMemoryHead - 1];
-        poseRingMemoryPointer = 0;
+    public Position getClosestPositionInBody(Position position){
+        return pose.getPositionInDirection(pose.calcAngleForPosition(position),getRadius());
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public double getDiameters() {
+        return diameters;
+    }
+
+    public double getRadius() {
+        return diameters / 2.0;
+    }
+
+    public double getEngineL() {
+        return engineL;
+    }
+
+    public double getEngineR() {
+        return engineR;
+    }
+
+    public Random getRandom() {
+        return random;
+    }
+
+    public void togglePause() {
+        isPaused = !isPaused;
+    }
+
+    @Override
+    public boolean getPaused() {
+        return isPaused;
+    }
+
+    public String toString() {
+        return "Engines: " + engineR + " - " + engineL + "\n" + pose;
+    }
+
+    @Override
+    public boolean equals(RobotInterface robot) {
+        return pose.equals(robot.getPose()) && engineL == robot.getEngineL() && engineR == robot.getEngineR()
+                && diameters == robot.getDiameters() && color == robot.getColor();
     }
 }
