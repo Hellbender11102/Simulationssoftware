@@ -13,7 +13,7 @@ public class Robot3 extends BaseRobot {
     @Override
     public void behavior() {
        // moveRandom(5, 0.5, 60);
-        stayGroupedWithAll(50,.75);
+        stayGroupedWithAll(50,8);
     }
 
     @Override

@@ -16,6 +16,7 @@ import java.util.List;
 abstract public class BaseRobot extends Thread implements RobotInterface {
     private double engineL, engineR;
     private int timeToSimulate;
+    private final int ticsPerSimulatedSecond = 1000;
     private final double maxSpeed = 8.0, minSpeed = 0.0;
     private Pose pose;
     /**
@@ -79,25 +80,25 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
      * @return double
      */
     public double trajectorySpeed() {
-        return (engineR + engineL) / 2;
+        return ((engineR + engineL) / 2) / ticsPerSimulatedSecond;
     }
 
     /**
      * Calculates angular velocity
      * changes dou to power transmission
      *
-     * @return double angle velocity in degree
+     * @return double angle velocity [-MaxSpeed/Distance , MaxSpeed/Distance]
      */
     public double angularVelocity() {
-        return ((engineR * (1 - powerTransmission) + engineL * powerTransmission) -
-                (engineL * (1 - powerTransmission) + engineR * powerTransmission)) / distanceE;
+        return (((engineR * (1 - powerTransmission) + engineL * powerTransmission) -
+                (engineL * (1 - powerTransmission) + engineR * powerTransmission)) / distanceE)/ ticsPerSimulatedSecond;
     }
 
     /**
      * calculates the next position and sets itself
      */
     public void setNextPosition() {
-        pose.incRotation(angularVelocity() / turnModification);
+        pose.incRotation(angularVelocity());
         pose = pose.getPoseInDirection(trajectorySpeed());
     }
 
@@ -121,9 +122,9 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
             collisionDetection();
             poseRingMemory[poseRingMemoryHead] = pose.clone();
             poseRingMemoryHead = (poseRingMemoryHead + 1) % (ringMemorySize - 1);
-            if(timeToSimulate !=0) {
+            if (timeToSimulate <= 0) {
                 try {
-                    sleep(10);
+                    sleep(1000/ ticsPerSimulatedSecond);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -140,6 +141,7 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
      */
     public boolean isPositionInRobotArea(Position position) {
         return pose.euclideanDistance(position) <= getRadius();
+
     }
 
     /**
@@ -258,7 +260,8 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
             logger.log(color.getBlue() + " straight moves", straight + "");
             logger.logDouble(color.getBlue() + " speed", speed, 3);
             rotation = pose.getRotation() + gaussianGenerator.nextValue();
-            straight = 0;;
+            straight = 0;
+            ;
         } else {
             setEngines(speed, speed);
             straight += 1;
@@ -405,6 +408,11 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
         } else {
             engineL = minSpeed;
         }
+    }
+
+    double increaseSpeed(double speed) {
+        setEngines(engineR + speed / 2, engineL + speed / 2);
+        return trajectorySpeed();
     }
 
     private boolean isEngineLowerOrMaxSpeed(double engine) {

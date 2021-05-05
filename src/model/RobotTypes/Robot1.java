@@ -14,7 +14,7 @@ public class Robot1 extends BaseRobot {
 
     @Override
     public void behavior() {
-                 stayGroupedWithType(50, List.of(Robot1.class),0.5);
+                 stayGroupedWithType(50, List.of(Robot1.class),8);
     }
     @Override
     public Color getClassColor() {
