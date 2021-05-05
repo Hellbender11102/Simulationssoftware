@@ -4,7 +4,7 @@ import controller.Logger;
 import model.Arena;
 import model.Pose;
 import model.Position;
-import model.AbstractModel.EntityBuilder;
+import model.AbstractModel.RobotBuilder;
 import model.AbstractModel.RobotInterface;
 import org.uncommons.maths.random.ExponentialGenerator;
 import org.uncommons.maths.random.GaussianGenerator;
@@ -14,25 +14,42 @@ import java.util.*;
 import java.util.List;
 
 abstract public class BaseRobot extends Thread implements RobotInterface {
-    private double engineL;
-    private double engineR;
+    private double engineL, engineR;
+    private int timeToSimulate;
+    private final double maxSpeed = 8.0, minSpeed = 0.0;
     private Pose pose;
+    /**
+     * distance between the engines
+     */
     private final double distanceE;
     private boolean isStop = true;
     private double powerTransmission = 0;
-    private int diameters = 20;
+    /**
+     * in cm
+     */
+    private double diameters;
     private final Random random;
     private final Color color;
     private final Arena arena;
     private final Logger logger;
-    private boolean isInTurn = false;
     private double rotation;
     private int ringMemorySize = 100;
     private Pose[] poseRingMemory;
     private Pose afterTurn;
+    /**
+     * flag for moveRandom()
+     */
+    private boolean isInTurn = false;
+    /**
+     * counts how many straight moves have been made until changing direction
+     * moveRandom()
+     */
     private int straight;
     private int poseRingMemoryHead = 0;
     private int poseRingMemoryPointer = 0;
+    /**
+     * slows the turn speed
+     */
     private int turnModification = 10;
 
     /**
@@ -40,19 +57,20 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
      *
      * @param builder
      */
-    public BaseRobot(EntityBuilder builder) {
+    public BaseRobot(RobotBuilder builder) {
         poseRingMemory = new Pose[ringMemorySize];
-        this.engineL = builder.getEngineL();
-        this.engineR = builder.getEngineR();
-        this.distanceE = builder.getDistanceE();
-        this.diameters = builder.getDiameters();
-        this.random = builder.getRandom();
-        this.pose = builder.getPose();
+        engineL = builder.getEngineL();
+        engineR = builder.getEngineR();
+        distanceE = builder.getDistanceE();
+        diameters = builder.getDiameters();
+        random = builder.getRandom();
+        pose = builder.getPose();
         poseRingMemory[poseRingMemoryHead] = builder.getPose();
-        this.arena = builder.getArena();
-        this.powerTransmission = builder.getPowerTransmission();
-        this.color = new Color(random.nextInt());
-        this.logger = builder.getLogger();
+        arena = builder.getArena();
+        powerTransmission = builder.getPowerTransmission();
+        color = new Color(random.nextInt());
+        logger = builder.getLogger();
+        timeToSimulate = builder.getTimeToSimulate();
     }
 
     /**
@@ -96,18 +114,21 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
      */
     @Override
     public void run() {
-        while (!isStop) {
+        while (!isStop || timeToSimulate >= 0) {
             behavior();
             setNextPosition();
             inArenaBounds();
             collisionDetection();
             poseRingMemory[poseRingMemoryHead] = pose.clone();
             poseRingMemoryHead = (poseRingMemoryHead + 1) % (ringMemorySize - 1);
-            try {
-                sleep(25);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            if(timeToSimulate !=0) {
+                try {
+                    sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
+            timeToSimulate--;
         }
     }
 
@@ -137,8 +158,7 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
      */
     void driveToPosition(Position position, double precision, double speed) {
         if (rotateToAngle(pose.calcAngleForPosition(position), Math.toRadians(precision), speed, speed / 2)) {
-            engineR = speed;
-            engineL = speed;
+            setEngines(speed, speed);
         }
     }
 
@@ -154,16 +174,13 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
         if (angleDiff <= precision / 2 || 2 * Math.PI - angleDiff <= precision / 2) {
             return true;
         } else if (angleDiff <= Math.PI) {
-            engineR = secondEngine;
-            engineL = rotationSpeed;
+            setEngines(secondEngine, rotationSpeed);
             return false;
         } else {
-            engineR = rotationSpeed;
-            engineL = secondEngine;
+            setEngines(rotationSpeed, secondEngine);
             return false;
         }
     }
-
 
     double getAngleDiff(double angle) {
         double angleDiff = (pose.getRotation() - angle) % (2 * Math.PI);
@@ -235,13 +252,13 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
                 afterTurn = pose;
             }
         } else if (nextD < 1 / (steps)) {
-            straight += 0;
             isInTurn = true;
             if (afterTurn != null)
                 logger.logDouble(color.getBlue() + " Distance", pose.euclideanDistance(afterTurn), 3);
-            logger.log(color.getBlue()  + " straight moves", straight + "");
-            logger.logDouble(color.getBlue()  + " speed", speed, 3);
+            logger.log(color.getBlue() + " straight moves", straight + "");
+            logger.logDouble(color.getBlue() + " speed", speed, 3);
             rotation = pose.getRotation() + gaussianGenerator.nextValue();
+            straight = 0;;
         } else {
             setEngines(speed, speed);
             straight += 1;
@@ -330,13 +347,15 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
         }
     }
 
+//Getter & Setter
 
-    public int getDiameters() {
+
+    public double getDiameters() {
         return diameters;
     }
 
-    public int getRadius() {
-        return diameters / 2;
+    public double getRadius() {
+        return diameters / 2.0;
     }
 
     public double getEngineL() {
@@ -351,17 +370,49 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
         return random;
     }
 
-    public void setEngineL(double engineL) {
-        this.engineL = engineL;
+    public void setEngineL(double leftEngine) {
+        if (isEngineLowerOrMaxSpeed(leftEngine) && isEngineGreaterOrMinSpeed(leftEngine)) {
+            engineL = leftEngine;
+        } else if (!isEngineLowerOrMaxSpeed(leftEngine)) {
+            engineL = maxSpeed;
+        } else {
+            engineL = minSpeed;
+        }
     }
 
-    public void setEngineR(double engineR) {
-        this.engineR = engineR;
+    public void setEngineR(double rightEngine) {
+        if (isEngineLowerOrMaxSpeed(rightEngine) && isEngineGreaterOrMinSpeed(rightEngine)) {
+            engineR = rightEngine;
+        } else if (!isEngineLowerOrMaxSpeed(rightEngine)) {
+            engineR = maxSpeed;
+        } else {
+            engineR = minSpeed;
+        }
     }
 
     public void setEngines(double rightEngine, double leftEngine) {
-        engineR = rightEngine;
-        engineL = leftEngine;
+        if (isEngineLowerOrMaxSpeed(rightEngine) && isEngineGreaterOrMinSpeed(rightEngine)) {
+            engineR = rightEngine;
+        } else if (!isEngineLowerOrMaxSpeed(rightEngine)) {
+            engineR = maxSpeed;
+        } else {
+            engineR = minSpeed;
+        }
+        if (isEngineLowerOrMaxSpeed(leftEngine) && isEngineGreaterOrMinSpeed(leftEngine)) {
+            engineL = leftEngine;
+        } else if (!isEngineLowerOrMaxSpeed(leftEngine)) {
+            engineL = maxSpeed;
+        } else {
+            engineL = minSpeed;
+        }
+    }
+
+    private boolean isEngineLowerOrMaxSpeed(double engine) {
+        return engine <= maxSpeed / 2;
+    }
+
+    private boolean isEngineGreaterOrMinSpeed(double engine) {
+        return minSpeed <= engine;
     }
 
     public void toggleStop() {
@@ -382,8 +433,8 @@ abstract public class BaseRobot extends Thread implements RobotInterface {
                 && diameters == robot.getDiameters() && color == robot.getColor();
     }
 
-
-    List<Pose> getPosesFromMemory() {
+    // Ring memory logic
+    private List<Pose> getPosesFromMemory() {
         List<Pose> poseList = new LinkedList<>();
         for (int i = poseRingMemoryHead - 1; 0 <= i; i--) {
             if (poseRingMemory[i] != null) poseList.add(poseRingMemory[i]);

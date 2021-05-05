@@ -1,12 +1,12 @@
 package model.RobotTypes;
 
-import model.AbstractModel.EntityBuilder;
+import model.AbstractModel.RobotBuilder;
 
 import java.awt.*;
 
 public class Robot2 extends BaseRobot {
 
-    public Robot2(EntityBuilder builder) {
+    public Robot2(RobotBuilder builder) {
         super(builder);
     }
 

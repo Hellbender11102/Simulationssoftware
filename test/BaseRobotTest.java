@@ -1,4 +1,4 @@
-import model.AbstractModel.EntityBuilder;
+import model.AbstractModel.RobotBuilder;
 import model.Arena;
 import model.Pose;
 import model.Position;
@@ -18,7 +18,7 @@ public class BaseRobotTest {
     public BaseRobot creatTestBaseRobot(int arenaWidth, int arenaHeight, double engineR, double engineL,
                                         double engineDistance, double diameters, double poseX, double poseY,
                                         double poseRotation) {
-        return new EntityBuilder()
+        return new RobotBuilder()
                 .arena(Arena.getInstance(arenaWidth, arenaHeight))
                 .diameters(diameters)
                 .engineDistnace(engineDistance)

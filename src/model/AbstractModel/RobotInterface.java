@@ -12,9 +12,9 @@ public interface RobotInterface extends Runnable, PhysicalEntity {
 
     abstract public boolean isPositionInRobotArea(Position position);
 
-    abstract public int getDiameters();
+    abstract public double getDiameters();
 
-    abstract public int getRadius();
+    abstract public double getRadius();
 
     abstract public double getEngineL();
 

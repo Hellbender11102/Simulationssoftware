@@ -1,6 +1,6 @@
 package model.RobotTypes;
 
-import model.AbstractModel.EntityBuilder;
+import model.AbstractModel.RobotBuilder;
 
 import java.awt.*;
 import java.util.List;
@@ -8,7 +8,7 @@ import java.util.List;
 public class Robot1 extends BaseRobot {
     boolean driveToCenter = true;
 
-    public Robot1(EntityBuilder builder) {
+    public Robot1(RobotBuilder builder) {
         super(builder);
     }
 

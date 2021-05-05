@@ -1,6 +1,6 @@
 package controller;
 
-import model.AbstractModel.EntityBuilder;
+import model.AbstractModel.RobotBuilder;
 import model.AbstractModel.RobotInterface;
 import model.Arena;
 import model.Pose;
@@ -52,6 +52,20 @@ class JsonLoader {
         else return 30;
     }
 
+    int loadSimulatedTime() {
+        if (settings != null) {
+            JSONObject mode = (JSONObject) settings.get("mode");
+            return (int) (long) mode.get("simulate-turns");
+        } else return 30;
+    }
+
+    boolean displayView() {
+        if (settings != null) {
+            JSONObject mode = (JSONObject) settings.get("mode");
+            return (boolean) mode.get("simulate-turns");
+        } else return true;
+    }
+
     Map<RobotInterface, Position> loadRobots(Random random, Logger logger) {
         JSONArray robots = (JSONArray) variables.get("robots");
         Map<RobotInterface, Position> robotsAndPositionOffsets = new HashMap<>();
@@ -91,7 +105,7 @@ class JsonLoader {
         Pose pos = new Pose((Double) positionObject.get("x"), (Double) positionObject.get("y"),
                 Math.toRadians((Double) positionObject.get("rotation")));
 
-        EntityBuilder builder = new EntityBuilder()
+        RobotBuilder builder = new RobotBuilder()
                 .engineRight((Double) robotObject.get("engineR"))
                 .engineLeft((Double) robotObject.get("engineL"))
                 .engineDistnace((Double) robotObject.get("distance"))

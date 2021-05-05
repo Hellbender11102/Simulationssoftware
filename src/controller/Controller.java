@@ -142,12 +142,16 @@ public class Controller {
                         view.getSimView().toggleDrawrobotCoordinates();
                         break;
                     case KeyEvent.VK_SHIFT:
-                    case KeyEvent.VK_PLUS:
                         view.getSimView().incFontSize(1);
                         break;
+                    case KeyEvent.VK_PLUS:
+                        view.getSimView().incZoom();
+                        break;
                     case KeyEvent.VK_CONTROL:
-                    case KeyEvent.VK_MINUS:
                         view.getSimView().incFontSize(-1);
+                        break;
+                    case KeyEvent.VK_MINUS:
+                        view.getSimView().decZoom();
                         break;
                     case KeyEvent.VK_G:
                     case KeyEvent.VK_NUMBER_SIGN:

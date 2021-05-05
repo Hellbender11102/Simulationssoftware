@@ -1,14 +1,12 @@
 package model.RobotTypes;
 
-import model.AbstractModel.EntityBuilder;
-import model.Position;
+import model.AbstractModel.RobotBuilder;
 
 import java.awt.*;
-import java.util.List;
 
 public class Robot3 extends BaseRobot {
 
-    public Robot3(EntityBuilder builder) {
+    public Robot3(RobotBuilder builder) {
         super(builder);
     }
 
