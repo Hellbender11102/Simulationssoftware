@@ -1,4 +1,4 @@
-import model.AbstractModel.RobotBuilder;
+import model.RobotBuilder;
 import model.Arena;
 import model.Pose;
 import model.Position;
@@ -77,8 +77,6 @@ public class BaseRobotTest {
         Position position = baseRobot.getPose().getPositionInDirection(0);
         for (double i = 0; i < rounds * 2 * Math.PI && i > rounds * 2 * Math.PI; i += degree) {
             baseRobot.setNextPosition();
-            System.out.println(i);
-            System.out.println(degree);
         }
         Assert.assertTrue(Math.round(baseRobot.getPose().getXCoordinate()) == Math.round(position.getXCoordinate()) &&
                 Math.round(baseRobot.getPose().getYCoordinate()) == Math.round(position.getYCoordinate()));

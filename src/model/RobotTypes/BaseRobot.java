@@ -2,10 +2,9 @@ package model.RobotTypes;
 
 import model.AbstractModel.BasePhysicalEntity;
 import model.AbstractModel.PhysicalEntity;
-import model.Arena;
 import model.Pose;
 import model.Position;
-import model.AbstractModel.RobotBuilder;
+import model.RobotBuilder;
 import model.AbstractModel.RobotInterface;
 import org.uncommons.maths.random.ExponentialGenerator;
 import org.uncommons.maths.random.GaussianGenerator;
@@ -66,7 +65,6 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     public BaseRobot(RobotBuilder builder) {
         super(builder.getArena(),builder.getRandom(), builder.getDiameters(), builder.getDiameters());
         poseRingMemory[poseRingMemoryHead] = builder.getPose();
-        System.out.println(builder.getRandom().nextInt());
         pose = builder.getPose();
         engineL = builder.getEngineL();
         engineR = builder.getEngineR();

@@ -1,6 +1,6 @@
 package model.RobotTypes;
 
-import model.AbstractModel.RobotBuilder;
+import model.RobotBuilder;
 
 import java.awt.*;
 

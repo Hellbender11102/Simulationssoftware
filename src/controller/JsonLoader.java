@@ -1,6 +1,6 @@
 package controller;
 
-import model.AbstractModel.RobotBuilder;
+import model.RobotBuilder;
 import model.AbstractModel.RobotInterface;
 import model.Arena;
 import model.Pose;
@@ -111,7 +111,7 @@ class JsonLoader {
                 .engineRight((Double) robotObject.get("engineR"))
                 .engineLeft((Double) robotObject.get("engineL"))
                 .engineDistnace((Double) robotObject.get("distance"))
-                .random(random)
+                .random(new Random(random.nextInt()))
                 .pose(pos)
                 .arena(arena)
                 .powerTransmission((Double) robotObject.get("powerTransmission"))

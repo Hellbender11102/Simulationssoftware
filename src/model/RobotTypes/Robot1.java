@@ -1,9 +1,8 @@
 package model.RobotTypes;
 
-import model.AbstractModel.RobotBuilder;
+import model.RobotBuilder;
 
 import java.awt.*;
-import java.util.List;
 
 public class Robot1 extends BaseRobot {
 

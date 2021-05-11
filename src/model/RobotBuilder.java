@@ -1,8 +1,6 @@
-package model.AbstractModel;
+package model;
 
 import controller.Logger;
-import model.Arena;
-import model.Pose;
 import model.RobotTypes.BaseRobot;
 import model.RobotTypes.Robot1;
 import model.RobotTypes.Robot2;
