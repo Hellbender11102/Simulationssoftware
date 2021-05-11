@@ -43,7 +43,9 @@ class JsonLoader {
     Random loadRandom() {
         if (variables != null)
             return new Random((long) variables.get("seed"));
-        else return new Random();
+        else{
+            System.out.println("no seed");
+        return new Random();}
     }
 
     int loadFps() {

@@ -4,6 +4,7 @@ import model.Pose;
 import model.Position;
 
 import java.util.List;
+import java.util.Random;
 
 public interface Entity {
 
@@ -15,6 +16,7 @@ public interface Entity {
 
     abstract Position centerOfGroupWithClasses(List<Class> classList);
 
-    abstract public boolean equals(RobotInterface robot);
+    abstract public boolean equals(PhysicalEntity robot);
 
+    abstract public Random getRandom();
 }

@@ -13,7 +13,8 @@ public class Robot1 extends BaseRobot {
 
     @Override
     public void behavior() {
-        stayGroupedWithType(50, List.of(Robot1.class), 8);
+        moveRandom(10,5,60);
+
     }
 
     @Override

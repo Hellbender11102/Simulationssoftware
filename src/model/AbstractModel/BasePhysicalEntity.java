@@ -7,6 +7,7 @@ import model.Position;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 abstract public class BasePhysicalEntity extends Thread implements PhysicalEntity {
     protected int poseRingMemoryHead = 0;
@@ -16,13 +17,15 @@ abstract public class BasePhysicalEntity extends Thread implements PhysicalEntit
     protected Pose pose;
     protected Logger logger;
     protected final Arena arena;
+    protected final Random random;
     private double width, height;
 
-    protected BasePhysicalEntity(Arena arena, double width, double height) {
+    protected BasePhysicalEntity(Arena arena, Random random, double width, double height) {
         this.poseRingMemory = new Pose[ringMemorySize];
         this.arena = arena;
         this.width = width;
         this.height = height;
+        this.random = random;
     }
 
     /**
@@ -65,6 +68,9 @@ abstract public class BasePhysicalEntity extends Thread implements PhysicalEntit
     }
 
     public void recursiveCollision(PhysicalEntity physicalEntity) {
+        if (!physicalEntity.inArenaBounds()) {
+            setInArenaBounds();
+        }
         if (physicalEntity.isMovable()) {
             //r2 gets bumped
             if (physicalEntity.isPositionInEntity(pose.getPositionInDirection(getClosestPositionInBody(physicalEntity.getPose()).euclideanDistance(pose)))) {
@@ -88,9 +94,8 @@ abstract public class BasePhysicalEntity extends Thread implements PhysicalEntit
                     bump(physicalEntity, this, new Position(physicalEntity.getPose().getXCoordinate(), physicalEntity.getPose().getYCoordinate() + physicalEntity.trajectorySpeed()));
                 }
             }
-        }
-        if (!physicalEntity.inArenaBounds()) {
-            setInArenaBounds();
+        } else {
+
         }
         if (0 < physicalEntity.isCollidingWith().size() || !physicalEntity.inArenaBounds()) {
             for (PhysicalEntity physicalEntity1 : physicalEntity.isCollidingWith()) {
@@ -184,5 +189,11 @@ abstract public class BasePhysicalEntity extends Thread implements PhysicalEntit
     public boolean isMovable() {
         return true;
     }
+
+    @Override
+    public Random getRandom() {
+        return random;
+    }
+
 
 }

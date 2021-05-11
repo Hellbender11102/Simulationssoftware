@@ -45,7 +45,6 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * in cm
      */
     private double diameters;
-    private final Random random;
     private final Color color;
     private double rotation;
     private Pose afterTurn;
@@ -65,14 +64,14 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * @param builder
      */
     public BaseRobot(RobotBuilder builder) {
-        super(builder.getArena(),builder.getDiameters(),builder.getDiameters());
+        super(builder.getArena(),builder.getRandom(), builder.getDiameters(), builder.getDiameters());
         poseRingMemory[poseRingMemoryHead] = builder.getPose();
+        System.out.println(builder.getRandom().nextInt());
         pose = builder.getPose();
         engineL = builder.getEngineL();
         engineR = builder.getEngineR();
         distanceE = builder.getDistanceE();
         diameters = builder.getDiameters();
-        random = builder.getRandom();
         powerTransmission = builder.getPowerTransmission();
         color = new Color(random.nextInt());
         logger = builder.getLogger();
@@ -269,64 +268,6 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         return robotsInGroup;
     }
 
-
-    /**
-     * Checks for collision between robots
-
-    private void collisionDetection() {
-        arena.getRobots().forEach((r2) -> {
-            if (getPose().euclideanDistance(r2.getPose()) < getRadius() + r2.getRadius()) {
-                if (r2.isPositionInEntity(getPose().getPositionInDirection(getRadius() + 0.01))) {
-                    //r2 gets bumped
-                    bump(this, r2, getPose().getPositionInDirection(trajectorySpeed()));
-
-                } else if (isPositionInEntity(r2.getPose().getPositionInDirection(r2.getRadius() + 0.01))) {
-                    //this gets pumped
-                    bump(r2, this, r2.getPose().getPositionInDirection(r2.trajectorySpeed()));
-
-                } else {
-                    //both are bumping cause no one drives directly in each other
-                    if (getPose().getXCoordinate() < r2.getPose().getXCoordinate()) {
-                        bump(this, r2, new Position(getPose().getXCoordinate() + trajectorySpeed(), getPose().getYCoordinate()));
-                        bump(r2, this, new Position(r2.getPose().getXCoordinate() - r2.trajectorySpeed(), r2.getPose().getYCoordinate()));
-                    } else {
-                        bump(this, r2, new Position(getPose().getXCoordinate() - trajectorySpeed(), getPose().getYCoordinate()));
-                        bump(r2, this, new Position(r2.getPose().getXCoordinate() + r2.trajectorySpeed(), r2.getPose().getYCoordinate()));
-                    }
-                    if (getPose().getYCoordinate() < r2.getPose().getYCoordinate()) {
-                        bump(this, r2, new Position(getPose().getXCoordinate(), getPose().getYCoordinate() + trajectorySpeed()));
-                        bump(r2, this, new Position(r2.getPose().getXCoordinate(), r2.getPose().getYCoordinate() - r2.trajectorySpeed()));
-                    } else {
-                        bump(this, r2, new Position(getPose().getXCoordinate(), getPose().getYCoordinate() - trajectorySpeed()));
-                        bump(r2, this, new Position(r2.getPose().getXCoordinate(), r2.getPose().getYCoordinate() + r2.trajectorySpeed()));
-                    }
-                }
-            }
-        });
-    }
-
-
-
-     * @param bumping                 Robot that bumps
-     * @param getsBumped              Robot that gets bumped
-     * @param positionInBumpDirection Position in which the bump directs
-
-    private void bump(RobotInterface bumping, RobotInterface getsBumped, Position positionInBumpDirection) {
-        Position vector = bumping.getPose().creatPositionByDecreasing(positionInBumpDirection);
-        getsBumped.getPose().decPosition(vector);
-
-        if (getsBumped.getPose().getXCoordinate() <= getsBumped.getRadius()) {
-            bumping.getPose().incPosition(vector.getXCoordinate(), 0);
-        } else if (getsBumped.getPose().getXCoordinate() >= arena.getWidth() - getsBumped.getRadius()) {
-            bumping.getPose().incPosition(vector.getXCoordinate(), 0);
-        }
-        if (getsBumped.getPose().getYCoordinate() <= bumping.getRadius()) {
-            bumping.getPose().incPosition(0, vector.getYCoordinate());
-        } else if (getsBumped.getPose().getYCoordinate() >= arena.getHeight() - getsBumped.getRadius()) {
-            bumping.getPose().incPosition(0, vector.getYCoordinate());
-        }
-    }
-  */
     double increaseSpeed(double speed) {
         setEngines(engineR + speed / 2, engineL + speed / 2);
         return trajectorySpeed();
@@ -399,8 +340,8 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
 //Getter & Setter
 
     @Override
-    public Position getClosestPositionInBody(Position position){
-        return pose.getPositionInDirection(pose.calcAngleForPosition(position),getRadius());
+    public Position getClosestPositionInBody(Position position) {
+        return pose.getPositionInDirection(getRadius(),pose.calcAngleForPosition(position));
     }
 
     public Color getColor() {
@@ -423,10 +364,6 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         return engineR;
     }
 
-    public Random getRandom() {
-        return random;
-    }
-
     public void togglePause() {
         isPaused = !isPaused;
     }
@@ -441,8 +378,8 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     }
 
     @Override
-    public boolean equals(RobotInterface robot) {
-        return pose.equals(robot.getPose()) && engineL == robot.getEngineL() && engineR == robot.getEngineR()
-                && diameters == robot.getDiameters() && color == robot.getColor();
+    public boolean equals(PhysicalEntity entity) {
+        return pose.equals(entity.getPose()) && color == entity.getColor()
+                && entity.isMovable() ==isMovable() && entity.getClass().equals(getClass());
     }
 }

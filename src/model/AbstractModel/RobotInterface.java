@@ -1,11 +1,5 @@
 package model.AbstractModel;
 
-import model.Pose;
-import model.Position;
-
-import java.awt.*;
-import java.util.List;
-
 public interface RobotInterface extends Runnable, PhysicalEntity {
 
     abstract void behavior();

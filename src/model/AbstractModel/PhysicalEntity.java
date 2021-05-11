@@ -5,6 +5,7 @@ import model.Position;
 
 import java.awt.*;
 import java.util.LinkedList;
+import java.util.Random;
 
 public interface PhysicalEntity extends Entity {
 
@@ -32,9 +33,6 @@ public interface PhysicalEntity extends Entity {
 
     abstract public void updatePositionMemory();
 
-
-
-
     abstract public void collisionDetection();
 
     abstract public void recursiveCollision(PhysicalEntity physicalEntity);
@@ -42,4 +40,5 @@ public interface PhysicalEntity extends Entity {
     abstract public Position getClosestPositionInBody(Position position);
 
     abstract public boolean isMovable();
+
 }
