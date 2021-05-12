@@ -94,13 +94,6 @@ abstract public class BasePhysicalEntity extends Thread implements PhysicalEntit
                     bump(physicalEntity, this, new Position(physicalEntity.getPose().getXCoordinate(), physicalEntity.getPose().getYCoordinate() + physicalEntity.trajectorySpeed()));
                 }
             }
-        } else {
-
-        }
-        if (0 < physicalEntity.isCollidingWith().size() || !physicalEntity.inArenaBounds()) {
-            for (PhysicalEntity physicalEntity1 : physicalEntity.isCollidingWith()) {
-                physicalEntity.recursiveCollision(physicalEntity1);
-            }
         }
     }
 

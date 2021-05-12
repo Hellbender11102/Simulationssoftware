@@ -73,7 +73,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         powerTransmission = builder.getPowerTransmission();
         color = new Color(random.nextInt());
         logger = builder.getLogger();
-        timeToSimulate = builder.getTimeToSimulate();
+        timeToSimulate = builder.getTimeToSimulate()*ticsPerSimulatedSecond;
     }
 
     /**
@@ -111,7 +111,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      */
     @Override
     public void run() {
-        while (!isPaused || timeToSimulate >= 0) {
+        while (!isPaused || timeToSimulate > 0) {
             behavior();
             setNextPosition();
             collisionDetection();
@@ -123,6 +123,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
                     e.printStackTrace();
                 }
             }
+            logger.log(getId()+"",pose.toString());
             timeToSimulate--;
         }
     }

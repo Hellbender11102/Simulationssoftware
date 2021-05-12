@@ -27,6 +27,7 @@ class JsonLoader {
             JSONObject arenaObj = (JSONObject) variables.get("arena");
             arena = Arena.getInstance((int) (long) arenaObj.get("width"), (int) (long) arenaObj.get("height"));
         } else {
+            System.err.println("Could not read File.");
             arena = Arena.getInstance(500, 500);
         }
         return arena;
@@ -36,6 +37,8 @@ class JsonLoader {
         if (variables != null) {
             JSONObject arenaObj = (JSONObject) variables.get("arena");
             arena = Arena.overWriteInstance((int) (long) arenaObj.get("width"), (int) (long) arenaObj.get("height"));
+        } else {
+            System.err.println("Could not read File.");
         }
         return arena;
     }
@@ -43,35 +46,50 @@ class JsonLoader {
     Random loadRandom() {
         if (variables != null)
             return new Random((long) variables.get("seed"));
-        else{
-            System.out.println("no seed");
-        return new Random();}
+        else {
+            System.err.println("Could not read File.");
+            return new Random();
+        }
     }
 
     int loadFps() {
         if (settings != null)
             return (int) (long) settings.get("fps");
-        else return 30;
+        else {
+            System.err.println("Could not read File.");
+            return 0;
+        }
     }
-
     int loadSimulatedTime() {
         if (settings != null) {
             JSONObject mode = (JSONObject) settings.get("mode");
             return (int) (long) mode.get("simulate-turns");
-        } else return 30;
+        } else {
+            System.err.println("Could not read File.");
+            return 0;
+        }
     }
 
     boolean displayView() {
         if (settings != null) {
             JSONObject mode = (JSONObject) settings.get("mode");
-            return (boolean) mode.get("simulate-turns");
-        } else return true;
+            return (boolean) mode.get("display-view");
+        } else {
+            System.err.println("Could not read File.");
+            return true;
+        }
     }
 
     Map<RobotInterface, Position> loadRobots(Random random, Logger logger) {
         JSONArray robots = (JSONArray) variables.get("robots");
         Map<RobotInterface, Position> robotsAndPositionOffsets = new HashMap<>();
-        robots.forEach(entry -> loadRobots((JSONObject) entry, robotsAndPositionOffsets, random, arena, logger));
+        robots.forEach(entry -> loadRobots(
+                (JSONObject) entry,
+                robotsAndPositionOffsets,
+                random,
+                arena,
+                logger
+                ,loadSimulatedTime()));
         return robotsAndPositionOffsets;
     }
 
@@ -102,7 +120,7 @@ class JsonLoader {
      */
     private static void loadRobots(
             JSONObject robotObject, Map<RobotInterface, Position> robotsAndPositionOffsets, Random random, Arena arena,
-            Logger logger) {
+            Logger logger, int timeToSimulate) {
         JSONObject positionObject = (JSONObject) robotObject.get("position");
         Pose pos = new Pose((Double) positionObject.get("x"), (Double) positionObject.get("y"),
                 Math.toRadians((Double) positionObject.get("rotation")));
@@ -113,6 +131,7 @@ class JsonLoader {
                 .engineDistnace((Double) robotObject.get("distance"))
                 .random(new Random(random.nextInt()))
                 .pose(pos)
+                .timeToSimulate(timeToSimulate)
                 .arena(arena)
                 .powerTransmission((Double) robotObject.get("powerTransmission"))
                 .diameters((Double) robotObject.get("diameters"))

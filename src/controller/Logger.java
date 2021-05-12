@@ -1,9 +1,10 @@
 package controller;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import com.sun.jdi.Value;
+
+import java.io.*;
 import java.math.RoundingMode;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.util.*;
 
@@ -14,6 +15,9 @@ public class Logger {
 
     synchronized
     public void log(String key, String value) {
+        if (logMap.size() > 2000) {
+            logMap.clear();
+        }
         if (logMap.containsKey(key)) {
             logMap.get(key).add(value);
         } else {
@@ -30,7 +34,7 @@ public class Logger {
             stringBuilder.append('#');
         }
         df = new DecimalFormat(stringBuilder.toString());
-        log(key, df.format(value).replaceAll(",","."));
+        log(key, df.format(value).replaceAll(",", "."));
     }
 
     public void saveLogFile() throws IOException {
@@ -50,7 +54,7 @@ public class Logger {
                 if (i < logMap.get(key).size())
                     stringBuilder.append(logMap.get(key).get(i)).append(", ");
                 else stringBuilder.append("-NONE-, ");
-                if (i % logMap.keySet().size()-1 == 0 && i != 0) stringBuilder.append('\n');
+                if (i % logMap.keySet().size() - 1 == 0 && i != 0) stringBuilder.append('\n');
                 i++;
             }
         }

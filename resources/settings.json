@@ -1,7 +1,7 @@
 {
   "fps": 50,
   "mode": {
-    "display-view": true,
-    "simulate-turns": 5000
+    "display-view": false,
+    "simulate-turns": 3600
   }
 }

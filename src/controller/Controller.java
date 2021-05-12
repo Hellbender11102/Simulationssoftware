@@ -22,10 +22,21 @@ public class Controller {
 
     public Controller() throws IOException {
         arena = jsonLoader.initArena();
-        init();
-        view = new View(arena);
-        visualisationTimer(jsonLoader.loadFps());
-        addViewListener();
+        if (jsonLoader.displayView()) {
+            init();
+            view = new View(arena);
+            repaintTimer(jsonLoader.loadFps());
+            addViewListener();
+        } else {
+            init();
+            arena.getRobots().forEach(this::startThread);
+            try {
+                wait();
+            }catch (Exception e){
+                System.out.print(e);
+            }
+            logger.saveLogFile();
+        }
     }
 
     void init() {
@@ -35,13 +46,14 @@ public class Controller {
         arena.setPhysicalEntities(new ArrayList<>(robotsAndPositionOffsets.keySet()));
     }
 
+
     /**
      * Starts an scheduled timer which checks for new robot locations and puts these on the arena
      * Repaints the view after
      *
      * @param framesPerSecond int
      */
-    public void visualisationTimer(int framesPerSecond) {
+    public void repaintTimer(int framesPerSecond) {
         repaintTimer.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -232,7 +244,7 @@ public class Controller {
                 e.printStackTrace();
             }
             arena = jsonLoader.reloadArena();
-            visualisationTimer(jsonLoader.loadFps());
+            repaintTimer(jsonLoader.loadFps());
             init();
         });
 
@@ -240,7 +252,6 @@ public class Controller {
 
     private void startThread(RobotInterface robot) {
         Thread t = new Thread(robot);
-        t.setDaemon(true);
         t.start();
     }
 }
