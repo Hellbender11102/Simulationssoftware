@@ -1,5 +1,6 @@
 package model;
 
+import model.AbstractModel.Entity;
 import model.AbstractModel.PhysicalEntity;
 import model.AbstractModel.RobotInterface;
 
@@ -9,6 +10,7 @@ import java.util.List;
 public class Arena {
     private List<RobotInterface> robotList = new ArrayList<>();
     private List<PhysicalEntity> physicalEntityList = new ArrayList<>();
+    private List<Entity> entityList = new ArrayList<>();
     private final int height, width;
     private static Arena singleton;
 
@@ -63,6 +65,9 @@ public class Arena {
 
     synchronized public List<PhysicalEntity> getPhysicalEntityList() {
         return singleton.physicalEntityList;
+    }
+    synchronized public List<Entity> getEntityList() {
+        return singleton.entityList;
     }
 
     public int getHeight() {

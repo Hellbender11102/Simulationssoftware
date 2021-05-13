@@ -1,6 +1,7 @@
 package model.RobotTypes;
 
 import model.AbstractModel.BasePhysicalEntity;
+import model.AbstractModel.Entity;
 import model.AbstractModel.PhysicalEntity;
 import model.Pose;
 import model.Position;
@@ -64,7 +65,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * @param builder
      */
     public BaseRobot(RobotBuilder builder) {
-        super(builder.getArena(),builder.getRandom(), builder.getDiameters(), builder.getDiameters());
+        super(builder.getArena(), builder.getRandom(), builder.getDiameters(), builder.getDiameters());
         poseRingMemory[poseRingMemoryHead] = builder.getPose();
         pose = builder.getPose();
         engineL = builder.getEngineL();
@@ -74,7 +75,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         powerTransmission = builder.getPowerTransmission();
         color = new Color(random.nextInt());
         logger = builder.getLogger();
-        timeToSimulate = builder.getTimeToSimulate()*ticsPerSimulatedSecond;
+        timeToSimulate = builder.getTimeToSimulate() * ticsPerSimulatedSecond;
         simulateWithView = builder.getSimulateWithView();
     }
 
@@ -181,9 +182,8 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         driveToPosition(robot.getPose(), 2, speed);
     }
 
-
-    public void stayGroupedWithType(double distanceToKeep, List<Class> classList, double speed) {
-        List<RobotInterface> group = robotGroupbyClasses(classList);
+    public void stayGroupedWithRobotType(double distanceToKeep, List<Class> classList, double speed) {
+        List<RobotInterface> group = robotGroupByClasses(classList);
         Position center = centerOfGroupWithRobots(group);
         Pose dummyPose = new Pose(pose.getXCoordinate(), pose.getYCoordinate(), 0);
         boolean isEnoughDistance = true;
@@ -206,15 +206,21 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         }
     }
 
-    public Position centerOfGroupWithClasses(List<Class> classList) {
-        LinkedList<RobotInterface> group = robotGroupbyClasses(classList);
-        return centerOfGroupWithRobots(group);
+    public Position centerOfGroupWithRobots(List<RobotInterface> group) {
+        List<Entity> entityList = new LinkedList<>();
+        entityList.addAll(group);
+        return centerOfGroupWithEntities(entityList);
     }
 
-    public Position centerOfGroupWithRobots(List<RobotInterface> group) {
+    public Position centerOfGroupWithClasses(List<Class> classList) {
+        LinkedList<Entity> group = entityGroupByClasses(classList);
+        return centerOfGroupWithEntities(group);
+    }
+
+    public Position centerOfGroupWithEntities(List<Entity> group) {
         Position center = new Position(0, 0);
-        for (RobotInterface robot : group) {
-            center.incPosition(robot.getPose());
+        for (Entity entity : group) {
+            center.incPosition(entity.getPose());
         }
         center.setXCoordinate(center.getXCoordinate() / group.size());
         center.setYCoordinate(center.getYCoordinate() / group.size());
@@ -222,7 +228,32 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     }
 
     public void stayGroupedWithAll(double distanceToClosestRobot, double speed) {
-        stayGroupedWithType(distanceToClosestRobot, List.of(RobotInterface.class), speed);
+        stayGroupedWithRobotType(distanceToClosestEntity(), List.of(RobotInterface.class), speed);
+    }
+
+    public double distanceToClosestEntity() {
+        double closest = -1;
+        for (Entity entity : arena.getEntityList()) {
+            double distance = pose.euclideanDistance(entity.getPose());
+            if (!equals(entity)) {
+                if (closest == -1) closest = distance;
+                else closest = Math.min(closest, distance);
+            }
+        }
+        return closest;
+    }
+
+    public double distanceToClosestEntityOfClass(List<Class> classList) {
+        LinkedList<Entity> group = entityGroupByClasses(classList);
+        double closest = -1;
+        for (Entity entity : group) {
+            double distance = pose.euclideanDistance(entity.getPose());
+            if (!equals(entity)) {
+                if (closest == -1) closest = distance;
+                else closest = Math.min(closest, distance);
+            }
+        }
+        return closest;
     }
 
     /**
@@ -243,10 +274,10 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
             }
         } else if (nextD < 1 / (steps)) {
             isInTurn = true;
-            if (afterTurn != null)
-                logger.logDouble(getId() + " Distance", pose.euclideanDistance(afterTurn), 3);
-            logger.log(getId()  + " straight moves", straight + "");
-            logger.logDouble(getId()  + " speed", speed, 3);
+        //    if (afterTurn != null)
+       //         logger.logDouble(getId() + " Distance", pose.euclideanDistance(afterTurn), 3);
+       //     logger.log(getId() + " straight moves", straight + "");
+       //     logger.logDouble(getId() + " speed", speed, 3);
             rotation = pose.getRotation() + gaussianGenerator.nextValue();
             straight = 0;
         } else {
@@ -255,16 +286,27 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         }
     }
 
-    public LinkedList<RobotInterface> robotGroupbyClasses(List<Class> classList) {
-        LinkedList<RobotInterface> robotsInGroup = new LinkedList<>();
-        for (RobotInterface robot : arena.getRobots()) {
+    public LinkedList<Entity> entityGroupByClasses(List<Class> classList) {
+        LinkedList<Entity> entityInGroup = new LinkedList<>();
+        for (Entity entity : arena.getPhysicalEntityList()) {
             for (Class c : classList) {
-                if (c.isAssignableFrom(robot.getClass()) || robot.getClass().isInstance(c)) {
-                    robotsInGroup.add(robot);
+                if (c.isAssignableFrom(entity.getClass()) || entity.getClass().isInstance(c)) {
+                    entityInGroup.add(entity);
                 }
             }
         }
-        return robotsInGroup;
+        return entityInGroup;
+    }
+    public LinkedList<RobotInterface> robotGroupByClasses(List<Class> classList) {
+        LinkedList<RobotInterface> entityInGroup = new LinkedList<>();
+        for (RobotInterface robot : arena.getRobots()) {
+            for (Class c : classList) {
+                if (c.isAssignableFrom(robot.getClass()) || robot.getClass().isInstance(c)) {
+                    entityInGroup.add(robot);
+                }
+            }
+        }
+        return entityInGroup;
     }
 
     double increaseSpeed(double speed) {
@@ -317,8 +359,6 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         return minSpeed <= engine;
     }
 
-    // Ring memory logic
-
     @Override
     public void setNextPose() {
         List<Pose> positions = getPosesFromMemory();
@@ -340,7 +380,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
 
     @Override
     public Position getClosestPositionInBody(Position position) {
-        return pose.getPositionInDirection(getRadius(),pose.calcAngleForPosition(position));
+        return pose.getPositionInDirection(getRadius(), pose.calcAngleForPosition(position));
     }
 
     public Color getColor() {
@@ -379,6 +419,6 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     @Override
     public boolean equals(PhysicalEntity entity) {
         return pose.equals(entity.getPose()) && color == entity.getColor()
-                && entity.isMovable() ==isMovable() && entity.getClass().equals(getClass());
+                && entity.isMovable() == isMovable() && entity.getClass().equals(getClass());
     }
 }

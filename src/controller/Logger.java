@@ -11,10 +11,9 @@ public class Logger {
     Thread saveThread;
     private ConcurrentHashMap<String, List<String>> logMap = new ConcurrentHashMap<>();
 
+
     public void log(String key, String value) {
-        synchronized (this) {
-            threadedSave(true);
-        }
+        threadedSave(true);
         if (logMap.containsKey(key)) {
             logMap.get(key).add(value);
         } else {
@@ -24,7 +23,7 @@ public class Logger {
         }
     }
 
-    synchronized
+
     public void logDouble(String key, double value, int decimalPlaces) {
         StringBuilder stringBuilder = new StringBuilder().append("#.");
         while (decimalPlaces-- > 0) {
@@ -34,6 +33,7 @@ public class Logger {
         log(key, df.format(value).replaceAll(",", "."));
     }
 
+
     public void saveFullLogToFile(boolean append) {
         Optional<Integer> longestList = logMap.values().stream()
                 .map(List::size)
@@ -41,6 +41,7 @@ public class Logger {
         int longestListSize = longestList.orElse(0);
         saveLogToFile(append, longestListSize);
     }
+
 
     public void saveLogToFile(boolean append, int longestListSize) {
         try {
@@ -60,6 +61,7 @@ public class Logger {
                     i++;
                 }
             }
+            logMap.values().clear();
             fileWriter.write(stringBuilder.toString());
             fileWriter.flush();
             fileWriter.close();
@@ -69,20 +71,22 @@ public class Logger {
     }
 
     private void threadedSave(boolean appendDataInFIle) {
-        if (logMap.values().stream().anyMatch(x -> x.size() > 2000) && (saveThread == null || !saveThread.isAlive())) {
-            saveThread = (new Thread(() -> {
-                Optional<Integer> optionalListSize;
-                optionalListSize = logMap.values().stream().map(List::size)
-                        .reduce((currentShortest, nextItem) -> currentShortest < nextItem ? currentShortest : nextItem);
-                int listSize = optionalListSize.orElse(0);
-                saveLogToFile(appendDataInFIle, listSize);
-                for (List<String> list : logMap.values()) {
-                    if (list.size() > listSize && listSize > 0) {
-                        list.subList(listSize - 1, list.size() - 1);
+        synchronized (this) {
+            if (logMap.values().stream().anyMatch(x -> x.size() > 2000) && (saveThread == null || !saveThread.isAlive())) {
+                saveThread = (new Thread(() -> {
+                    Optional<Integer> optionalListSize;
+                    optionalListSize = logMap.values().stream().map(List::size)
+                            .reduce((currentShortest, nextItem) -> currentShortest < nextItem ? currentShortest : nextItem);
+                    int listSize = optionalListSize.orElse(0);
+                    saveLogToFile(appendDataInFIle, listSize);
+                    for (List<String> list : logMap.values()) {
+                        if (list.size() > listSize && listSize > 0) {
+                            list.subList(listSize - 1, list.size() - 1);
+                        }
                     }
-                }
-            }));
-            saveThread.start();
+                }));
+                saveThread.start();
+            }
         }
     }
 }

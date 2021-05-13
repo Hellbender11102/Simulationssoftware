@@ -6,7 +6,7 @@
   },
   "robots": [
     {
-      "type": "3",
+      "type": "1",
       "engineR": 1.0,
       "engineL": 1.0,
       "distance": 1.0,
@@ -18,7 +18,7 @@
         "rotation": 270.0
       }
     },{
-      "type": "2",
+      "type": "1",
       "engineR": 1.0,
       "engineL": 1.0,
       "distance": 1.0,
@@ -63,42 +63,6 @@
       "position": {
         "x": 50.0,
         "y": 20.0,
-        "rotation": 270.0
-      }
-    },{
-      "type": "1",
-      "engineR": 1.0,
-      "engineL": 1.0,
-      "distance": 1.0,
-      "diameters": 4.0,
-      "powerTransmission": 0.0,
-      "position": {
-        "x": 35.0,
-        "y": 40.0,
-        "rotation": 270.0
-      }
-    },{
-      "type": "1",
-      "engineR": 1.0,
-      "engineL": 1.0,
-      "distance": 1.0,
-      "diameters": 4.0,
-      "powerTransmission": 0.0,
-      "position": {
-        "x": 20.0,
-        "y": 20.0,
-        "rotation": 270.0
-      }
-    },{
-      "type": "3",
-      "engineR": 1.0,
-      "engineL": 1.0,
-      "distance": 1.0,
-      "diameters": 4.0,
-      "powerTransmission": 0.0,
-      "position": {
-        "x": 20.0,
-        "y": 40.0,
         "rotation": 270.0
       }
     }
