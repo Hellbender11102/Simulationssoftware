@@ -15,11 +15,20 @@ import java.io.IOException;
 import java.util.*;
 
 class JsonLoader {
-    private JSONObject settings = loadJSON("resources/settings.json");
-    private JSONObject variables = loadJSON("resources/variables.json");
+    private JSONObject settings;
+    private JSONObject variables;
+
     private Arena arena;
 
-    JsonLoader() throws IOException {
+    JsonLoader() {
+        {
+            try {
+                settings = loadJSON("resources/settings.json");
+                variables = loadJSON("resources/variables.json");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     Arena initArena() {
@@ -118,7 +127,7 @@ class JsonLoader {
      * @param robotsAndPositionOffsets
      * @param random
      */
-    private static void loadRobots(
+    private void loadRobots(
             JSONObject robotObject, Map<RobotInterface, Position> robotsAndPositionOffsets, Random random, Arena arena,
             Logger logger, int timeToSimulate) {
         JSONObject positionObject = (JSONObject) robotObject.get("position");
@@ -135,7 +144,8 @@ class JsonLoader {
                 .arena(arena)
                 .powerTransmission((Double) robotObject.get("powerTransmission"))
                 .diameters((Double) robotObject.get("diameters"))
-                .logger(logger);
+                .logger(logger)
+                .simulateWithView(displayView());
         RobotInterface robot;
         switch ((String) robotObject.get("type")) {
             case "1":

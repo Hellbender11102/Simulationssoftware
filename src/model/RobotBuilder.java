@@ -22,6 +22,7 @@ public class RobotBuilder {
     private Arena arena;
     private int timeToSimulate;
     private Logger logger;
+    private boolean simulateWithView;
 
     public double getEngineL() {
         return engineL;
@@ -51,7 +52,9 @@ public class RobotBuilder {
         return diameters;
     }
 
-    public int getTimeToSimulate() { return timeToSimulate; }
+    public int getTimeToSimulate() {
+        return timeToSimulate;
+    }
 
     public Arena getArena() {
         return arena;
@@ -61,6 +64,9 @@ public class RobotBuilder {
         return logger;
     }
 
+    public boolean getSimulateWithView() {
+        return simulateWithView;
+    }
 
     public RobotBuilder engineLeft(double engineL) {
         this.engineL = engineL;
@@ -101,8 +107,14 @@ public class RobotBuilder {
         this.random = random;
         return this;
     }
+
     public RobotBuilder timeToSimulate(int timeToSimulate) {
         this.timeToSimulate = timeToSimulate;
+        return this;
+    }
+
+    public RobotBuilder simulateWithView(boolean simulateWithView) {
+        this.simulateWithView = simulateWithView;
         return this;
     }
 

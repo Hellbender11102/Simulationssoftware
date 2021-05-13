@@ -45,6 +45,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      */
     private double diameters;
     private final Color color;
+    private final boolean simulateWithView;
     private double rotation;
     private Pose afterTurn;
     /**
@@ -74,6 +75,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         color = new Color(random.nextInt());
         logger = builder.getLogger();
         timeToSimulate = builder.getTimeToSimulate()*ticsPerSimulatedSecond;
+        simulateWithView = builder.getSimulateWithView();
     }
 
     /**
@@ -111,19 +113,18 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      */
     @Override
     public void run() {
-        while (!isPaused || timeToSimulate > 0) {
+        while (!isPaused || (timeToSimulate > 0 && !simulateWithView)) {
             behavior();
             setNextPosition();
             collisionDetection();
             updatePositionMemory();
-            if (timeToSimulate <= 0) {
+            if (timeToSimulate <= 0 || simulateWithView) {
                 try {
                     sleep(1000 / ticsPerSimulatedSecond);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
-            logger.log(getId()+"",pose.toString());
             timeToSimulate--;
         }
     }
@@ -243,12 +244,11 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         } else if (nextD < 1 / (steps)) {
             isInTurn = true;
             if (afterTurn != null)
-                logger.logDouble(color.getBlue() + " Distance", pose.euclideanDistance(afterTurn), 3);
-            logger.log(color.getBlue() + " straight moves", straight + "");
-            logger.logDouble(color.getBlue() + " speed", speed, 3);
+                logger.logDouble(getId() + " Distance", pose.euclideanDistance(afterTurn), 3);
+            logger.log(getId()  + " straight moves", straight + "");
+            logger.logDouble(getId()  + " speed", speed, 3);
             rotation = pose.getRotation() + gaussianGenerator.nextValue();
             straight = 0;
-            ;
         } else {
             setEngines(speed, speed);
             straight += 1;

@@ -1,22 +1,19 @@
 package controller;
 
-import com.sun.jdi.Value;
-
 import java.io.*;
-import java.math.RoundingMode;
-import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Logger {
     private File outpotFile = new File("out/Log.csv");
     DecimalFormat df;
-    private HashMap<String, List<String>> logMap = new HashMap<String, List<String>>();
+    Thread saveThread;
+    private ConcurrentHashMap<String, List<String>> logMap = new ConcurrentHashMap<>();
 
-    synchronized
     public void log(String key, String value) {
-        if (logMap.size() > 2000) {
-            logMap.clear();
+        synchronized (this) {
+            threadedSave(true);
         }
         if (logMap.containsKey(key)) {
             logMap.get(key).add(value);
@@ -37,29 +34,55 @@ public class Logger {
         log(key, df.format(value).replaceAll(",", "."));
     }
 
-    public void saveLogFile() throws IOException {
-        FileWriter fileWriter = new FileWriter(outpotFile);
-        StringBuilder stringBuilder = new StringBuilder();
-        for (String key : logMap.keySet()) {
-            stringBuilder.append(key).append(", ");
-        }
-        stringBuilder.append('\n');
+    public void saveFullLogToFile(boolean append) {
         Optional<Integer> longestList = logMap.values().stream()
-                .map(list -> Math.max(list.size(), 0))
+                .map(List::size)
                 .reduce((currLargest, nextItem) -> currLargest > nextItem ? currLargest : nextItem);
         int longestListSize = longestList.orElse(0);
-        int i = 0;
-        while (i < longestListSize) {
+        saveLogToFile(append, longestListSize);
+    }
+
+    public void saveLogToFile(boolean append, int longestListSize) {
+        try {
+            FileWriter fileWriter = new FileWriter(outpotFile, append);
+            StringBuilder stringBuilder = new StringBuilder();
             for (String key : logMap.keySet()) {
-                if (i < logMap.get(key).size())
-                    stringBuilder.append(logMap.get(key).get(i)).append(", ");
-                else stringBuilder.append("-NONE-, ");
-                if (i % logMap.keySet().size() - 1 == 0 && i != 0) stringBuilder.append('\n');
-                i++;
+                stringBuilder.append(key).append(", ");
             }
+            stringBuilder.append('\n');
+            int i = 0;
+            while (i < longestListSize) {
+                for (String key : logMap.keySet()) {
+                    if (i < logMap.get(key).size())
+                        stringBuilder.append(logMap.get(key).get(i)).append(", ");
+                    else stringBuilder.append("- , ");
+                    if (i % logMap.keySet().size() - 1 == 0 && i != 0) stringBuilder.append('\n');
+                    i++;
+                }
+            }
+            fileWriter.write(stringBuilder.toString());
+            fileWriter.flush();
+            fileWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        fileWriter.write(stringBuilder.toString());
-        fileWriter.flush();
-        fileWriter.close();
+    }
+
+    private void threadedSave(boolean appendDataInFIle) {
+        if (logMap.values().stream().anyMatch(x -> x.size() > 2000) && (saveThread == null || !saveThread.isAlive())) {
+            saveThread = (new Thread(() -> {
+                Optional<Integer> optionalListSize;
+                optionalListSize = logMap.values().stream().map(List::size)
+                        .reduce((currentShortest, nextItem) -> currentShortest < nextItem ? currentShortest : nextItem);
+                int listSize = optionalListSize.orElse(0);
+                saveLogToFile(appendDataInFIle, listSize);
+                for (List<String> list : logMap.values()) {
+                    if (list.size() > listSize && listSize > 0) {
+                        list.subList(listSize - 1, list.size() - 1);
+                    }
+                }
+            }));
+            saveThread.start();
+        }
     }
 }

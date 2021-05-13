@@ -6,13 +6,13 @@ import model.AbstractModel.RobotInterface;
 import view.View;
 
 import java.awt.event.*;
-import java.io.IOException;
 import java.util.*;
 
 public class Controller {
     private boolean stopped = true;
     private View view;
     private Arena arena;
+    private List<Thread> entityThreads = new LinkedList<>();
     private Map<RobotInterface, Position> robotsAndPositionOffsets;
     private Random random;
     private JsonLoader jsonLoader = new JsonLoader();
@@ -20,7 +20,7 @@ public class Controller {
     private final Timer logTimer = new Timer();
     private final Logger logger = new Logger();
 
-    public Controller() throws IOException {
+    public Controller() {
         arena = jsonLoader.initArena();
         if (jsonLoader.displayView()) {
             init();
@@ -31,11 +31,23 @@ public class Controller {
             init();
             arena.getRobots().forEach(this::startThread);
             try {
-                wait();
-            }catch (Exception e){
-                System.out.print(e);
+                if (logger.saveThread != null && logger.saveThread.isAlive())
+                    logger.saveThread.join();
+                entityThreads.stream().filter(Thread::isAlive).forEach(thread-> {
+                    try {
+                        thread.join();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                });
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-            logger.saveLogFile();
+            logger.saveFullLogToFile(true);
+            System.out.println("Done");
+            System.out.println(entityThreads.stream().anyMatch(Thread::isAlive));
+            System.out.println(logger.saveThread.isAlive());
+            System.exit(0);
         }
     }
 
@@ -185,11 +197,7 @@ public class Controller {
                         }
                         break;
                     case KeyEvent.VK_F2:
-                        try {
-                            logger.saveLogFile();
-                        } catch (IOException ex) {
-                            ex.printStackTrace();
-                        }
+                        logger.saveFullLogToFile(false);
                         break;
                 }
             }
@@ -216,11 +224,7 @@ public class Controller {
 
         //Menu listener
         view.getLog().addActionListener(actionListener -> {
-            try {
-                logger.saveLogFile();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
+            logger.saveFullLogToFile(false);
         });
         view.getRestart().addActionListener(actionListener -> {
             for (RobotInterface robot : robotsAndPositionOffsets.keySet()) {
@@ -238,11 +242,7 @@ public class Controller {
                 }
             }
             stopped = true;
-            try {
-                jsonLoader = new JsonLoader();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            jsonLoader = new JsonLoader();
             arena = jsonLoader.reloadArena();
             repaintTimer(jsonLoader.loadFps());
             init();
@@ -252,6 +252,7 @@ public class Controller {
 
     private void startThread(RobotInterface robot) {
         Thread t = new Thread(robot);
+        entityThreads.add(t);
         t.start();
     }
 }
