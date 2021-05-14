@@ -240,6 +240,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
                 else closest = Math.min(closest, distance);
             }
         }
+        //distanceToClosestEntityOfClass(List.of(Entity.class))
         return closest;
     }
 
@@ -408,6 +409,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         isPaused = !isPaused;
     }
 
+    @Override
     public int getTimeToSimulate() {
       return timeToSimulate;
     }

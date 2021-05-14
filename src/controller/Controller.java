@@ -32,13 +32,22 @@ public class Controller {
             init();
             int timeToSimulate = arena.getRobots().get(0).getTimeToSimulate();
             arena.getRobots().forEach(this::startThread);
+            Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
             while (entityThreads.stream().anyMatch(Thread::isAlive)){
-                System.out.print(arena.getPhysicalEntityList().get(0).getTimeToSimulate() / timeToSimulate + "%\r");
+                System.out.print(
+                   Math.round((1- ((double)arena.getRobots().get(0).getTimeToSimulate() / (double)timeToSimulate))*100 )+ "%\r");
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException interruptedException) {
+                    interruptedException.printStackTrace();
+                }
             }
             logger.saveFullLogToFile(true);
             if(entityThreads.stream().noneMatch(Thread::isAlive)
                     && (logger.saveThread == null || !logger.saveThread.isAlive())){
-                System.out.println("Done");
+                timeToSimulate=jsonLoader.loadSimulatedTime();
+                System.out.println("Done simulating.\nSimulated "
+                        + (timeToSimulate / 60)/60+ "h " + timeToSimulate / 60+ "min " + timeToSimulate%60 +"sec");
                 System.exit(0);
             }
         }
