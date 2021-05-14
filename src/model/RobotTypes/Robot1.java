@@ -1,5 +1,6 @@
 package model.RobotTypes;
 
+import model.Position;
 import model.RobotBuilder;
 
 import java.awt.*;
@@ -16,9 +17,10 @@ public class Robot1 extends BaseRobot {
     @Override
     public void behavior() {
         stayGroupedWithAll(10, 8);
-            logger.logDouble(getId() + " Distant closest", distanceToClosestEntityOfClass(List.of(getClass())), 3);
-            logger.logDouble(getId() + " center X", centerOfGroupWithClasses(List.of(getClass())).getXCoordinate(), 3);
-            logger.logDouble(getId() + " center Y", centerOfGroupWithClasses(List.of(getClass())).getYCoordinate(), 3);
+        Position groupCenter = centerOfGroupWithClasses(List.of(getClass()));
+            logger.logDouble(getId() + " Distant closest", distanceToClosestEntityOfClass(List.of(getClass())), 2);
+            logger.logDouble(getId() + " center X", groupCenter.getXCoordinate(), 1);
+            logger.logDouble(getId() + " center Y", groupCenter.getYCoordinate(), 1);
     }
 
     @Override

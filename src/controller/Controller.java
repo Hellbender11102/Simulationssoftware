@@ -47,7 +47,7 @@ public class Controller {
                     && (logger.saveThread == null || !logger.saveThread.isAlive())){
                 timeToSimulate=jsonLoader.loadSimulatedTime();
                 System.out.println("Done simulating.\nSimulated "
-                        + (timeToSimulate / 60)/60+ "h " + timeToSimulate / 60+ "min " + timeToSimulate%60 +"sec");
+                        + (timeToSimulate / 60)/60+ "h " + (timeToSimulate / 60)%60+ "min " + timeToSimulate%60 +"sec ("+timeToSimulate+")");
                 System.exit(0);
             }
         }
