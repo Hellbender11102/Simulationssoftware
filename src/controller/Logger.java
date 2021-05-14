@@ -55,8 +55,8 @@ public class Logger {
             while (i < longestListSize) {
                 for (String key : logMap.keySet()) {
                     if (i < logMap.get(key).size())
-                        stringBuilder.append(logMap.get(key).get(i)).append(", ");
-                    else stringBuilder.append("- , ");
+                        stringBuilder.append(logMap.get(key).get(i)).append(",");
+                    else stringBuilder.append(",");
                     if (i % logMap.keySet().size() - 1 == 0 && i != 0) stringBuilder.append('\n');
                     i++;
                 }

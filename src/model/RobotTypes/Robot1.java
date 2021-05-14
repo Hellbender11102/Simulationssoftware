@@ -11,6 +11,8 @@ public class Robot1 extends BaseRobot {
         super(builder);
     }
 
+    private boolean loggingCenter = false;
+
     @Override
     public void behavior() {
         stayGroupedWithAll(10, 8);
