@@ -11,9 +11,9 @@ public class Logger {
     Thread saveThread;
     private ConcurrentHashMap<String, List<String>> logMap = new ConcurrentHashMap<>();
 
-
+    synchronized
     public void log(String key, String value) {
-        threadedSave(true);
+            threadedSave(true);
         if (logMap.containsKey(key)) {
             logMap.get(key).add(value);
         } else {
@@ -23,7 +23,7 @@ public class Logger {
         }
     }
 
-
+    synchronized
     public void logDouble(String key, double value, int decimalPlaces) {
         StringBuilder stringBuilder = new StringBuilder().append("#.");
         while (decimalPlaces-- > 0) {
@@ -33,7 +33,7 @@ public class Logger {
         log(key, df.format(value).replaceAll(",", "."));
     }
 
-
+    synchronized
     public void saveFullLogToFile(boolean append) {
         Optional<Integer> longestList = logMap.values().stream()
                 .map(List::size)
@@ -42,7 +42,7 @@ public class Logger {
         saveLogToFile(append, longestListSize);
     }
 
-
+    synchronized
     public void saveLogToFile(boolean append, int longestListSize) {
         try {
             FileWriter fileWriter = new FileWriter(outpotFile, append);

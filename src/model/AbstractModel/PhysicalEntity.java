@@ -41,4 +41,6 @@ public interface PhysicalEntity extends Entity {
 
     abstract public boolean isMovable();
 
+    abstract public int getTimeToSimulate();
+
 }

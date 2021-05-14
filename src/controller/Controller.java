@@ -1,6 +1,7 @@
 package controller;
 
 import model.*;
+import model.AbstractModel.PhysicalEntity;
 import model.RobotTypes.BaseRobot;
 import model.AbstractModel.RobotInterface;
 import view.View;
@@ -29,25 +30,17 @@ public class Controller {
             addViewListener();
         } else {
             init();
+            int timeToSimulate = arena.getRobots().get(0).getTimeToSimulate();
             arena.getRobots().forEach(this::startThread);
-            try {
-                if (logger.saveThread != null && logger.saveThread.isAlive())
-                    logger.saveThread.join();
-                entityThreads.stream().filter(Thread::isAlive).forEach(thread-> {
-                    try {
-                        thread.join();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                });
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            while (entityThreads.stream().anyMatch(Thread::isAlive)){
+                System.out.print(arena.getPhysicalEntityList().get(0).getTimeToSimulate() / timeToSimulate + "%\r");
             }
             logger.saveFullLogToFile(true);
-            System.out.println("Done");
-            System.out.println(entityThreads.stream().anyMatch(Thread::isAlive));
-            System.out.println(logger.saveThread.isAlive());
-            System.exit(0);
+            if(entityThreads.stream().noneMatch(Thread::isAlive)
+                    && (logger.saveThread == null || !logger.saveThread.isAlive())){
+                System.out.println("Done");
+                System.exit(0);
+            }
         }
     }
 

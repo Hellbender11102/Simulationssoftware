@@ -30,7 +30,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * 100 = 10ms
      * 1 = 1 second
      */
-    private final int ticsPerSimulatedSecond = 500;
+    private final int ticsPerSimulatedSecond = 1000;
     /**
      * in centimeters
      */
@@ -126,7 +126,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
                     e.printStackTrace();
                 }
             }
-            timeToSimulate--;
+           if(!simulateWithView) timeToSimulate--;
         }
     }
 
@@ -228,7 +228,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     }
 
     public void stayGroupedWithAll(double distanceToClosestRobot, double speed) {
-        stayGroupedWithRobotType(distanceToClosestEntity(), List.of(RobotInterface.class), speed);
+        stayGroupedWithRobotType(distanceToClosestRobot, List.of(RobotInterface.class), speed);
     }
 
     public double distanceToClosestEntity() {
@@ -297,6 +297,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         }
         return entityInGroup;
     }
+
     public LinkedList<RobotInterface> robotGroupByClasses(List<Class> classList) {
         LinkedList<RobotInterface> entityInGroup = new LinkedList<>();
         for (RobotInterface robot : arena.getRobots()) {
@@ -407,6 +408,10 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         isPaused = !isPaused;
     }
 
+    public int getTimeToSimulate() {
+      return timeToSimulate;
+    }
+
     @Override
     public boolean getPaused() {
         return isPaused;
@@ -417,8 +422,8 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     }
 
     @Override
-    public boolean equals(PhysicalEntity entity) {
-        return pose.equals(entity.getPose()) && color == entity.getColor()
-                && entity.isMovable() == isMovable() && entity.getClass().equals(getClass());
+    public boolean equals(PhysicalEntity physicalEntity) {
+        return pose.equals(physicalEntity.getPose()) && color == physicalEntity.getColor()
+                && physicalEntity.isMovable() == isMovable() && physicalEntity.getClass().equals(getClass());
     }
 }

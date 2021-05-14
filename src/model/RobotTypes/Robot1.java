@@ -14,11 +14,9 @@ public class Robot1 extends BaseRobot {
     @Override
     public void behavior() {
         stayGroupedWithAll(10, 8);
-        synchronized (this) {
             logger.logDouble(getId() + " Distant closest", distanceToClosestEntityOfClass(List.of(getClass())), 3);
-            logger.log(getId() + " center X", centerOfGroupWithClasses(List.of(getClass())).getXCoordinate() + "");
-            logger.log(getId() + " center Y", centerOfGroupWithClasses(List.of(getClass())).getYCoordinate() + "");
-        }
+            logger.logDouble(getId() + " center X", centerOfGroupWithClasses(List.of(getClass())).getXCoordinate(), 3);
+            logger.logDouble(getId() + " center Y", centerOfGroupWithClasses(List.of(getClass())).getYCoordinate(), 3);
     }
 
     @Override
