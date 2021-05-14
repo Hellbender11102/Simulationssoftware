@@ -22,6 +22,7 @@ public class Controller {
     private final Logger logger = new Logger();
 
     public Controller() {
+        long startTime = System.currentTimeMillis();
         arena = jsonLoader.initArena();
         if (jsonLoader.displayView()) {
             init();
@@ -46,8 +47,10 @@ public class Controller {
             if(entityThreads.stream().noneMatch(Thread::isAlive)
                     && (logger.saveThread == null || !logger.saveThread.isAlive())){
                 timeToSimulate=jsonLoader.loadSimulatedTime();
+                long endTime = System.currentTimeMillis();
                 System.out.println("Done simulating.\nSimulated "
                         + (timeToSimulate / 60)/60+ "h " + (timeToSimulate / 60)%60+ "min " + timeToSimulate%60 +"sec ("+timeToSimulate+")");
+                System.out.println("That took " + (endTime - startTime) + " milliseconds");
                 System.exit(0);
             }
         }
