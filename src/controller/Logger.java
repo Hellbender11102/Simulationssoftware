@@ -48,15 +48,15 @@ public class Logger {
             FileWriter fileWriter = new FileWriter(outpotFile, append);
             StringBuilder stringBuilder = new StringBuilder();
             for (String key : logMap.keySet()) {
-                stringBuilder.append(key).append(",");
+                stringBuilder.append(key).append(", ");
             }
             stringBuilder.append('\n');
             int i = 0;
             while (i < longestListSize) {
                 for (String key : logMap.keySet()) {
                     if (i < logMap.get(key).size())
-                        stringBuilder.append(logMap.get(key).get(i)).append(",");
-                    else stringBuilder.append(",");
+                        stringBuilder.append(logMap.get(key).get(i)).append(", ");
+                    else stringBuilder.append(", ");
                     if (i % logMap.keySet().size() == 0 && i != 0) stringBuilder.append('\n');
                     i++;
                 }
