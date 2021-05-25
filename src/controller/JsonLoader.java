@@ -61,6 +61,24 @@ class JsonLoader {
         }
     }
 
+    double loadMaxSpeed() {
+        if (variables != null)
+            return (double) variables.get("maxSpeed");
+        else {
+            System.err.println("Could not read File.");
+            return 8.;
+        }
+    }
+
+    double loadMinSpeed() {
+        if (variables != null)
+            return (double) variables.get("minSpeed");
+        else {
+            System.err.println("Could not read File.");
+            return 0.;
+        }
+    }
+
     int loadFps() {
         if (settings != null)
             return (int) (long) settings.get("fps");
@@ -69,6 +87,7 @@ class JsonLoader {
             return 0;
         }
     }
+
     int loadSimulatedTime() {
         if (settings != null) {
             JSONObject mode = (JSONObject) settings.get("mode");
@@ -98,7 +117,7 @@ class JsonLoader {
                 random,
                 arena,
                 logger
-                ,loadSimulatedTime()));
+                , loadSimulatedTime()));
         return robotsAndPositionOffsets;
     }
 
@@ -140,6 +159,8 @@ class JsonLoader {
                 .engineDistnace((Double) robotObject.get("distance"))
                 .random(new Random(random.nextInt()))
                 .pose(pos)
+                .minSpeed(loadMinSpeed())
+                .maxSpeed(loadMaxSpeed())
                 .timeToSimulate(timeToSimulate)
                 .arena(arena)
                 .powerTransmission((Double) robotObject.get("powerTransmission"))

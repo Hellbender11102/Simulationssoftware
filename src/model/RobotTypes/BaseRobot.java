@@ -34,7 +34,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     /**
      * in centimeters
      */
-    private final double maxSpeed = 8.0, minSpeed = 0.0;
+    private final double maxSpeed, minSpeed;
     /**
      * distance between the engines
      */
@@ -53,6 +53,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * flag for moveRandom()
      */
     private boolean isInTurn = false;
+    private double turnsTo = Double.NaN;
     /**
      * counts how many straight moves have been made until changing direction
      * moveRandom()
@@ -75,6 +76,8 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         powerTransmission = builder.getPowerTransmission();
         color = new Color(random.nextInt());
         logger = builder.getLogger();
+        maxSpeed = builder.getMaxSpeed();
+        minSpeed = builder.getMinSpeed();
         timeToSimulate = builder.getTimeToSimulate() * ticsPerSimulatedSecond;
         simulateWithView = builder.getSimulateWithView();
     }
@@ -161,6 +164,12 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * @return boolean
      */
     boolean rotateToAngle(double angle, double precision, double rotationSpeed, double secondEngine) {
+        if (rotationSpeed == secondEngine) secondEngine -= secondEngine / 10;
+        else {
+            double second = secondEngine;
+            rotationSpeed = Math.max(rotationSpeed, secondEngine);
+            secondEngine = Math.min(rotationSpeed, second);
+        }
         double angleDiff = getAngleDiff(angle);
         if (angleDiff <= precision / 2 || 2 * Math.PI - angleDiff <= precision / 2) {
             return true;
@@ -314,6 +323,20 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     double increaseSpeed(double speed) {
         setEngines(engineR + speed / 2, engineL + speed / 2);
         return trajectorySpeed();
+    }
+
+    void turn(double degree, double engine1, double engine2) {
+        if (Double.isNaN(turnsTo)) {
+            turnsTo = pose.getRotation() + degree;
+        } else if (turnsTo < pose.getRotation() && turnsTo > pose.getRotation()) {
+            turnsTo = Double.NaN;
+        } else {
+            rotateToAngle(turnsTo, 1, engine1, engine2);
+        }
+    }
+
+    void turn(double degree) {
+        turn(degree, engineR, engineL);
     }
 
     public void setEngineL(double leftEngine) {
