@@ -57,9 +57,9 @@ public class Logger {
                     if (i < logMap.get(key).size())
                         stringBuilder.append(logMap.get(key).get(i)).append(", ");
                     else stringBuilder.append(", ");
-                    if (i % logMap.keySet().size() == 0 && i != 0) stringBuilder.append('\n');
-                    i++;
                 }
+               stringBuilder.append("\n");
+                i++;
             }
             logMap.values().clear();
             fileWriter.write(stringBuilder.toString());
