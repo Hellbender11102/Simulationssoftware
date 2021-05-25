@@ -126,7 +126,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
                     e.printStackTrace();
                 }
             }
-           if(!simulateWithView) timeToSimulate--;
+            if (!simulateWithView) timeToSimulate--;
         }
     }
 
@@ -275,10 +275,10 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
             }
         } else if (nextD < 1 / (steps)) {
             isInTurn = true;
-        //    if (afterTurn != null)
-       //         logger.logDouble(getId() + " Distance", pose.euclideanDistance(afterTurn), 3);
-       //     logger.log(getId() + " straight moves", straight + "");
-       //     logger.logDouble(getId() + " speed", speed, 3);
+            //    if (afterTurn != null)
+            //         logger.logDouble(getId() + " Distance", pose.euclideanDistance(afterTurn), 3);
+            //     logger.log(getId() + " straight moves", straight + "");
+            //     logger.logDouble(getId() + " speed", speed, 3);
             rotation = pose.getRotation() + gaussianGenerator.nextValue();
             straight = 0;
         } else {
@@ -337,20 +337,8 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     }
 
     public void setEngines(double rightEngine, double leftEngine) {
-        if (isEngineLowerOrMaxSpeed(rightEngine) && isEngineGreaterOrMinSpeed(rightEngine)) {
-            engineR = rightEngine;
-        } else if (!isEngineLowerOrMaxSpeed(rightEngine)) {
-            engineR = maxSpeed;
-        } else {
-            engineR = minSpeed;
-        }
-        if (isEngineLowerOrMaxSpeed(leftEngine) && isEngineGreaterOrMinSpeed(leftEngine)) {
-            engineL = leftEngine;
-        } else if (!isEngineLowerOrMaxSpeed(leftEngine)) {
-            engineL = maxSpeed;
-        } else {
-            engineL = minSpeed;
-        }
+        setEngineR(rightEngine);
+        setEngineL(leftEngine);
     }
 
     private boolean isEngineLowerOrMaxSpeed(double engine) {
@@ -411,7 +399,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
 
     @Override
     public int getTimeToSimulate() {
-      return timeToSimulate;
+        return timeToSimulate;
     }
 
     @Override
