@@ -1,8 +1,6 @@
-package model.AbstractModel;
+package model;
 
 import controller.Logger;
-import model.Arena;
-import model.Pose;
 import model.RobotTypes.BaseRobot;
 import model.RobotTypes.Robot1;
 import model.RobotTypes.Robot2;
@@ -11,7 +9,7 @@ import model.RobotTypes.Robot3;
 import java.awt.*;
 import java.util.Random;
 
-public class EntityBuilder {
+public class RobotBuilder {
     private double engineL;
 
     private double engineR;
@@ -22,7 +20,9 @@ public class EntityBuilder {
     private int diameters = 20;
     private Random random;
     private Arena arena;
+    private int timeToSimulate;
     private Logger logger;
+    private boolean simulateWithView;
 
     public double getEngineL() {
         return engineL;
@@ -52,6 +52,10 @@ public class EntityBuilder {
         return diameters;
     }
 
+    public int getTimeToSimulate() {
+        return timeToSimulate;
+    }
+
     public Arena getArena() {
         return arena;
     }
@@ -60,48 +64,61 @@ public class EntityBuilder {
         return logger;
     }
 
+    public boolean getSimulateWithView() {
+        return simulateWithView;
+    }
 
-    public EntityBuilder engineLeft(double engineL) {
+    public RobotBuilder engineLeft(double engineL) {
         this.engineL = engineL;
         return this;
     }
 
-    public EntityBuilder engineRight(double engineR) {
+    public RobotBuilder engineRight(double engineR) {
         this.engineR = engineR;
         return this;
     }
 
-    public EntityBuilder engineDistnace(double distanceE) {
+    public RobotBuilder engineDistnace(double distanceE) {
         this.distanceE = distanceE;
         return this;
     }
 
-    public EntityBuilder powerTransmission(double powerTransmission) {
+    public RobotBuilder powerTransmission(double powerTransmission) {
         this.powerTransmission = powerTransmission;
         return this;
     }
 
-    public EntityBuilder diameters(double diameters) {
+    public RobotBuilder diameters(double diameters) {
         this.diameters = (int) diameters;
         return this;
     }
 
-    public EntityBuilder arena(Arena arena) {
+    public RobotBuilder arena(Arena arena) {
         this.arena = arena;
         return this;
     }
 
-    public EntityBuilder pose(Pose pose) {
+    public RobotBuilder pose(Pose pose) {
         this.pose = pose;
         return this;
     }
 
-    public EntityBuilder random(Random random) {
+    public RobotBuilder random(Random random) {
         this.random = random;
         return this;
     }
 
-    public EntityBuilder logger(Logger logger) {
+    public RobotBuilder timeToSimulate(int timeToSimulate) {
+        this.timeToSimulate = timeToSimulate;
+        return this;
+    }
+
+    public RobotBuilder simulateWithView(boolean simulateWithView) {
+        this.simulateWithView = simulateWithView;
+        return this;
+    }
+
+    public RobotBuilder logger(Logger logger) {
         this.logger = logger;
         return this;
     }

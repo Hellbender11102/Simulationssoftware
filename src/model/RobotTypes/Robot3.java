@@ -1,21 +1,18 @@
 package model.RobotTypes;
 
-import model.AbstractModel.EntityBuilder;
-import model.Position;
+import model.RobotBuilder;
 
 import java.awt.*;
-import java.util.List;
 
 public class Robot3 extends BaseRobot {
 
-    public Robot3(EntityBuilder builder) {
+    public Robot3(RobotBuilder builder) {
         super(builder);
     }
 
     @Override
     public void behavior() {
-       // moveRandom(5, 0.5, 60);
-        stayGroupedWithAll(50,.75);
+        moveRandom(10,5,60);
     }
 
     @Override

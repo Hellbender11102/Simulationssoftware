@@ -1,18 +1,19 @@
 package controller;
 
 import model.*;
+import model.AbstractModel.PhysicalEntity;
 import model.RobotTypes.BaseRobot;
 import model.AbstractModel.RobotInterface;
 import view.View;
 
 import java.awt.event.*;
-import java.io.IOException;
 import java.util.*;
 
 public class Controller {
     private boolean stopped = true;
     private View view;
     private Arena arena;
+    private List<Thread> entityThreads = new LinkedList<>();
     private Map<RobotInterface, Position> robotsAndPositionOffsets;
     private Random random;
     private JsonLoader jsonLoader = new JsonLoader();
@@ -20,19 +21,48 @@ public class Controller {
     private final Timer logTimer = new Timer();
     private final Logger logger = new Logger();
 
-    public Controller() throws IOException {
+    public Controller() {
+        long startTime = System.currentTimeMillis();
         arena = jsonLoader.initArena();
-        init();
-        view = new View(arena);
-        visualisationTimer(jsonLoader.loadFps());
-        addViewListener();
+        if (jsonLoader.displayView()) {
+            init();
+            view = new View(arena);
+            repaintTimer(jsonLoader.loadFps());
+            addViewListener();
+        } else {
+            init();
+            int timeToSimulate = arena.getRobots().get(0).getTimeToSimulate();
+            arena.getRobots().forEach(this::startThread);
+            Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+            while (entityThreads.stream().anyMatch(Thread::isAlive)){
+                System.out.print(
+                   Math.round((1- ((double)arena.getRobots().get(0).getTimeToSimulate() / (double)timeToSimulate))*100 )+ "%\r");
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException interruptedException) {
+                    interruptedException.printStackTrace();
+                }
+            }
+            logger.saveFullLogToFile(true);
+            if(entityThreads.stream().noneMatch(Thread::isAlive)
+                    && (logger.saveThread == null || !logger.saveThread.isAlive())){
+                timeToSimulate=jsonLoader.loadSimulatedTime();
+                long endTime = System.currentTimeMillis();
+                System.out.println("Done simulating.\nSimulated "
+                        + (timeToSimulate / 60)/60+ "h " + (timeToSimulate / 60)%60+ "min " + timeToSimulate%60 +"sec ("+timeToSimulate+")");
+                System.out.println("That took " + (endTime - startTime) + " milliseconds");
+                System.exit(0);
+            }
+        }
     }
 
     void init() {
         random = jsonLoader.loadRandom();
         robotsAndPositionOffsets = jsonLoader.loadRobots(random, logger);
         arena.setRobots(new ArrayList<>(robotsAndPositionOffsets.keySet()));
+        arena.setPhysicalEntities(new ArrayList<>(robotsAndPositionOffsets.keySet()));
     }
+
 
     /**
      * Starts an scheduled timer which checks for new robot locations and puts these on the arena
@@ -40,7 +70,7 @@ public class Controller {
      *
      * @param framesPerSecond int
      */
-    public void visualisationTimer(int framesPerSecond) {
+    public void repaintTimer(int framesPerSecond) {
         repaintTimer.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -93,10 +123,10 @@ public class Controller {
                         for (RobotInterface robot : robotsAndPositionOffsets.keySet()) {
                             if (stopped) {
                                 robot.setToLatestPose();
-                                robot.toggleStop();
+                                robot.togglePause();
                                 startThread(robot);
                             } else {
-                                robot.toggleStop();
+                                robot.togglePause();
                             }
                         }
                         stopped = !stopped;
@@ -142,12 +172,16 @@ public class Controller {
                         view.getSimView().toggleDrawrobotCoordinates();
                         break;
                     case KeyEvent.VK_SHIFT:
-                    case KeyEvent.VK_PLUS:
                         view.getSimView().incFontSize(1);
                         break;
+                    case KeyEvent.VK_PLUS:
+                        view.getSimView().incZoom();
+                        break;
                     case KeyEvent.VK_CONTROL:
-                    case KeyEvent.VK_MINUS:
                         view.getSimView().incFontSize(-1);
+                        break;
+                    case KeyEvent.VK_MINUS:
+                        view.getSimView().decZoom();
                         break;
                     case KeyEvent.VK_G:
                     case KeyEvent.VK_NUMBER_SIGN:
@@ -168,11 +202,7 @@ public class Controller {
                         }
                         break;
                     case KeyEvent.VK_F2:
-                        try {
-                            logger.saveLogFile();
-                        } catch (IOException ex) {
-                            ex.printStackTrace();
-                        }
+                        logger.saveFullLogToFile(false);
                         break;
                 }
             }
@@ -199,16 +229,12 @@ public class Controller {
 
         //Menu listener
         view.getLog().addActionListener(actionListener -> {
-            try {
-                logger.saveLogFile();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
+            logger.saveFullLogToFile(false);
         });
         view.getRestart().addActionListener(actionListener -> {
             for (RobotInterface robot : robotsAndPositionOffsets.keySet()) {
                 if (!stopped) {
-                    robot.toggleStop();
+                    robot.togglePause();
                 }
             }
             stopped = true;
@@ -217,17 +243,13 @@ public class Controller {
         view.getFullRestart().addActionListener(actionListener -> {
             for (RobotInterface robot : robotsAndPositionOffsets.keySet()) {
                 if (!stopped) {
-                    robot.toggleStop();
+                    robot.togglePause();
                 }
             }
             stopped = true;
-            try {
-                jsonLoader = new JsonLoader();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            jsonLoader = new JsonLoader();
             arena = jsonLoader.reloadArena();
-            visualisationTimer(jsonLoader.loadFps());
+            repaintTimer(jsonLoader.loadFps());
             init();
         });
 
@@ -235,7 +257,7 @@ public class Controller {
 
     private void startThread(RobotInterface robot) {
         Thread t = new Thread(robot);
-        t.setDaemon(true);
+        entityThreads.add(t);
         t.start();
     }
 }

@@ -8,10 +8,12 @@ public class Position {
         this.yCoordinate = yCoordinate;
     }
 
-    public Position clone(){
-        return new Position(xCoordinate,yCoordinate);
+
+    public Position clone() {
+        return new Position(xCoordinate, yCoordinate);
     }
-        synchronized
+
+    synchronized
     public double getXCoordinate() {
         return xCoordinate;
     }
@@ -26,42 +28,42 @@ public class Position {
         return yCoordinate;
     }
 
-synchronized
+    synchronized
     public void setYCoordinate(double yCoordinate) {
         this.yCoordinate = yCoordinate;
     }
 
-    
+    synchronized
     public double getPolarAngle() {
         if (getPolarDistance() != 0.0)
             return Math.atan2(yCoordinate, xCoordinate);
         else return Double.NaN;
     }
 
-    
+
     public double calcAngleForPosition(Position position) {
         return position.creatPositionByDecreasing(this).getPolarAngle();
     }
 
-    
+    synchronized
     public double getPolarDistance() {
         return Math.hypot(xCoordinate, yCoordinate);
     }
 
-        synchronized
+    synchronized
     public boolean equals(Position position) {
         return xCoordinate == position.xCoordinate &&
                 yCoordinate == position.yCoordinate;
     }
 
-    
+
     public double euclideanDistance(Position position) {
         return Math.sqrt((position.xCoordinate - xCoordinate) * (position.xCoordinate - xCoordinate) +
                 (position.yCoordinate - yCoordinate) * (position.yCoordinate - yCoordinate));
     }
 
     @Override
-    
+
     public String toString() {
         return "Position: " +
                 "x:" + String.format("%,.2f", xCoordinate) +
@@ -90,7 +92,7 @@ synchronized
      * @param vector Position
      * @return position - position
      */
-        synchronized
+    synchronized
     public Position creatPositionByDecreasing(Position vector) {
         return new Position(xCoordinate - vector.xCoordinate, yCoordinate - vector.yCoordinate);
     }

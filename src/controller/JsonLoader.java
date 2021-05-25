@@ -1,6 +1,6 @@
 package controller;
 
-import model.AbstractModel.EntityBuilder;
+import model.RobotBuilder;
 import model.AbstractModel.RobotInterface;
 import model.Arena;
 import model.Pose;
@@ -15,11 +15,20 @@ import java.io.IOException;
 import java.util.*;
 
 class JsonLoader {
-    private JSONObject settings = loadJSON("resources/settings.json");
-    private JSONObject variables = loadJSON("resources/variables.json");
+    private JSONObject settings;
+    private JSONObject variables;
+
     private Arena arena;
 
-    JsonLoader() throws IOException {
+    JsonLoader() {
+        {
+            try {
+                settings = loadJSON("resources/settings.json");
+                variables = loadJSON("resources/variables.json");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     Arena initArena() {
@@ -27,6 +36,7 @@ class JsonLoader {
             JSONObject arenaObj = (JSONObject) variables.get("arena");
             arena = Arena.getInstance((int) (long) arenaObj.get("width"), (int) (long) arenaObj.get("height"));
         } else {
+            System.err.println("Could not read File.");
             arena = Arena.getInstance(500, 500);
         }
         return arena;
@@ -36,6 +46,8 @@ class JsonLoader {
         if (variables != null) {
             JSONObject arenaObj = (JSONObject) variables.get("arena");
             arena = Arena.overWriteInstance((int) (long) arenaObj.get("width"), (int) (long) arenaObj.get("height"));
+        } else {
+            System.err.println("Could not read File.");
         }
         return arena;
     }
@@ -43,19 +55,50 @@ class JsonLoader {
     Random loadRandom() {
         if (variables != null)
             return new Random((long) variables.get("seed"));
-        else return new Random();
+        else {
+            System.err.println("Could not read File.");
+            return new Random();
+        }
     }
 
     int loadFps() {
         if (settings != null)
             return (int) (long) settings.get("fps");
-        else return 30;
+        else {
+            System.err.println("Could not read File.");
+            return 0;
+        }
+    }
+    int loadSimulatedTime() {
+        if (settings != null) {
+            JSONObject mode = (JSONObject) settings.get("mode");
+            return (int) (long) mode.get("simulate-turns");
+        } else {
+            System.err.println("Could not read File.");
+            return 0;
+        }
+    }
+
+    boolean displayView() {
+        if (settings != null) {
+            JSONObject mode = (JSONObject) settings.get("mode");
+            return (boolean) mode.get("display-view");
+        } else {
+            System.err.println("Could not read File.");
+            return true;
+        }
     }
 
     Map<RobotInterface, Position> loadRobots(Random random, Logger logger) {
         JSONArray robots = (JSONArray) variables.get("robots");
         Map<RobotInterface, Position> robotsAndPositionOffsets = new HashMap<>();
-        robots.forEach(entry -> loadRobots((JSONObject) entry, robotsAndPositionOffsets, random, arena, logger));
+        robots.forEach(entry -> loadRobots(
+                (JSONObject) entry,
+                robotsAndPositionOffsets,
+                random,
+                arena,
+                logger
+                ,loadSimulatedTime()));
         return robotsAndPositionOffsets;
     }
 
@@ -84,23 +127,25 @@ class JsonLoader {
      * @param robotsAndPositionOffsets
      * @param random
      */
-    private static void loadRobots(
+    private void loadRobots(
             JSONObject robotObject, Map<RobotInterface, Position> robotsAndPositionOffsets, Random random, Arena arena,
-            Logger logger) {
+            Logger logger, int timeToSimulate) {
         JSONObject positionObject = (JSONObject) robotObject.get("position");
         Pose pos = new Pose((Double) positionObject.get("x"), (Double) positionObject.get("y"),
                 Math.toRadians((Double) positionObject.get("rotation")));
 
-        EntityBuilder builder = new EntityBuilder()
+        RobotBuilder builder = new RobotBuilder()
                 .engineRight((Double) robotObject.get("engineR"))
                 .engineLeft((Double) robotObject.get("engineL"))
                 .engineDistnace((Double) robotObject.get("distance"))
-                .random(random)
+                .random(new Random(random.nextInt()))
                 .pose(pos)
+                .timeToSimulate(timeToSimulate)
                 .arena(arena)
                 .powerTransmission((Double) robotObject.get("powerTransmission"))
                 .diameters((Double) robotObject.get("diameters"))
-                .logger(logger);
+                .logger(logger)
+                .simulateWithView(displayView());
         RobotInterface robot;
         switch ((String) robotObject.get("type")) {
             case "1":
