@@ -52,7 +52,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     /**
      * flag for moveRandom()
      */
-    private boolean isInTurn = false;
+    boolean isInTurn = false;
     private double turnsTo = Double.NaN;
     /**
      * counts how many straight moves have been made until changing direction
@@ -164,12 +164,9 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * @return boolean
      */
     boolean rotateToAngle(double angle, double precision, double rotationSpeed, double secondEngine) {
-        if (rotationSpeed == secondEngine) secondEngine -= secondEngine / 10;
-        else {
             double second = secondEngine;
             rotationSpeed = Math.max(rotationSpeed, secondEngine);
             secondEngine = Math.min(rotationSpeed, second);
-        }
         double angleDiff = getAngleDiff(angle);
         if (angleDiff <= precision / 2 || 2 * Math.PI - angleDiff <= precision / 2) {
             return true;
@@ -326,12 +323,15 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     }
 
     void turn(double degree, double engine1, double engine2) {
-        if (Double.isNaN(turnsTo)) {
-            turnsTo = pose.getRotation() + degree;
-        } else if (turnsTo < pose.getRotation() && turnsTo > pose.getRotation()) {
+        if (!isInTurn) {
+            turnsTo = pose.getRotation() + Math.toRadians(degree);
+            isInTurn = true;
+            System.out.println(pose.getRotation());
+            System.out.println(degree);
+            System.out.println(turnsTo);
+        } else if (rotateToAngle(turnsTo, 1, engine1, engine2)) {
             turnsTo = Double.NaN;
-        } else {
-            rotateToAngle(turnsTo, 1, engine1, engine2);
+            isInTurn = false;
         }
     }
 
@@ -343,7 +343,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         if (isEngineLowerOrMaxSpeed(leftEngine) && isEngineGreaterOrMinSpeed(leftEngine)) {
             engineL = leftEngine;
         } else if (!isEngineLowerOrMaxSpeed(leftEngine)) {
-            engineL = maxSpeed;
+            engineL = maxSpeed/2;
         } else {
             engineL = minSpeed;
         }
@@ -353,7 +353,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         if (isEngineLowerOrMaxSpeed(rightEngine) && isEngineGreaterOrMinSpeed(rightEngine)) {
             engineR = rightEngine;
         } else if (!isEngineLowerOrMaxSpeed(rightEngine)) {
-            engineR = maxSpeed;
+            engineR = maxSpeed/2;
         } else {
             engineR = minSpeed;
         }
