@@ -9,10 +9,12 @@ public class Robot3 extends BaseRobot {
     public Robot3(RobotBuilder builder) {
         super(builder);
     }
-
+int i =0;
     @Override
     public void behavior() {
-        moveRandom(10,5,60);
+     // moveAndStop(100,8);
+       if (move(100,8))i++;
+       // System.out.println(i);
     }
 
     @Override

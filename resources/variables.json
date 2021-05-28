@@ -21,7 +21,7 @@
       }
     },
     {
-      "type": "1",
+      "type": "3",
       "engineR": 1.0,
       "engineL": 1.0,
       "distance": 1.0,
@@ -30,7 +30,7 @@
       "position": {
         "x": 10.0,
         "y": 10.0,
-        "rotation": 270.0
+        "rotation": 90.0
       }
     },
     {

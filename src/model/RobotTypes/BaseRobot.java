@@ -55,10 +55,10 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     boolean isInTurn = false;
     private double turnsTo = Double.NaN;
     /**
-     * counts how many straight moves have been made until changing direction
-     * moveRandom()
+     * Counter to get precises straight moves for a given path length
      */
-    private int straight;
+    private int straightMoves = -1;
+    private double straightMovesRest;
 
     /**
      * Constructs object via Builder
@@ -146,44 +146,56 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     /**
      * Rotates to Position and if heading in the correct direction it drives full speed
      *
-     * @param position
-     * @param precision [0,360]
-     * @param speed
+     * @param position          Position
+     * @param precisionInDegree double[0,360]
+     * @param speed             double[minSpeed,maxSpeed]
      */
-    void driveToPosition(Position position, double precision, double speed) {
-        if (rotateToAngle(pose.calcAngleForPosition(position), Math.toRadians(precision), speed, speed / 2)) {
+    void driveToPosition(Position position, double precisionInDegree, double speed) {
+        if (rotateToAngle(pose.calcAngleForPosition(position), Math.toRadians(precisionInDegree), speed, speed / 2)) {
             setEngines(speed, speed);
         }
     }
 
     /**
-     * Rotates with to correct angle +- (precision / 2)°
+     * Rotates to correct angleInRadian +- (precisionInRadian / 2)
      *
-     * @param angle         double heading angle
-     * @param rotationSpeed double > 0 && < 1
-     * @return boolean
+     * @param angleInRadian  double heading angleInRadian
+     * @param rotatingEngine double
+     * @param secondEngine   double
+     * @return boolean is orientation set to given angle
      */
-    boolean rotateToAngle(double angle, double precision, double rotationSpeed, double secondEngine) {
-            double second = secondEngine;
-            rotationSpeed = Math.max(rotationSpeed, secondEngine);
-            secondEngine = Math.min(rotationSpeed, second);
-        double angleDiff = getAngleDiff(angle);
-        if (angleDiff <= precision / 2 || 2 * Math.PI - angleDiff <= precision / 2) {
+    boolean rotateToAngle(double angleInRadian, double precisionInRadian, double rotatingEngine, double secondEngine) {
+        double second = secondEngine;
+        rotatingEngine = Math.max(rotatingEngine, secondEngine);
+        secondEngine = Math.min(rotatingEngine, second);
+        double angleDiff = getAngleDiff(angleInRadian);
+        if (angleDiff <= precisionInRadian / 2 || 2 * Math.PI - angleDiff <= precisionInRadian / 2) {
             return true;
         } else if (angleDiff <= Math.PI) {
-            setEngines(secondEngine, rotationSpeed);
-            return false;
+            setEngines(secondEngine, rotatingEngine);
         } else {
-            setEngines(rotationSpeed, secondEngine);
-            return false;
+            setEngines(rotatingEngine, secondEngine);
         }
+        return false;
     }
 
-    double getAngleDiff(double angle) {
-        double angleDiff = (pose.getRotation() - angle) % (2 * Math.PI);
+    /**
+     * Calculates the difference between current orientation and angleInRadians
+     *
+     * @param angleInRadians double
+     * @return double difference between angles[0,2*PI]
+     */
+    double getAngleDiff(double angleInRadians) {
+        double angleDiff = (pose.getRotation() - angleInRadians) % (2 * Math.PI);
         return angleDiff < 0 ? angleDiff + (2 * Math.PI) : angleDiff;
     }
 
+    /**
+     * Follows an given Robot
+     *
+     * @param robot RobotInterface
+     * @param speed double
+     */
     public void follow(RobotInterface robot, double speed) {
         driveToPosition(robot.getPose(), 2, speed);
     }
@@ -264,18 +276,18 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     }
 
     /**
-     * @param pathLength        distance the robot will take in average
-     * @param speed             settings for both engines
-     * @param standardDeviation [0,360]° the robot shall turn
+     * @param pathLength                distance the robot will take in average
+     * @param speed                     settings for both engines
+     * @param standardDeviationInDegree [0,360]° the robot shall turn
      */
-    public void moveRandom(double pathLength, double speed, int standardDeviation) {
+    public void moveRandom(double pathLength, double speed, int standardDeviationInDegree) {
         double steps = pathLength / trajectorySpeed();
         ExponentialGenerator exponentialGenerator = new ExponentialGenerator(1 / steps, random);
-        GaussianGenerator gaussianGenerator = new GaussianGenerator(0, Math.toRadians(standardDeviation), random);
+        GaussianGenerator gaussianGenerator = new GaussianGenerator(0, Math.toRadians(standardDeviationInDegree), random);
         double nextD = random.nextDouble();
         double nextDE = exponentialGenerator.nextValue();
         if (isInTurn) {
-            if (rotateToAngle(rotation, 2, speed, speed / 2)) {
+            if (rotateToAngle(rotation, Math.toRadians(2), speed, speed / 2)) {
                 isInTurn = false;
                 afterTurn = pose;
             }
@@ -286,10 +298,8 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
             //     logger.log(getId() + " straight moves", straight + "");
             //     logger.logDouble(getId() + " speed", speed, 3);
             rotation = pose.getRotation() + gaussianGenerator.nextValue();
-            straight = 0;
         } else {
             setEngines(speed, speed);
-            straight += 1;
         }
     }
 
@@ -322,6 +332,11 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         return trajectorySpeed();
     }
 
+    void turn(double degree) {
+        turn(degree, engineR, engineL);
+    }
+
+    //Todo
     void turn(double degree, double engine1, double engine2) {
         if (!isInTurn) {
             turnsTo = pose.getRotation() + Math.toRadians(degree);
@@ -329,31 +344,90 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
             System.out.println(pose.getRotation());
             System.out.println(degree);
             System.out.println(turnsTo);
-        } else if (rotateToAngle(turnsTo, 1, engine1, engine2)) {
+        } else if (rotateToAngle(turnsTo, Math.toRadians(2), engine1, engine2)) {
+            System.out.println(turnsTo);
             turnsTo = Double.NaN;
             isInTurn = false;
         }
     }
 
-    void turn(double degree) {
-        turn(degree, engineR, engineL);
+    /**
+     * Moves a given distance
+     * resets internal flags when done
+     *
+     * @param pathLength double length of the path
+     * @param speed      double
+     * @return true if the path is
+     */
+    boolean move(double pathLength, double speed) {
+        if (straightMoves == -2) {
+            reset();
+            return true;
+        }
+        moveAndStop(pathLength, speed);
+        return false;
     }
 
+    /**
+     * Moves a given distance and stops
+     * due to internal flags
+     *
+     * @param pathLength double
+     * @param speed      double
+     */
+    void moveAndStop(double pathLength, double speed) {
+        if (!isInTurn) {
+            if (straightMoves == -1 && straightMovesRest == 0) {
+                setEngines(speed / 2, speed / 2);
+                int moves = (int) Math.round(pathLength / (speed / ticsPerSimulatedSecond));
+                straightMoves = moves;
+                straightMovesRest = moves - (pathLength / (speed / ticsPerSimulatedSecond));
+            } else {
+                if (straightMoves == 0 && 0 < straightMovesRest) {
+                    setEngines(straightMovesRest, straightMovesRest);
+                    straightMovesRest = 0;
+                    straightMoves = 1;
+                } else if (straightMoves == 0 && 0 == straightMovesRest) {
+                    setEngines(0, 0);
+                    straightMoves = -1;
+                }
+                if (-1 <= straightMoves) straightMoves--;
+            }
+        }
+    }
+
+    /**
+     * resets all intern flags
+     */
+    void reset() {
+        straightMoves = -1;
+        straightMovesRest = 0;
+        isInTurn = false;
+    }
+
+    /**
+     * Sets the left engine
+     * @param leftEngine double
+     */
     public void setEngineL(double leftEngine) {
         if (isEngineLowerOrMaxSpeed(leftEngine) && isEngineGreaterOrMinSpeed(leftEngine)) {
             engineL = leftEngine;
         } else if (!isEngineLowerOrMaxSpeed(leftEngine)) {
-            engineL = maxSpeed/2;
+            engineL = maxSpeed / 2;
         } else {
             engineL = minSpeed;
         }
     }
 
+    /**
+     * Sets the right engine
+     * @param rightEngine double
+     */
     public void setEngineR(double rightEngine) {
         if (isEngineLowerOrMaxSpeed(rightEngine) && isEngineGreaterOrMinSpeed(rightEngine)) {
             engineR = rightEngine;
         } else if (!isEngineLowerOrMaxSpeed(rightEngine)) {
-            engineR = maxSpeed/2;
+            engineR = maxSpeed / 2;
         } else {
             engineR = minSpeed;
         }
@@ -372,19 +446,27 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         return minSpeed <= engine;
     }
 
+    /**
+     * When paused sets the robot on the next available position
+     * saved in the ring memory.
+     * If no further position is existing it will creat a next position
+     * and adds it to the memory.
+     */
     @Override
     public void setNextPose() {
-        List<Pose> positions = getPosesFromMemory();
-        if (0 < poseRingMemoryPointer) {
-            if (poseRingMemoryPointer < positions.size())
-                pose = positions.get(poseRingMemoryPointer);
-            poseRingMemoryPointer -= 1;
-        } else {
-            behavior();
-            setNextPosition();
-            inArenaBounds();
-            collisionDetection();
-            updatePositionMemory();
+        if(isPaused) {
+            List<Pose> positions = getPosesFromMemory();
+            if (0 < poseRingMemoryPointer) {
+                if (poseRingMemoryPointer < positions.size())
+                    pose = positions.get(poseRingMemoryPointer);
+                poseRingMemoryPointer -= 1;
+            } else {
+                behavior();
+                setNextPosition();
+                inArenaBounds();
+                collisionDetection();
+                updatePositionMemory();
+            }
         }
     }
 

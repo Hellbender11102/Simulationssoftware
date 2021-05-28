@@ -127,6 +127,13 @@ abstract public class BasePhysicalEntity extends Thread implements PhysicalEntit
 
 
     // Ring memory logic
+
+    /**
+     * Reads the poseRingMemory and orders it correctly in a list
+     * from list entry zero current position
+     * to list entry ringMemorySize position furthest back in time
+     * @return List<Pose>
+     */
     protected List<Pose> getPosesFromMemory() {
         List<Pose> poseList = new LinkedList<>();
         for (int i = poseRingMemoryHead - 1; 0 <= i; i--) {
@@ -138,6 +145,9 @@ abstract public class BasePhysicalEntity extends Thread implements PhysicalEntit
         return poseList;
     }
 
+    /**
+     * Sets the pose to the previous pose saved in the memory
+     */
     @Override
     public void setPrevPose() {
         List<Pose> positions = getPosesFromMemory();
@@ -146,6 +156,9 @@ abstract public class BasePhysicalEntity extends Thread implements PhysicalEntit
         poseRingMemoryPointer += poseRingMemoryPointer < positions.size() - 1 ? 1 : 0;
     }
 
+    /**
+     * Sets the pose to the next pose saved in the memory
+     */
     @Override
     public void setNextPose() {
         List<Pose> positions = getPosesFromMemory();
@@ -156,6 +169,9 @@ abstract public class BasePhysicalEntity extends Thread implements PhysicalEntit
         }
     }
 
+    /**
+     * Sets the pose of the entity to the latest pose saved in the memory
+     */
     @Override
     public void setToLatestPose() {
         if (poseRingMemoryHead - 1 < poseRingMemory.length && 0 <= poseRingMemoryHead - 1)
@@ -168,6 +184,8 @@ abstract public class BasePhysicalEntity extends Thread implements PhysicalEntit
         poseRingMemory[poseRingMemoryHead] = pose.clone();
         poseRingMemoryHead = (poseRingMemoryHead + 1) % (ringMemorySize - 1);
     }
+
+    //setter & getter
 
     /**
      * @return Pose
