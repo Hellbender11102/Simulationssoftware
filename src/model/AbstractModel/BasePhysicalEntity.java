@@ -12,7 +12,7 @@ import java.util.Random;
 abstract public class BasePhysicalEntity extends Thread implements PhysicalEntity {
     protected int poseRingMemoryHead = 0;
     protected int poseRingMemoryPointer = 0;
-    private int ringMemorySize = 100;
+    private int ringMemorySize = 10000;
     protected Pose[] poseRingMemory;
     protected Pose pose;
     protected Logger logger;
