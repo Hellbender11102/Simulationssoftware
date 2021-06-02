@@ -1,10 +1,7 @@
 package model;
 
 import controller.Logger;
-import model.RobotTypes.BaseRobot;
-import model.RobotTypes.Robot1;
-import model.RobotTypes.Robot2;
-import model.RobotTypes.Robot3;
+import model.RobotTypes.*;
 
 import java.awt.*;
 import java.util.Random;
@@ -179,4 +176,14 @@ public class RobotBuilder {
     public Robot3 buildRobot3() {
         return new Robot3(this);
     }
+    /**
+     * Builds the robot of type 4
+     *
+     * @return Robot3
+     */
+    public Robot4 buildRobot4() {
+        return new Robot4(this);
+    }
+
+    /* Space to add own robot types */
 }

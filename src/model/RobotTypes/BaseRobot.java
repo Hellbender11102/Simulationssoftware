@@ -167,7 +167,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     boolean rotateToAngle(double angleInRadian, double precisionInRadian, double rotatingEngine, double secondEngine) {
         double second = secondEngine;
         rotatingEngine = Math.max(rotatingEngine, secondEngine);
-        secondEngine = Math.min(rotatingEngine, second);
+        secondEngine = second < rotatingEngine ? second:Math.min(rotatingEngine, secondEngine)/2;
         double angleDiff = getAngleDiff(angleInRadian);
         if (angleDiff <= precisionInRadian / 2 || 2 * Math.PI - angleDiff <= precisionInRadian / 2) {
             return true;
@@ -332,23 +332,27 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         return trajectorySpeed();
     }
 
-    void turn(double degree) {
-        turn(degree, engineR, engineL);
+    boolean turn(double degree) {
+        return turn(degree, engineR, engineL);
     }
 
     //Todo
-    void turn(double degree, double engine1, double engine2) {
+    boolean turn(double degree, double engine1, double engine2) {
         if (!isInTurn) {
-            turnsTo = pose.getRotation() + Math.toRadians(degree);
+            turnsTo = pose.getRotation() + Math.toRadians(degree) % 2 * Math.PI;
             isInTurn = true;
             System.out.println(pose.getRotation());
             System.out.println(degree);
             System.out.println(turnsTo);
-        } else if (rotateToAngle(turnsTo, Math.toRadians(2), engine1, engine2)) {
-            System.out.println(turnsTo);
-            turnsTo = Double.NaN;
-            isInTurn = false;
+            System.out.println(isInTurn);
+        } else {
+            if (rotateToAngle(turnsTo, Math.toRadians(2), engine1, engine2)) {
+                System.out.println(Math.toDegrees(turnsTo));
+                turnsTo = Double.NaN;
+                isInTurn = false;
+            }
         }
+        return !isInTurn;
     }
 
     /**
@@ -407,6 +411,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
 
     /**
      * Sets the left engine
+     *
      * @param leftEngine double
      */
     public void setEngineL(double leftEngine) {
@@ -421,6 +426,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
 
     /**
      * Sets the right engine
+     *
      * @param rightEngine double
      */
     public void setEngineR(double rightEngine) {
@@ -454,7 +460,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      */
     @Override
     public void setNextPose() {
-        if(isPaused) {
+        if (isPaused) {
             List<Pose> positions = getPosesFromMemory();
             if (0 < poseRingMemoryPointer) {
                 if (poseRingMemoryPointer < positions.size())

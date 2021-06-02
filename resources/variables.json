@@ -71,6 +71,57 @@
         "y": 20.0,
         "rotation": 270.0
       }
+    },
+
+    {
+      "type": "4",
+      "engineR": 1.0,
+      "engineL": 1.0,
+      "distance": 1.0,
+      "diameters": 4.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 10.0,
+        "y": 10.0,
+        "rotation": 270.0
+      }
+    },
+    {
+      "type": "4",
+      "engineR": 1.0,
+      "engineL": 1.0,
+      "distance": 1.0,
+      "diameters": 4.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 90.0,
+        "y": 10.0,
+        "rotation": 270.0
+      }
+    },    {
+      "type": "4",
+      "engineR": 1.0,
+      "engineL": 1.0,
+      "distance": 1.0,
+      "diameters": 4.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 10.0,
+        "y": 90.0,
+        "rotation": 90.0
+      }
+    },    {
+      "type": "4",
+      "engineR": 1.0,
+      "engineL": 1.0,
+      "distance": 1.0,
+      "diameters": 4.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 90.0,
+        "y": 90.0,
+        "rotation": 90.0
+      }
     }
   ]
 }

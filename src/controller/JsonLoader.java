@@ -178,6 +178,9 @@ class JsonLoader {
             case "3":
                 robot = builder.buildRobot3();
                 break;
+            case "4":
+                robot = builder.buildRobot4();
+                break;
             default:
                 robot = builder.buildDefault();
         }
