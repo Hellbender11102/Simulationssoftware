@@ -91,7 +91,7 @@ class JsonLoader {
     int loadSimulatedTime() {
         if (settings != null) {
             JSONObject mode = (JSONObject) settings.get("mode");
-            return (int) (long) mode.get("simulate-turns");
+            return (int) (long) mode.get("simulate-seconds");
         } else {
             System.err.println("Could not read File.");
             return 0;

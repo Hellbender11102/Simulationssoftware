@@ -30,7 +30,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * 100 = 10ms
      * 1 = 1 second
      */
-    private final int ticsPerSimulatedSecond = 1000;
+    final int ticsPerSimulatedSecond = 1000;
     /**
      * in centimeters
      */
@@ -217,10 +217,8 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         }
         dummyPose.setRotation(dummyPose.getRotation());
         if (isEnoughDistance) {
-            System.out.println("center");
             driveToPosition(center, percisionInDegree, speed);
         } else {
-            System.out.println("dummyPose");
             driveToPosition(dummyPose, percisionInDegree, speed);
         }
     }
@@ -342,13 +340,8 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         if (!isInTurn) {
             turnsTo = pose.getRotation() + Math.toRadians(degree) % 2 * Math.PI;
             isInTurn = true;
-            System.out.println(pose.getRotation());
-            System.out.println(degree);
-            System.out.println(turnsTo);
-            System.out.println(isInTurn);
         } else {
             if (rotateToAngle(turnsTo, Math.toRadians(2), engine1, engine2)) {
-                System.out.println(Math.toDegrees(turnsTo));
                 turnsTo = Double.NaN;
                 isInTurn = false;
             }
