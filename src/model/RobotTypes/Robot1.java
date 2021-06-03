@@ -16,13 +16,16 @@ public class Robot1 extends BaseRobot {
 
     @Override
     public void behavior() {
-        stayGroupedWithAll(5, 8);
+        stayGroupedWithAll(10, 8);
         Position groupCenter = centerOfGroupWithClasses(List.of(getClass()));
-        if(i% ticsPerSimulatedSecond == 0) {
+        if(i% (ticsPerSimulatedSecond / 20) == 0) {
             logger.logDouble(getId() + " Distant closest", distanceToClosestEntityOfClass(List.of(getClass())), 2);
-            logger.logDouble(getId() + " center X", groupCenter.getXCoordinate(), 1);
-            logger.logDouble(getId() + " center Y", groupCenter.getYCoordinate(), 1);
+            if(getId() == 19) {
+                logger.logDouble(" center X", groupCenter.getXCoordinate(), 1);
+                logger.logDouble(" center Y", groupCenter.getYCoordinate(), 1);
             }
+        }
+        i++;
     }
 
     @Override
