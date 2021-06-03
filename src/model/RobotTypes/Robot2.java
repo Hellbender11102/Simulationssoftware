@@ -15,10 +15,10 @@ public class Robot2 extends BaseRobot {
     @Override
     public void behavior() {
 
-        if (toggle == 0 && turn(-45)) {
+        if (toggle == 0 && turn(-180,4,0)) {
             System.out.println("case1");
             toggle = 1;
-        } else if (toggle == 1 && turn(45)) {
+        } else if (toggle == 1 && turn(180)) {
             System.out.println("case2");
             toggle = 0;
         }

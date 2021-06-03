@@ -85,7 +85,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     /**
      * Calculates speed
      *
-     * @return double
+     * @return doublen
      */
     public double trajectorySpeed() {
         return ((engineR + engineL) / 2) / ticsPerSimulatedSecond;
@@ -151,7 +151,8 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * @param speed             double[minSpeed,maxSpeed]
      */
     void driveToPosition(Position position, double precisionInDegree, double speed) {
-        if (rotateToAngle(pose.calcAngleForPosition(position), Math.toRadians(precisionInDegree), speed, speed / 2)) {
+        speed = speed < maxSpeed ? speed/2:maxSpeed/2 ;
+        if (rotateToAngle(pose.calcAngleForPosition(position), Math.toRadians(precisionInDegree), speed, 0)) {
             setEngines(speed, speed);
         }
     }
@@ -160,14 +161,12 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * Rotates to correct angleInRadian +- (precisionInRadian / 2)
      *
      * @param angleInRadian  double heading angleInRadian
-     * @param rotatingEngine double
-     * @param secondEngine   double
+     * @param rotatingEngine double [minSpeed,maxSpeed/2]
+     * @param secondEngine   double [minSpeed,maxSpeed/2]
      * @return boolean is orientation set to given angle
      */
     boolean rotateToAngle(double angleInRadian, double precisionInRadian, double rotatingEngine, double secondEngine) {
-        double second = secondEngine;
-        rotatingEngine = Math.max(rotatingEngine, secondEngine);
-        secondEngine = second < rotatingEngine ? second:Math.min(rotatingEngine, secondEngine)/2;
+        if (rotatingEngine == secondEngine) secondEngine *= 0.99;
         double angleDiff = getAngleDiff(angleInRadian);
         if (angleDiff <= precisionInRadian / 2 || 2 * Math.PI - angleDiff <= precisionInRadian / 2) {
             return true;
@@ -196,11 +195,11 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * @param robot RobotInterface
      * @param speed double
      */
-    public void follow(RobotInterface robot, double speed) {
-        driveToPosition(robot.getPose(), 2, speed);
+    public void follow(RobotInterface robot,double percisionInDegree, double speed) {
+        driveToPosition(robot.getPose(), percisionInDegree, speed);
     }
 
-    public void stayGroupedWithRobotType(double distanceToKeep, List<Class> classList, double speed) {
+    public void stayGroupedWithRobotType(double distanceToKeep, List<Class> classList, double speed,double percisionInDegree) {
         List<RobotInterface> group = robotGroupByClasses(classList);
         Position center = centerOfGroupWithRobots(group);
         Pose dummyPose = new Pose(pose.getXCoordinate(), pose.getYCoordinate(), 0);
@@ -218,9 +217,11 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         }
         dummyPose.setRotation(dummyPose.getRotation());
         if (isEnoughDistance) {
-            driveToPosition(center, 2, speed);
+            System.out.println("center");
+            driveToPosition(center, percisionInDegree, speed);
         } else {
-            driveToPosition(dummyPose, 2, speed);
+            System.out.println("dummyPose");
+            driveToPosition(dummyPose, percisionInDegree, speed);
         }
     }
 
@@ -246,7 +247,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     }
 
     public void stayGroupedWithAll(double distanceToClosestRobot, double speed) {
-        stayGroupedWithRobotType(distanceToClosestRobot, List.of(RobotInterface.class), speed);
+        stayGroupedWithRobotType(distanceToClosestRobot, List.of(RobotInterface.class), speed,2);
     }
 
     public double distanceToClosestEntity() {

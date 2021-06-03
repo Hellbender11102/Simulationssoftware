@@ -10,17 +10,15 @@ public class Robot4 extends BaseRobot {
     public Robot4(RobotBuilder builder) {
         super(builder);
     }
-
+    Position position=new Position(50,50);
     @Override
     public void behavior() {
-        Position position=new Position(50,50);
-        if (rotateToAngle(pose.calcAngleForPosition(position),Math.toRadians(2),4,2))
-            setEngines(8,8);
-        else   setEngines(1,2);
+
+        driveToPosition(position,2,8);
     }
 
     @Override
     public Color getClassColor() {
-        return Color.RED;
+        return Color.BLUE;
     }
 }
