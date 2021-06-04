@@ -58,6 +58,8 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * Counter to get precises straight moves for a given path length
      */
     private int straightMoves = -1;
+    private int straight = 0;
+     int identifier = 0;
     private double straightMovesRest;
 
     /**
@@ -283,23 +285,24 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         double steps = pathLength / trajectorySpeed();
         ExponentialGenerator exponentialGenerator = new ExponentialGenerator(1 / steps, random);
         GaussianGenerator gaussianGenerator = new GaussianGenerator(0, Math.toRadians(standardDeviationInDegree), random);
-        double nextD = random.nextDouble();
         double nextDE = exponentialGenerator.nextValue();
         if (isInTurn) {
-            if (rotateToAngle(rotation, Math.toRadians(2), speed, speed / 2)) {
+            if (rotateToAngle(rotation, Math.toRadians(2), speed, 0)) {
                 isInTurn = false;
                 afterTurn = pose;
             }
-        } else if (nextD < 1 / (steps)) {
+        } else if (straight <= 0) {
             isInTurn = true;
-            //    if (afterTurn != null)
-            //         logger.logDouble(getId() + " Distance", pose.euclideanDistance(afterTurn), 3);
-            //     logger.log(getId() + " straight moves", straight + "");
-            //     logger.logDouble(getId() + " speed", speed, 3);
-            rotation = pose.getRotation() + gaussianGenerator.nextValue();
+               if (afterTurn != null)
+                   logger.logDouble(identifier + " Distance", pose.euclideanDistance(afterTurn), 3);
+            rotation = (pose.getRotation() + gaussianGenerator.nextValue()) % 2* Math.PI ;
+            straight = (int)nextDE;
+            logger.log(identifier + " straight moves", straight + "");
+            logger.logDouble(identifier + " calculated distance", straight*trajectorySpeed(), 3);
         } else {
-            setEngines(speed, speed);
+            setEngines(speed/2, speed/2);
         }
+        straight--;
     }
 
     public LinkedList<Entity> entityGroupByClasses(List<Class> classList) {
