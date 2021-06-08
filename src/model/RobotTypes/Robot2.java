@@ -10,9 +10,18 @@ public class Robot2 extends BaseRobot {
         super(builder);
     }
 
+    int toggle = 0;
+
     @Override
-    public void behavior(){
-        moveRandom(10,getRandom().nextDouble(),90);
+    public void behavior() {
+
+        if (toggle == 0 && turn(-180,4,0)) {
+            System.out.println("case1");
+            toggle = 1;
+        } else if (toggle == 1 && turn(180)) {
+            System.out.println("case2");
+            toggle = 0;
+        }
     }
 
     @Override

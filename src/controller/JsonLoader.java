@@ -61,6 +61,24 @@ class JsonLoader {
         }
     }
 
+    double loadMaxSpeed() {
+        if (variables != null)
+            return (double) variables.get("maxSpeed");
+        else {
+            System.err.println("Could not read File.");
+            return 8.;
+        }
+    }
+
+    double loadMinSpeed() {
+        if (variables != null)
+            return (double) variables.get("minSpeed");
+        else {
+            System.err.println("Could not read File.");
+            return 0.;
+        }
+    }
+
     int loadFps() {
         if (settings != null)
             return (int) (long) settings.get("fps");
@@ -69,10 +87,11 @@ class JsonLoader {
             return 0;
         }
     }
+
     int loadSimulatedTime() {
         if (settings != null) {
             JSONObject mode = (JSONObject) settings.get("mode");
-            return (int) (long) mode.get("simulate-turns");
+            return (int) (long) mode.get("simulate-seconds");
         } else {
             System.err.println("Could not read File.");
             return 0;
@@ -98,7 +117,7 @@ class JsonLoader {
                 random,
                 arena,
                 logger
-                ,loadSimulatedTime()));
+                , loadSimulatedTime()));
         return robotsAndPositionOffsets;
     }
 
@@ -140,6 +159,8 @@ class JsonLoader {
                 .engineDistnace((Double) robotObject.get("distance"))
                 .random(new Random(random.nextInt()))
                 .pose(pos)
+                .minSpeed(loadMinSpeed())
+                .maxSpeed(loadMaxSpeed())
                 .timeToSimulate(timeToSimulate)
                 .arena(arena)
                 .powerTransmission((Double) robotObject.get("powerTransmission"))
@@ -156,6 +177,9 @@ class JsonLoader {
                 break;
             case "3":
                 robot = builder.buildRobot3();
+                break;
+            case "4":
+                robot = builder.buildRobot4();
                 break;
             default:
                 robot = builder.buildDefault();

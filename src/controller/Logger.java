@@ -9,11 +9,12 @@ public class Logger {
     private File outpotFile = new File("out/Log.csv");
     DecimalFormat df;
     Thread saveThread;
+    private boolean headWritten = false;
     private ConcurrentHashMap<String, List<String>> logMap = new ConcurrentHashMap<>();
 
     synchronized
     public void log(String key, String value) {
-            threadedSave(true);
+        threadedSave(true);
         if (logMap.containsKey(key)) {
             logMap.get(key).add(value);
         } else {
@@ -47,8 +48,11 @@ public class Logger {
         try {
             FileWriter fileWriter = new FileWriter(outpotFile, append);
             StringBuilder stringBuilder = new StringBuilder();
-            for (String key : logMap.keySet()) {
-                stringBuilder.append(key).append(", ");
+            if (!headWritten) {
+                for (String key : logMap.keySet()) {
+                    stringBuilder.append(key).append(", ");
+                }
+                headWritten = true;
             }
             stringBuilder.append('\n');
             int i = 0;
@@ -58,7 +62,7 @@ public class Logger {
                         stringBuilder.append(logMap.get(key).get(i)).append(", ");
                     else stringBuilder.append(", ");
                 }
-               stringBuilder.append("\n");
+                stringBuilder.append("\n");
                 i++;
             }
             logMap.values().clear();

@@ -1,5 +1,7 @@
 {
   "seed": 1,
+  "maxSpeed": 8.0,
+  "minSpeed": 0.0,
   "arena": {
     "width": 100,
     "height": 100
@@ -13,23 +15,24 @@
       "diameters": 4.0,
       "powerTransmission": 0.0,
       "position": {
-        "x": 40.0,
-        "y": 40.0,
-        "rotation": 270.0
-      }
-    },{
-      "type": "1",
-      "engineR": 1.0,
-      "engineL": 1.0,
-      "distance": 1.0,
-      "diameters": 4.0,
-      "powerTransmission": 0.0,
-      "position": {
         "x": 10.0,
         "y": 10.0,
-        "rotation": 270.0
+        "rotation": 90.0
       }
-    },{
+    },
+    {
+      "type": "1",
+      "engineR": 1.0,
+      "engineL": 1.0,
+      "distance": 1.0,
+      "diameters": 4.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 90.0,
+        "y": 10.0,
+        "rotation": 90.0
+      }
+    },    {
       "type": "1",
       "engineR": 1.0,
       "engineL": 1.0,
@@ -38,10 +41,10 @@
       "powerTransmission": 0.0,
       "position": {
         "x": 10.0,
-        "y": 40.0,
+        "y": 90.0,
         "rotation": 270.0
       }
-    },{
+    },    {
       "type": "1",
       "engineR": 1.0,
       "engineL": 1.0,
@@ -49,20 +52,8 @@
       "diameters": 4.0,
       "powerTransmission": 0.0,
       "position": {
-        "x": 45.0,
-        "y": 30.0,
-        "rotation": 270.0
-      }
-    },{
-      "type": "1",
-      "engineR": 1.0,
-      "engineL": 1.0,
-      "distance": 1.0,
-      "diameters": 4.0,
-      "powerTransmission": 0.0,
-      "position": {
-        "x": 50.0,
-        "y": 20.0,
+        "x": 90.0,
+        "y": 90.0,
         "rotation": 270.0
       }
     }

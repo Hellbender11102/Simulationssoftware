@@ -50,7 +50,7 @@ public class Controller {
                 long endTime = System.currentTimeMillis();
                 System.out.println("Done simulating.\nSimulated "
                         + (timeToSimulate / 60)/60+ "h " + (timeToSimulate / 60)%60+ "min " + timeToSimulate%60 +"sec ("+timeToSimulate+")");
-                System.out.println("That took " + (endTime - startTime) + " milliseconds");
+                System.out.println("That took " + ((endTime - startTime) /1000) / 60+ " min and " +  ((endTime - startTime) /1000) %60 + " sec");
                 System.exit(0);
             }
         }

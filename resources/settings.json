@@ -1,7 +1,8 @@
 {
   "fps": 50,
   "mode": {
-    "display-view": false,
-    "simulate-turns": 100
+    "torus": false,
+    "display-view": true,
+    "simulate-seconds": 86400
   }
 }

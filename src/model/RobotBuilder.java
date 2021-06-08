@@ -1,26 +1,17 @@
 package model;
 
 import controller.Logger;
-import model.RobotTypes.BaseRobot;
-import model.RobotTypes.Robot1;
-import model.RobotTypes.Robot2;
-import model.RobotTypes.Robot3;
+import model.RobotTypes.*;
 
 import java.awt.*;
 import java.util.Random;
 
 public class RobotBuilder {
-    private double engineL;
-
-    private double engineR;
-
+    private double engineL, engineR, distanceE, maxSpeed, minSpeed, powerTransmission;
     private Pose pose;
-    private double distanceE;
-    private double powerTransmission = 0;
-    private int diameters = 20;
+    private int diameters = 20, timeToSimulate;
     private Random random;
     private Arena arena;
-    private int timeToSimulate;
     private Logger logger;
     private boolean simulateWithView;
 
@@ -50,6 +41,14 @@ public class RobotBuilder {
 
     public int getDiameters() {
         return diameters;
+    }
+
+    public double getMaxSpeed() {
+        return maxSpeed;
+    }
+
+    public double getMinSpeed() {
+        return minSpeed;
     }
 
     public int getTimeToSimulate() {
@@ -100,6 +99,16 @@ public class RobotBuilder {
 
     public RobotBuilder pose(Pose pose) {
         this.pose = pose;
+        return this;
+    }
+
+    public RobotBuilder maxSpeed(double maxSpeed) {
+        this.maxSpeed = maxSpeed;
+        return this;
+    }
+
+    public RobotBuilder minSpeed(double minSpeed) {
+        this.minSpeed = minSpeed;
         return this;
     }
 
@@ -167,4 +176,14 @@ public class RobotBuilder {
     public Robot3 buildRobot3() {
         return new Robot3(this);
     }
+    /**
+     * Builds the robot of type 4
+     *
+     * @return Robot3
+     */
+    public Robot4 buildRobot4() {
+        return new Robot4(this);
+    }
+
+    /* Space to add own robot types */
 }

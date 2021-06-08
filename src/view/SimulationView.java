@@ -71,7 +71,7 @@ public class SimulationView extends JPanel {
                 drawRobot(robot, g);
                 if (!infosLeft) {
                     x = convertZoom((int) Math.round(robot.getPose().getXCoordinate() - offsetX)- (int) robot.getRadius());
-                    y = convertZoom(arena.getHeight() - (int) Math.round(robot.getPose().getYCoordinate() - offsetY) + (int) robot.getRadius());
+                    y = convertZoom(arena.getHeight() - (int) Math.round(robot.getPose().getYCoordinate() + offsetY) + (int) robot.getRadius());
                 } else {
                     x += 0;
                     y += fontSize * 5;
