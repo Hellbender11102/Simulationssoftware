@@ -11,4 +11,6 @@ public interface RobotInterface extends Runnable, PhysicalEntity {
     abstract public double getEngineL();
 
     abstract public double getEngineR();
+
+    abstract public boolean getSignal();
 }
