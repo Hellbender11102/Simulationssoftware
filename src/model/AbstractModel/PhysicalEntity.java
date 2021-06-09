@@ -20,8 +20,6 @@ public interface PhysicalEntity extends Entity {
 
     abstract public void setInArenaBounds();
 
-    abstract public boolean isPositionInEntity(Position position);
-
     abstract public LinkedList<PhysicalEntity> isCollidingWith();
 
     abstract public void collisionDetection();

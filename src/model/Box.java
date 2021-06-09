@@ -5,6 +5,7 @@ import model.AbstractModel.PhysicalEntity;
 
 import java.awt.*;
 import java.util.Random;
+
 //TODO
 public class Box extends BasePhysicalEntity {
     protected Box(Arena arena, Random random, double width, double height) {
@@ -18,12 +19,15 @@ public class Box extends BasePhysicalEntity {
 
     @Override
     public Color getClassColor() {
-        return new Color(50,32,28);
+        return new Color(50, 32, 28);
     }
 
     @Override
     public boolean isPositionInEntity(Position position) {
-        return false;
+        return position.getXCoordinate() <= pose.getXCoordinate() + height / 2 &&
+                position.getXCoordinate() >= pose.getXCoordinate() - height / 2 &&
+                position.getYCoordinate() <= pose.getYCoordinate() + width / 2 &&
+                position.getYCoordinate() >= pose.getYCoordinate() - width / 2;
     }
 
     @Override
@@ -36,18 +40,4 @@ public class Box extends BasePhysicalEntity {
         return 0;
     }
 
-    @Override
-    public boolean equals(PhysicalEntity robot) {
-        return false;
-    }
-
-    @Override
-    public Color getColor() {
-        return null;
-    }
-
-    @Override
-    public boolean draw(Graphics g) {
-        return false;
-    }
 }

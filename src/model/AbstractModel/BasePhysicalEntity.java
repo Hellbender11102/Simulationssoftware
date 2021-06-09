@@ -56,7 +56,7 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
         if (!physicalEntity.inArenaBounds()) {
             setInArenaBounds();
         }
-        if (physicalEntity.isMovable()) {
+        if (physicalEntity.hasAnBody()) {
             //r2 gets bumped
             if (physicalEntity.isPositionInEntity(pose.getPositionInDirection(getClosestPositionInBody(physicalEntity.getPose()).euclideanDistance(pose)))) {
                 bump(this, physicalEntity, pose.getPositionInDirection(trajectorySpeed()));
@@ -136,7 +136,7 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
         return entityInGroup;
     }
     @Override
-    public boolean isMovable() {
+    public boolean hasAnBody() {
         return true;
     }
 }

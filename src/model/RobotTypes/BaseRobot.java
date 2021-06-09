@@ -45,7 +45,6 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * in cm
      */
     private double diameters;
-    private final Color color;
     private final boolean simulateWithView;
     private double rotation;
     private Pose afterTurn;
@@ -81,7 +80,6 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         distanceE = builder.getDistanceE();
         diameters = builder.getDiameters();
         powerTransmission = builder.getPowerTransmission();
-        color = new Color(random.nextInt());
         logger = builder.getLogger();
         maxSpeed = builder.getMaxSpeed();
         minSpeed = builder.getMinSpeed();
@@ -495,14 +493,4 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         return "Engines: " + engineR + " - " + engineL + "\n" + pose;
     }
 
-    @Override
-    public boolean equals(PhysicalEntity physicalEntity) {
-        return pose.equals(physicalEntity.getPose()) && color == physicalEntity.getColor()
-                && physicalEntity.isMovable() == isMovable() && physicalEntity.getClass().equals(getClass());
-    }
-
-    @Override
-    public boolean draw(Graphics g) {
-     return false;
-    }
 }

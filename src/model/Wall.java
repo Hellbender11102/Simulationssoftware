@@ -6,29 +6,15 @@ import model.AbstractModel.PhysicalEntity;
 import java.awt.*;
 import java.util.Random;
 
-//TODO
+//TODO,0
 public class Wall extends BasePhysicalEntity {
     protected Wall(Arena arena, double width, double height) {
         super(arena, null, width, height);
     }
 
-    @Override
-    public boolean equals(PhysicalEntity robot) {
-        return false;
-    }
 
     @Override
-    public Color getColor() {
-        return null;
-    }
-
-    @Override
-    public boolean isMovable() {
-        return false;
-    }
-
-    @Override
-    public boolean draw(Graphics g) {
+    public boolean hasAnBody() {
         return false;
     }
 
@@ -39,14 +25,16 @@ public class Wall extends BasePhysicalEntity {
 
     @Override
     public Color getClassColor() {
-        return null;
+        return new Color(55,55,55);
     }
 
     @Override
     public boolean isPositionInEntity(Position position) {
-        return false;
+        return position.getXCoordinate() <= pose.getXCoordinate() + height / 2 &&
+                position.getXCoordinate() >= pose.getXCoordinate() - height / 2 &&
+                position.getYCoordinate() <= pose.getYCoordinate() + width / 2 &&
+                position.getYCoordinate() >= pose.getYCoordinate() - width / 2;
     }
-
     @Override
     public Position getClosestPositionInBody(Position position) {
         return null;

@@ -13,27 +13,26 @@ import java.util.Random;
 //TODO
 public class Area extends BaseEntity {
 
+    double noticeableDistance =0;
+
     protected Area(Arena arena, Random random, double width, double height) {
         super(arena, random, width, height);
     }
 
     @Override
-    public boolean equals(PhysicalEntity robot) {
+    public boolean hasAnBody() {
         return false;
     }
 
-    @Override
-    public Color getColor() {
-        return null;
+     /**
+     * Calculates if position is in Area radius
+     *
+     * @param position Position
+     * @return boolean
+     */
+    public boolean isPositionInEntity(Position position) {
+        return pose.euclideanDistance(position) <= width;
     }
 
-    @Override
-    public boolean isMovable() {
-        return false;
-    }
 
-    @Override
-    public boolean draw(Graphics g) {
-        return false;
-    }
 }

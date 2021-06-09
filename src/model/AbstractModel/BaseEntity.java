@@ -3,8 +3,8 @@ package model.AbstractModel;
 import controller.Logger;
 import model.Arena;
 import model.Pose;
-import model.Position;
 
+import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -19,7 +19,8 @@ abstract public class BaseEntity extends Thread implements Entity {
     protected final Arena arena;
     protected boolean isPaused = true;
     protected final Random random;
-    double width, height;
+    protected double width, height;
+    protected final Color color;
 
     protected BaseEntity(Arena arena, Random random, double width, double height) {
         this.poseRingMemory = new Pose[ringMemorySize];
@@ -27,6 +28,7 @@ abstract public class BaseEntity extends Thread implements Entity {
         this.width = width;
         this.height = height;
         this.random = random;
+        this.color = new Color(random.nextInt());
     }
 
 
@@ -110,8 +112,16 @@ abstract public class BaseEntity extends Thread implements Entity {
         isPaused = !isPaused;
     }
 
-    @Override
     public boolean getPaused() {
         return isPaused;
+    }
+
+        public boolean equals(Entity entity) {
+        return pose.equals(entity.getPose()) && color == entity.getColor()
+                && entity.hasAnBody() == hasAnBody() && entity.getClass().equals(getClass());
+    }
+
+    public Color getColor() {
+        return color;
     }
 }

@@ -4,7 +4,6 @@ import model.Pose;
 import model.Position;
 
 import java.awt.*;
-import java.util.List;
 import java.util.Random;
 
 public interface Entity {
@@ -15,7 +14,7 @@ public interface Entity {
 
     abstract public boolean getPaused();
 
-    abstract public boolean equals(PhysicalEntity robot);
+    abstract public boolean equals(Entity entity);
 
     abstract public Random getRandom();
 
@@ -29,7 +28,7 @@ public interface Entity {
 
     abstract public void updatePositionMemory();
 
-    abstract public boolean isMovable();
+    abstract public boolean hasAnBody();
 
-    abstract public boolean draw(Graphics g);
+    abstract public boolean isPositionInEntity(Position position);
 }
