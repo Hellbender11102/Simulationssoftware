@@ -13,10 +13,11 @@ import java.util.Random;
 //TODO
 public class Area extends BaseEntity {
 
-    double noticeableDistance =0;
+    double noticeableDistance;
 
-    public Area(Arena arena, Random random, double diameters,Pose pose) {
-        super(arena, random, diameters, diameters,pose);
+    public Area(Arena arena, Random random, double diameters, double noticeableDistance, Pose pose) {
+        super(arena, random, diameters, diameters, pose);
+        this.noticeableDistance = noticeableDistance;
     }
 
     @Override
@@ -24,7 +25,7 @@ public class Area extends BaseEntity {
         return false;
     }
 
-     /**
+    /**
      * Calculates if position is in Area radius
      *
      * @param position Position
@@ -34,5 +35,12 @@ public class Area extends BaseEntity {
         return pose.euclideanDistance(position) <= width;
     }
 
+    @Override
+    public Color getClassColor() {
+        return new Color(180, 255, 180);
+    }
 
+    public double getNoticeableDistance() {
+        return noticeableDistance;
+    }
 }

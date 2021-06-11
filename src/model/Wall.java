@@ -6,13 +6,14 @@ import model.AbstractModel.PhysicalEntity;
 import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 //TODO,0
 public class Wall extends BasePhysicalEntity {
     final Position edgeUL, edgeUR, edgeLL, edgeLR;
 
-    public Wall(Arena arena, double width, double height,Pose pose) {
-        super(arena, null, width, height, pose);
+    public Wall(Arena arena, Random random, double width, double height, Pose pose) {
+        super(arena, random, width, height, pose);
         edgeUL = new Position(pose.getXCoordinate() - width / 2, pose.getYCoordinate() + height / 2);
         edgeUR = new Position(pose.getXCoordinate() + width / 2, pose.getYCoordinate() + height / 2);
         edgeLL = new Position(pose.getXCoordinate() - width / 2, pose.getYCoordinate() - height / 2);
@@ -59,4 +60,10 @@ public class Wall extends BasePhysicalEntity {
     public int getTimeToSimulate() {
         return 0;
     }
+
+    @Override
+    public boolean isMovable() {
+        return false;
+    }
+
 }

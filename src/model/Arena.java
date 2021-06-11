@@ -3,13 +3,13 @@ package model;
 import model.AbstractModel.Entity;
 import model.AbstractModel.PhysicalEntity;
 import model.AbstractModel.RobotInterface;
+import model.RobotTypes.BaseRobot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Arena {
-    private List<RobotInterface> robotList = new ArrayList<>();
-    private List<PhysicalEntity> physicalEntityList = new ArrayList<>();
     private List<Entity> entityList = new ArrayList<>();
     private final int height, width;
     private static Arena singleton;
@@ -51,21 +51,31 @@ public class Arena {
         return "width:" + singleton.width + " height:" + singleton.height;
     }
 
-    synchronized public void setRobots(List<RobotInterface> robotList) {
-        singleton.robotList = robotList;
-    }
-
-    synchronized public void setPhysicalEntities(List<PhysicalEntity> physicalEntityList) {
-        singleton.physicalEntityList = physicalEntityList;
+    synchronized public void addEntities(List<Entity> entities) {
+        singleton.entityList.addAll(entities);
     }
 
     synchronized public List<RobotInterface> getRobots() {
-        return singleton.robotList;
+        return singleton.entityList.stream().filter(x->RobotInterface.class.isAssignableFrom(x.getClass())).map(x->(RobotInterface) x).collect(Collectors.toList());
     }
 
     synchronized public List<PhysicalEntity> getPhysicalEntityList() {
-        return singleton.physicalEntityList;
+        return singleton.entityList.stream().filter(x->PhysicalEntity.class.isAssignableFrom(x.getClass())).map(x->(PhysicalEntity) x).collect(Collectors.toList());
     }
+    synchronized public List<PhysicalEntity> getPhysicalEntitiesWithoutRobots() {
+        return singleton.entityList.stream().filter(
+                x->PhysicalEntity.class.isAssignableFrom(x.getClass()) &&
+                        !BaseRobot.class.isAssignableFrom(x.getClass())
+        ).map(x->(PhysicalEntity) x).collect(Collectors.toList());
+    }
+
+    synchronized public List<Entity> getNonPhysicalEntityList() {
+        return singleton.entityList.stream().filter(x->!x.hasAnBody()).map(x->(Entity) x).collect(Collectors.toList());
+    }
+    synchronized public List<Area> getAreaList() {
+        return singleton.entityList.stream().filter(x->Area.class.isAssignableFrom(x.getClass())).map(x->(Area) x).collect(Collectors.toList());
+    }
+
     synchronized public List<Entity> getEntityList() {
         return singleton.entityList;
     }

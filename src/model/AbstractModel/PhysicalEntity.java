@@ -14,8 +14,6 @@ public interface PhysicalEntity extends Entity {
 
     abstract public double trajectorySpeed();
 
-    abstract public Color getClassColor();
-
     abstract public boolean inArenaBounds();
 
     abstract public void setInArenaBounds();
@@ -30,4 +28,5 @@ public interface PhysicalEntity extends Entity {
 
     abstract public int getTimeToSimulate();
 
+    abstract public boolean isMovable();
 }

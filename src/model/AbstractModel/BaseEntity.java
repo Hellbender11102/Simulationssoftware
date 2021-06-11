@@ -125,4 +125,13 @@ abstract public class BaseEntity extends Thread implements Entity {
     public Color getColor() {
         return color;
     }
+
+    @Override
+    public double getWidth(){
+        return width;
+    }
+    @Override
+    public double getHeight(){
+        return height;
+    }
 }

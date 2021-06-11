@@ -8,6 +8,8 @@ import java.util.Random;
 
 public interface Entity {
 
+    abstract public Color getClassColor();
+
     abstract public Pose getPose();
 
     abstract public void togglePause();
@@ -31,4 +33,8 @@ public interface Entity {
     abstract public boolean hasAnBody();
 
     abstract public boolean isPositionInEntity(Position position);
+
+    abstract public double getWidth();
+
+    abstract public double getHeight();
 }

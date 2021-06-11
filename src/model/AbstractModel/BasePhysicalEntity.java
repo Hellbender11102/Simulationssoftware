@@ -90,15 +90,15 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
      */
     private void bump(PhysicalEntity bumping, PhysicalEntity getsBumped, Position positionInBumpDirection) {
         Position vector = bumping.getPose().creatPositionByDecreasing(positionInBumpDirection);
-        getsBumped.getPose().decPosition(vector);
+        if (getsBumped.isMovable()) getsBumped.getPose().decPosition(vector);
 
-        if (getPose().getXCoordinate() < width / 2)
+        if (getPose().getXCoordinate() < width / 2 && bumping.isMovable())
             bumping.getPose().incPosition(vector.getXCoordinate(), 0);
-        else if (getPose().getXCoordinate() > arena.getWidth() - width / 2)
+        else if (getPose().getXCoordinate() > arena.getWidth() - width / 2  && bumping.isMovable())
             bumping.getPose().incPosition(vector.getXCoordinate(), 0);
-        if (getPose().getYCoordinate() < height / 2)
+        if (getPose().getYCoordinate() < height / 2  && bumping.isMovable())
             bumping.getPose().incPosition(0, vector.getYCoordinate());
-        else if (getPose().getYCoordinate() > arena.getHeight() - height / 2)
+        else if (getPose().getYCoordinate() > arena.getHeight() - height / 2  && bumping.isMovable())
             bumping.getPose().incPosition(0, vector.getYCoordinate());
     }
 
@@ -141,6 +141,20 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
     @Override
     public boolean hasAnBody() {
         return true;
+    }
+
+    @Override
+    public boolean isMovable() {
+        return true;
+    }
+
+    @Override
+    public double getWidth(){
+        return width;
+    }
+    @Override
+    public double getHeight(){
+        return height;
     }
 }
 

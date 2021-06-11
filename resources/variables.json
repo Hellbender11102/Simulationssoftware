@@ -73,11 +73,11 @@
   ],
   "walls": [
     {
-      "width": 10,
-      "height": 3,
+      "width": 100.0,
+      "height": 3.0,
       "position": {
-        "x": 90.0,
-        "y": 90.0,
+        "x": 50.0,
+        "y": 50.0,
         "rotation": 0.0
       }
     }
@@ -85,6 +85,7 @@
   "areas": [
     {
       "diameters": 15.0,
+      "noticeableDistance": 15.0,
       "position": {
         "x": 90.0,
         "y": 90.0,

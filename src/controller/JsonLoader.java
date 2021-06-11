@@ -1,6 +1,8 @@
 package controller;
 
 import model.*;
+import model.AbstractModel.Entity;
+import model.AbstractModel.PhysicalEntity;
 import model.AbstractModel.RobotInterface;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -129,12 +131,11 @@ class JsonLoader {
     /**
      *
      * @param random Random
-     * @param logger Logger
      * @return
      */
-    List<Box> loadBoxes(Random random, Logger logger) {
+    List<Entity> loadBoxes(Random random ) {
         JSONArray boxes = (JSONArray) variables.get("boxes");
-        LinkedList<Box> boxList = new LinkedList();
+        LinkedList<Entity> boxList = new LinkedList();
         for (Object box: boxes) {
             JSONObject jsonBox= (JSONObject) box;
             boxList.add(new Box(arena,new Random(random.nextInt()),(double) jsonBox.get("width"),(double) jsonBox.get("height"),loadPose(jsonBox)));
@@ -144,33 +145,28 @@ class JsonLoader {
     }
     /**
      *
-     * @param random Random
-     * @param logger Logger
      * @return
      */
-    List<Wall> loadWalls(Random random, Logger logger) {
+    List<Entity> loadWalls(Random random) {
         JSONArray walls = (JSONArray) variables.get("walls");
-        LinkedList<Wall> wallList = new LinkedList();
+        LinkedList<Entity> wallList = new LinkedList();
         for (Object wall: walls) {
             JSONObject jsonWall= (JSONObject) wall;
-            wallList.add(new Wall(arena,(double) jsonWall.get("width"),(double) jsonWall.get("height"),loadPose(jsonWall)));
-
+            wallList.add(new Wall(arena,new Random(random.nextInt()),(double) jsonWall.get("width"),(double) jsonWall.get("height"),loadPose(jsonWall)));
         }
         return wallList;
     }
     /**
      *
      * @param random Random
-     * @param logger Logger
      * @return
      */
-    List<Area> loadAreas(Random random, Logger logger) {
+    List<Entity> loadAreas(Random random) {
         JSONArray areas = (JSONArray) variables.get("areas");
-        LinkedList<Area> wallList = new LinkedList();
+        LinkedList<Entity> wallList = new LinkedList();
         for (Object area: areas) {
             JSONObject jsonArea= (JSONObject) area;
-            wallList.add(new Area(arena,new Random(random.nextInt()),(double) jsonArea.get("diameters"),loadPose(jsonArea)));
-
+            wallList.add(new Area(arena,new Random(random.nextInt()),(double) jsonArea.get("diameters"),(double) jsonArea.get("noticeableDistance"),loadPose(jsonArea)));
         }
         return wallList;
     }
