@@ -46,11 +46,11 @@ public class Wall extends BasePhysicalEntity {
                         edgeLL.euclideanDistance(position) > edgeLR.euclideanDistance(position) ? edgeLR : edgeLL
                         :
                         edgeUL.euclideanDistance(position) > edgeUR.euclideanDistance(position) ? edgeUR : edgeUL;
-      if(position.getXCoordinate() <= pose.getXCoordinate() + height / 2 &&
-              position.getXCoordinate() >= pose.getXCoordinate() - height / 2){
+      if(position.getXCoordinate() <= pose.getXCoordinate() + width / 2 &&
+              position.getXCoordinate() >= pose.getXCoordinate() - width / 2){
           closest.setXCoordinate(position.getXCoordinate());
-      } else if(position.getYCoordinate() <= pose.getYCoordinate() + width / 2 &&
-                position.getYCoordinate() >= pose.getYCoordinate() - width / 2){
+      } else if(position.getYCoordinate() <= pose.getYCoordinate() + height / 2 &&
+                position.getYCoordinate() >= pose.getYCoordinate() - height / 2){
                  closest.setYCoordinate(position.getYCoordinate());
       }
       return closest;

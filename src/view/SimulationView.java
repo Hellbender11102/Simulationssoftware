@@ -35,7 +35,6 @@ public class SimulationView extends JPanel {
             if (!classList.contains(robot.getClass()))
                 classList.add(robot);
         }
-        System.out.println(classList.size());
     }
 
     public void paint(Graphics g) {
@@ -50,7 +49,14 @@ public class SimulationView extends JPanel {
         g2d.drawLine(convertZoom(-offsetX), convertZoom(-offsetY), convertZoom(arena.getWidth() - offsetX), convertZoom(-offsetY));
         g2d.drawLine(convertZoom(arena.getWidth() - offsetX), convertZoom(arena.getHeight() - offsetY), convertZoom(-offsetX), convertZoom(arena.getHeight() - offsetY));
         g2d.drawLine(convertZoom(arena.getWidth() - offsetX), convertZoom(arena.getHeight() - offsetY), convertZoom(arena.getWidth() - offsetX), convertZoom(-offsetY));
-
+        for (PhysicalEntity pe1: arena.getPhysicalEntityList()) {
+        for (PhysicalEntity pe2: arena.getPhysicalEntityList()) {
+            Position p2 = pe2.getPose();
+            Position closest = pe1.getClosestPositionInBody(p2);
+          g.drawLine( convertZoom((int)closest.getXCoordinate()-offsetX), convertZoom((int)closest.getYCoordinate()-offsetY),
+                  convertZoom((int)p2.getXCoordinate()-offsetX), convertZoom((int)p2.getYCoordinate()-offsetY));
+        }
+        }
         if (drawLines) {
             g2d.setColor(Color.LIGHT_GRAY);
             for (int i = 10; i < arena.getWidth(); i += 10) {
