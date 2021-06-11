@@ -1,6 +1,7 @@
 package model.AbstractModel;
 
 import model.Arena;
+import model.Pose;
 import model.Position;
 
 import java.util.LinkedList;
@@ -9,8 +10,8 @@ import java.util.Random;
 
 abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalEntity {
 
-    protected BasePhysicalEntity(Arena arena, Random random, double width, double height) {
-        super(arena,random,width,height);
+    protected BasePhysicalEntity(Arena arena, Random random, double width, double height, Pose pose) {
+        super(arena, random, width, height, pose);
     }
 
     /**
@@ -120,10 +121,11 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
         return center;
     }
 
-        public Position centerOfGroupWithClasses(List<Class> classList) {
+    public Position centerOfGroupWithClasses(List<Class> classList) {
         LinkedList<Entity> group = entityGroupByClasses(classList);
         return centerOfGroupWithEntities(group);
     }
+
     public LinkedList<Entity> entityGroupByClasses(List<Class> classList) {
         LinkedList<Entity> entityInGroup = new LinkedList<>();
         for (Entity entity : arena.getPhysicalEntityList()) {
@@ -135,6 +137,7 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
         }
         return entityInGroup;
     }
+
     @Override
     public boolean hasAnBody() {
         return true;

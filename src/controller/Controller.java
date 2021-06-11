@@ -1,7 +1,6 @@
 package controller;
 
 import model.*;
-import model.AbstractModel.PhysicalEntity;
 import model.RobotTypes.BaseRobot;
 import model.AbstractModel.RobotInterface;
 import view.View;
@@ -24,7 +23,7 @@ public class Controller {
     public Controller() {
         long startTime = System.currentTimeMillis();
         arena = jsonLoader.initArena();
-        if (jsonLoader.displayView()) {
+        if (jsonLoader.loadDisplayView()) {
             init();
             view = new View(arena);
             repaintTimer(jsonLoader.loadFps());

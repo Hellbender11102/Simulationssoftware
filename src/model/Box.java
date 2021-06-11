@@ -9,8 +9,8 @@ import java.util.Random;
 //TODO
 public class Box extends BasePhysicalEntity {
     Position edgeUL, edgeUR, edgeLL, edgeLR;
-    protected Box(Arena arena, Random random, double width, double height) {
-        super(arena, random, width, height);
+    public Box(Arena arena, Random random, double width, double height, Pose pose) {
+        super(arena, random, width, height,pose);
                 edgeUL = new Position(pose.getXCoordinate() - width / 2, pose.getYCoordinate() + height / 2);
         edgeUR = new Position(pose.getXCoordinate() + width / 2, pose.getYCoordinate() + height / 2);
         edgeLL = new Position(pose.getXCoordinate() - width / 2, pose.getYCoordinate() - height / 2);

@@ -2,7 +2,6 @@ package model.RobotTypes;
 
 import model.AbstractModel.BasePhysicalEntity;
 import model.AbstractModel.Entity;
-import model.AbstractModel.PhysicalEntity;
 import model.Pose;
 import model.Position;
 import model.RobotBuilder;
@@ -40,7 +39,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      */
     private final double distanceE;
 
-    private double powerTransmission = 0;
+    private double powerTransmission;
     /**
      * in cm
      */
@@ -72,9 +71,8 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * @param builder
      */
     public BaseRobot(RobotBuilder builder) {
-        super(builder.getArena(), builder.getRandom(), builder.getDiameters(), builder.getDiameters());
+        super(builder.getArena(), builder.getRandom(), builder.getDiameters(), builder.getDiameters(),builder.getPose());
         poseRingMemory[poseRingMemoryHead] = builder.getPose();
-        pose = builder.getPose();
         engineL = builder.getEngineL();
         engineR = builder.getEngineR();
         distanceE = builder.getDistanceE();

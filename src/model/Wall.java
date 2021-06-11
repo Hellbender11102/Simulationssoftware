@@ -11,18 +11,12 @@ import java.util.List;
 public class Wall extends BasePhysicalEntity {
     final Position edgeUL, edgeUR, edgeLL, edgeLR;
 
-    protected Wall(Arena arena, double width, double height) {
-        super(arena, null, width, height);
+    public Wall(Arena arena, double width, double height,Pose pose) {
+        super(arena, null, width, height, pose);
         edgeUL = new Position(pose.getXCoordinate() - width / 2, pose.getYCoordinate() + height / 2);
         edgeUR = new Position(pose.getXCoordinate() + width / 2, pose.getYCoordinate() + height / 2);
         edgeLL = new Position(pose.getXCoordinate() - width / 2, pose.getYCoordinate() - height / 2);
         edgeLR = new Position(pose.getXCoordinate() + width / 2, pose.getYCoordinate() - height / 2);
-    }
-
-
-    @Override
-    public boolean hasAnBody() {
-        return false;
     }
 
     @Override

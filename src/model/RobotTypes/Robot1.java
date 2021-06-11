@@ -25,9 +25,4 @@ public class Robot1 extends BaseRobot {
     public Color getClassColor() {
         return Color.GREEN;
     }
-
-    @Override
-    public boolean draw(Graphics g) {
-        return false;
-    }
 }

@@ -15,8 +15,8 @@ public class Area extends BaseEntity {
 
     double noticeableDistance =0;
 
-    protected Area(Arena arena, Random random, double width, double height) {
-        super(arena, random, width, height);
+    public Area(Arena arena, Random random, double diameters,Pose pose) {
+        super(arena, random, diameters, diameters,pose);
     }
 
     @Override
