@@ -63,13 +63,13 @@ public class SimulationView extends JPanel {
         if (arena.getAreaList() != null) {
             for (Area area : arena.getAreaList()) {
                 g2d.setColor(new Color(area.getColor().getRed(), area.getColor().getGreen(), area.getColor().getBlue(), 200));
-                g2d.fillOval(convertZoom((int) (area.getPose().getXCoordinate() - offsetX -(area.getWidth() + area.getNoticeableDistance() +1) /2)),
-                        convertZoom((int) (area.getPose().getYCoordinate()- offsetY - (area.getHeight() + area.getNoticeableDistance() +1) /2)),
-                        convertZoom((int) (area.getWidth() + area.getNoticeableDistance())),
-                        convertZoom((int) (area.getHeight() + area.getNoticeableDistance())));
-                g2d.setColor(area.getColor());
-                g2d.drawOval(convertZoom((int) (area.getPose().getXCoordinate() - offsetX -area.getWidth() /2)),
-                        convertZoom((int) (area.getPose().getYCoordinate()- offsetY - area.getHeight() /2)),
+                g2d.fillOval(convertZoom((int) (area.getPose().getXCoordinate() - offsetX - (area.getNoticeableDistance()) / 2)),
+                        convertZoom((int) (area.getPose().getYCoordinate() - offsetY - ( area.getNoticeableDistance()) / 2)),
+                        convertZoom((int) (area.getNoticeableDistance())),
+                        convertZoom((int) (area.getNoticeableDistance())));
+                g2d.setColor(area.getClassColor());
+                g2d.drawOval(convertZoom((int) (area.getPose().getXCoordinate() - offsetX - area.getWidth() / 2)),
+                        convertZoom((int) (area.getPose().getYCoordinate() - offsetY - area.getHeight() / 2)),
                         convertZoom((int) area.getWidth()),
                         convertZoom((int) area.getHeight()));
             }

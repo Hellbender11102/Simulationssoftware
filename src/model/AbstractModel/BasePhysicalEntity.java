@@ -43,6 +43,7 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
             pose.setYCoordinate(arena.getHeight() - height / 2);
     }
 
+    //TODO
     @Override
     public void collisionDetection() {
         if (!inArenaBounds()) {
@@ -94,11 +95,11 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
 
         if (getPose().getXCoordinate() < width / 2 && bumping.isMovable())
             bumping.getPose().incPosition(vector.getXCoordinate(), 0);
-        else if (getPose().getXCoordinate() > arena.getWidth() - width / 2  && bumping.isMovable())
+        else if (getPose().getXCoordinate() > arena.getWidth() - width / 2 && bumping.isMovable())
             bumping.getPose().incPosition(vector.getXCoordinate(), 0);
-        if (getPose().getYCoordinate() < height / 2  && bumping.isMovable())
+        if (getPose().getYCoordinate() < height / 2 && bumping.isMovable())
             bumping.getPose().incPosition(0, vector.getYCoordinate());
-        else if (getPose().getYCoordinate() > arena.getHeight() - height / 2  && bumping.isMovable())
+        else if (getPose().getYCoordinate() > arena.getHeight() - height / 2 && bumping.isMovable())
             bumping.getPose().incPosition(0, vector.getYCoordinate());
     }
 
@@ -149,11 +150,12 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
     }
 
     @Override
-    public double getWidth(){
+    public double getWidth() {
         return width;
     }
+
     @Override
-    public double getHeight(){
+    public double getHeight() {
         return height;
     }
 }
