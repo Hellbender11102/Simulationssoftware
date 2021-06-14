@@ -5,7 +5,7 @@ import model.AbstractModel.BasePhysicalEntity;
 import java.awt.*;
 import java.util.Random;
 
-//TODO,0
+//TODO, passing through sometimes
 public class Wall extends BasePhysicalEntity {
     final Position edgeUL, edgeUR, edgeLL, edgeLR;
 

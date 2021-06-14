@@ -19,7 +19,7 @@ public class BaseRobotTest {
                                         double engineDistance, double diameters, double poseX, double poseY,
                                         double poseRotation) {
         return new RobotBuilder()
-                .arena(Arena.getInstance(arenaWidth, arenaHeight))
+                .arena(Arena.getInstance(arenaWidth, arenaHeight,false))
                 .diameters(diameters)
                 .engineDistnace(engineDistance)
                 .powerTransmission(0)

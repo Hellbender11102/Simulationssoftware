@@ -1,6 +1,8 @@
 package controller;
 
 import model.*;
+import model.AbstractModel.Entity;
+import model.AbstractModel.PhysicalEntity;
 import model.RobotTypes.BaseRobot;
 import model.AbstractModel.RobotInterface;
 import view.View;
@@ -31,7 +33,7 @@ public class Controller {
         } else {
             init();
             int timeToSimulate = arena.getRobots().get(0).getTimeToSimulate();
-            arena.getRobots().forEach(this::startThread);
+            arena.getPhysicalEntityList().forEach(this::startThread);
             Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
             while (entityThreads.stream().anyMatch(Thread::isAlive)){
                 System.out.print(
@@ -257,8 +259,8 @@ public class Controller {
 
     }
 
-    private void startThread(RobotInterface robot) {
-        Thread t = new Thread(robot);
+    private void startThread(PhysicalEntity physicalEntity) {
+        Thread t = new Thread(physicalEntity);
         entityThreads.add(t);
         t.start();
     }

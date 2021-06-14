@@ -41,26 +41,39 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
             pose.setYCoordinate(arena.getHeight() - height / 2);
     }
 
+    private void setInArenaWithTorus(PhysicalEntity physicalEntity) {
+        Pose pose = physicalEntity.getPose();
+        pose.setXCoordinate(pose.getXCoordinate() % arena.getWidth());
+        pose.setYCoordinate(pose.getYCoordinate() % arena.getHeight());
+        if (pose.getXCoordinate() < 0) pose.incPosition(arena.getWidth(), 0);
+        if (pose.getYCoordinate() < 0) pose.incPosition(0, arena.getHeight());
+    }
+
     //TODO
     @Override
     public void collisionDetection() {
-        if (!inArenaBounds()) {
-            setInArenaBounds();
-        }
+
         for (PhysicalEntity physicalEntity : isCollidingWith()) {
             if (!physicalEntity.isMovable() && isMovable())
                 notMovableCollision(physicalEntity, this);
             else if (physicalEntity.isMovable() && !isMovable())
                 notMovableCollision(this, physicalEntity);
             else if (physicalEntity.isMovable() && isMovable())
-             collision(physicalEntity);
+                collision(physicalEntity);
+            if (!physicalEntity.inArenaBounds() && !arena.isTorus) {
+                physicalEntity.setInArenaBounds();
+            } else if (arena.isTorus) {
+                setInArenaWithTorus(physicalEntity);
+            }
+        }
+        if (!inArenaBounds() && !arena.isTorus) {
+            setInArenaBounds();
+        } else if (arena.isTorus) {
+            setInArenaWithTorus(this);
         }
     }
 
     public void collision(PhysicalEntity physicalEntity) {
-        if (!physicalEntity.inArenaBounds()) {
-            physicalEntity.setInArenaBounds();
-        }
         //r2 gets bumped
         if (physicalEntity.isPositionInEntity(pose.getPositionInDirection(getClosestPositionInEntity(physicalEntity.getPose()).euclideanDistance(pose)))) {
             bump(this, physicalEntity, pose.getPositionInDirection(trajectorySpeed()));

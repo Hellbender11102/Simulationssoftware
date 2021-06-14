@@ -291,12 +291,8 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
             }
         } else if (straight <= 0) {
             isInTurn = true;
-            if (afterTurn != null)
-                logger.logDouble(identifier + " Distance", pose.euclideanDistance(afterTurn), 3);
             rotation = (pose.getRotation() + gaussianGenerator.nextValue()) % 2 * Math.PI;
             straight = (int) nextDE;
-            logger.log(identifier + " straight moves", straight + "");
-            logger.logDouble(identifier + " calculated distance", straight * trajectorySpeed(), 3);
         } else {
             setEngines(speed / 2, speed / 2);
         }

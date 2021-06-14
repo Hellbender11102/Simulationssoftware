@@ -13,6 +13,7 @@ public class Arena {
     private List<Entity> entityList = new ArrayList<>();
     private final int height, width;
     private static Arena singleton;
+    public final boolean isTorus; //TODO closest position distance and collision through "jumps"
 
     /**
      * Constructor
@@ -21,10 +22,10 @@ public class Arena {
      * @param height in centemeter
      */
     synchronized
-    public static Arena getInstance(int width, int height) {
+    public static Arena getInstance(int width, int height, boolean isTorus) {
 
         if (singleton == null) {
-            singleton = new Arena(width, height);
+            singleton = new Arena(width, height, isTorus);
         }
         return singleton;
     }
@@ -36,14 +37,15 @@ public class Arena {
      * @param height in centemeter
      */
     synchronized
-    public static Arena overWriteInstance(int width, int height) {
-        singleton = new Arena(width, height);
+    public static Arena overWriteInstance(int width, int height, boolean isTorus) {
+        singleton = new Arena(width, height, isTorus);
         return singleton;
     }
 
-    private Arena(int width, int height) {
+    private Arena(int width, int height, boolean isTorus) {
         this.width = width;
         this.height = height;
+        this.isTorus = isTorus;
     }
 
     @Override
@@ -56,24 +58,26 @@ public class Arena {
     }
 
     synchronized public List<RobotInterface> getRobots() {
-        return singleton.entityList.stream().filter(x->RobotInterface.class.isAssignableFrom(x.getClass())).map(x->(RobotInterface) x).collect(Collectors.toList());
+        return singleton.entityList.stream().filter(x -> RobotInterface.class.isAssignableFrom(x.getClass())).map(x -> (RobotInterface) x).collect(Collectors.toList());
     }
 
     synchronized public List<PhysicalEntity> getPhysicalEntityList() {
-        return singleton.entityList.stream().filter(x->PhysicalEntity.class.isAssignableFrom(x.getClass())).map(x->(PhysicalEntity) x).collect(Collectors.toList());
+        return singleton.entityList.stream().filter(x -> PhysicalEntity.class.isAssignableFrom(x.getClass())).map(x -> (PhysicalEntity) x).collect(Collectors.toList());
     }
+
     synchronized public List<PhysicalEntity> getPhysicalEntitiesWithoutRobots() {
         return singleton.entityList.stream().filter(
-                x->PhysicalEntity.class.isAssignableFrom(x.getClass()) &&
+                x -> PhysicalEntity.class.isAssignableFrom(x.getClass()) &&
                         !BaseRobot.class.isAssignableFrom(x.getClass())
-        ).map(x->(PhysicalEntity) x).collect(Collectors.toList());
+        ).map(x -> (PhysicalEntity) x).collect(Collectors.toList());
     }
 
     synchronized public List<Entity> getNonPhysicalEntityList() {
-        return singleton.entityList.stream().filter(x->!x.hasAnBody()).map(x->(Entity) x).collect(Collectors.toList());
+        return singleton.entityList.stream().filter(x -> !x.hasAnBody()).map(x -> (Entity) x).collect(Collectors.toList());
     }
+
     synchronized public List<Area> getAreaList() {
-        return singleton.entityList.stream().filter(x->Area.class.isAssignableFrom(x.getClass())).map(x->(Area) x).collect(Collectors.toList());
+        return singleton.entityList.stream().filter(x -> Area.class.isAssignableFrom(x.getClass())).map(x -> (Area) x).collect(Collectors.toList());
     }
 
     synchronized public List<Entity> getEntityList() {

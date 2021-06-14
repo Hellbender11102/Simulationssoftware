@@ -1,7 +1,6 @@
 {
   "fps": 50,
   "mode": {
-    "torus": false,
     "display-view": true,
     "simulate-seconds": 86400
   }

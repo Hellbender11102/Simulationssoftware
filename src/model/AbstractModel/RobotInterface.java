@@ -1,6 +1,6 @@
 package model.AbstractModel;
 
-public interface RobotInterface extends Runnable, PhysicalEntity {
+public interface RobotInterface extends PhysicalEntity {
 
     abstract void behavior();
 

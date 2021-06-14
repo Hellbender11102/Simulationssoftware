@@ -2,7 +2,6 @@ package controller;
 
 import model.*;
 import model.AbstractModel.Entity;
-import model.AbstractModel.PhysicalEntity;
 import model.AbstractModel.RobotInterface;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -35,10 +34,10 @@ class JsonLoader {
     Arena initArena() {
         if (variables != null) {
             JSONObject arenaObj = (JSONObject) variables.get("arena");
-            arena = Arena.getInstance((int) (long) arenaObj.get("width"), (int) (long) arenaObj.get("height"));
+            arena = Arena.getInstance((int) (long) arenaObj.get("width"), (int) (long) arenaObj.get("height"), (boolean) arenaObj.get("torus"));
         } else {
             System.err.println("Could not read arena from variables.json.");
-            arena = Arena.getInstance(500, 500);
+            arena = Arena.getInstance(500, 500, false);
         }
         return arena;
     }
@@ -46,7 +45,7 @@ class JsonLoader {
     Arena reloadArena() {
         if (variables != null) {
             JSONObject arenaObj = (JSONObject) variables.get("arena");
-            arena = Arena.overWriteInstance((int) (long) arenaObj.get("width"), (int) (long) arenaObj.get("height"));
+            arena = Arena.overWriteInstance((int) (long) arenaObj.get("width"), (int) (long) arenaObj.get("height"), (boolean) arenaObj.get("torus"));
         } else {
             System.err.println("Could not read arena from variables.json.");
         }
@@ -110,14 +109,13 @@ class JsonLoader {
     }
 
     /**
-     *
      * @param random Random
      * @param logger Logger
      * @return Map<RobotInterface, Position>
      */
     Map<RobotInterface, Position> loadRobots(Random random, Logger logger) {
         JSONArray robots = (JSONArray) variables.get("robots");
-        if(robots.size() == 0)    System.err.println("Zero robots in variables.json.");
+        if (robots.size() == 0) System.err.println("Zero robots in variables.json.");
         Map<RobotInterface, Position> robotsAndPositionOffsets = new HashMap<>();
         robots.forEach(entry -> loadRobots(
                 (JSONObject) entry,
@@ -128,45 +126,45 @@ class JsonLoader {
                 , loadSimulatedTime()));
         return robotsAndPositionOffsets;
     }
+
     /**
-     *
      * @param random Random
      * @return
      */
-    List<Entity> loadBoxes(Random random ) {
+    List<Entity> loadBoxes(Random random) {
         JSONArray boxes = (JSONArray) variables.get("boxes");
         LinkedList<Entity> boxList = new LinkedList();
-        for (Object box: boxes) {
-            JSONObject jsonBox= (JSONObject) box;
-            boxList.add(new Box(arena,new Random(random.nextInt()),(double) jsonBox.get("width"),(double) jsonBox.get("height"),loadPose(jsonBox)));
+        for (Object box : boxes) {
+            JSONObject jsonBox = (JSONObject) box;
+            boxList.add(new Box(arena, new Random(random.nextInt()), (double) jsonBox.get("width"), (double) jsonBox.get("height"), loadPose(jsonBox)));
 
         }
         return boxList;
     }
+
     /**
-     *
      * @return
      */
     List<Entity> loadWalls(Random random) {
         JSONArray walls = (JSONArray) variables.get("walls");
         LinkedList<Entity> wallList = new LinkedList();
-        for (Object wall: walls) {
-            JSONObject jsonWall= (JSONObject) wall;
-            wallList.add(new Wall(arena,new Random(random.nextInt()),(double) jsonWall.get("width"),(double) jsonWall.get("height"),loadPose(jsonWall)));
+        for (Object wall : walls) {
+            JSONObject jsonWall = (JSONObject) wall;
+            wallList.add(new Wall(arena, new Random(random.nextInt()), (double) jsonWall.get("width"), (double) jsonWall.get("height"), loadPose(jsonWall)));
         }
         return wallList;
     }
+
     /**
-     *
      * @param random Random
      * @return
      */
     List<Entity> loadAreas(Random random) {
         JSONArray areas = (JSONArray) variables.get("areas");
         LinkedList<Entity> wallList = new LinkedList();
-        for (Object area: areas) {
-            JSONObject jsonArea= (JSONObject) area;
-            wallList.add(new Area(arena,new Random(random.nextInt()),(double) jsonArea.get("diameters"),(double) jsonArea.get("noticeableDistance"),loadPose(jsonArea)));
+        for (Object area : areas) {
+            JSONObject jsonArea = (JSONObject) area;
+            wallList.add(new Area(arena, new Random(random.nextInt()), (double) jsonArea.get("diameters"), (double) jsonArea.get("noticeableDistance"), loadPose(jsonArea)));
         }
         return wallList;
     }
@@ -192,12 +190,12 @@ class JsonLoader {
     }
 
     /**
-     * @param robotObject JSONObject
+     * @param robotObject              JSONObject
      * @param robotsAndPositionOffsets Map<RobotInterface, Position>
-     * @param random Random
-     * @param arena Arena
-     * @param logger Logger
-     * @param timeToSimulate int
+     * @param random                   Random
+     * @param arena                    Arena
+     * @param logger                   Logger
+     * @param timeToSimulate           int
      */
     private void loadRobots(
             JSONObject robotObject, Map<RobotInterface, Position> robotsAndPositionOffsets, Random random, Arena arena,
@@ -238,7 +236,7 @@ class JsonLoader {
         robotsAndPositionOffsets.put(robot, new Position(0, 0));
     }
 
-    private Pose loadPose(JSONObject object){
+    private Pose loadPose(JSONObject object) {
         JSONObject positionObject = (JSONObject) object.get("position");
         return new Pose((Double) positionObject.get("x"), (Double) positionObject.get("y"),
                 Math.toRadians((Double) positionObject.get("rotation")));
