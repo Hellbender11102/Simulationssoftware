@@ -48,17 +48,6 @@ public class SimulationView extends JPanel {
         g2d.drawLine(convertZoom(-offsetX), convertZoom(-offsetY), convertZoom(arena.getWidth() - offsetX), convertZoom(-offsetY));
         g2d.drawLine(convertZoom(arena.getWidth() - offsetX), convertZoom(arena.getHeight() - offsetY), convertZoom(-offsetX), convertZoom(arena.getHeight() - offsetY));
         g2d.drawLine(convertZoom(arena.getWidth() - offsetX), convertZoom(arena.getHeight() - offsetY), convertZoom(arena.getWidth() - offsetX), convertZoom(-offsetY));
-        for (PhysicalEntity pe1 : arena.getPhysicalEntityList()) {
-            for (PhysicalEntity pe2 : arena.getPhysicalEntityList()) {
-                if (!pe1.equals(pe2)) {
-                    Position p2 = pe2.getPose();
-                    Position closest = pe1.getClosestPositionInEntity(p2);
-                    g2d.setColor(pe2.getColor());
-                    g2d.fillRect(convertZoom(closest.getXCoordinate()-offsetX),
-                            convertZoom(arena.getHeight()-closest.getYCoordinate()-offsetY),3,3);
-                }
-            }
-        }
         if (drawLines) {
             g2d.setColor(Color.LIGHT_GRAY);
             for (int i = 10; i < arena.getWidth(); i += 10) {
@@ -104,8 +93,8 @@ public class SimulationView extends JPanel {
             for (RobotInterface robot : arena.getRobots()) {
                 drawRobot(robot, g);
                 if (!infosLeft) {
-                    x = convertZoom(Math.round(robot.getPose().getXCoordinate() - offsetX) - robot.getRadius());
-                    y = convertZoom(arena.getHeight() - Math.round(robot.getPose().getYCoordinate() + offsetY) + robot.getRadius());
+                    x = convertZoom(robot.getPose().getXCoordinate() - offsetX - robot.getRadius());
+                    y = convertZoom(arena.getHeight() - (robot.getPose().getYCoordinate() + offsetY) + robot.getRadius());
                 } else {
                     x += 0;
                     y += fontSize * 5;

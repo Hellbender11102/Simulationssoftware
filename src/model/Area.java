@@ -36,7 +36,7 @@ public class Area extends BaseEntity {
 
     @Override
     public Color getClassColor() {
-        return new Color(180, 255, 180);
+        return new Color(10, 180, 120);
     }
 
     public double getNoticeableDistance() {

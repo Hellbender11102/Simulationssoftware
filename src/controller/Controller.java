@@ -58,6 +58,7 @@ public class Controller {
     void init() {
         random = jsonLoader.loadRandom();
         robotsAndPositionOffsets = jsonLoader.loadRobots(random,logger);
+        arena.getEntityList().clear();
         arena.addEntities(new ArrayList<>(robotsAndPositionOffsets.keySet()));
         arena.addEntities(jsonLoader.loadBoxes(random));
         arena.addEntities(jsonLoader.loadWalls(random));

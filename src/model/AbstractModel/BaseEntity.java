@@ -141,9 +141,9 @@ abstract public class BaseEntity extends Thread implements Entity {
         Position closest =
                 Math.min(edgeUL.euclideanDistance(position), edgeUR.euclideanDistance(position)) <
                         Math.min(edgeLL.euclideanDistance(position), edgeLR.euclideanDistance(position)) ?
-                        edgeUL.euclideanDistance(position) < edgeUR.euclideanDistance(position) ? edgeUR : edgeUL
+                        edgeUL.euclideanDistance(position) < edgeUR.euclideanDistance(position) ? edgeUL : edgeUR
                         :
-                        edgeLL.euclideanDistance(position) < edgeLR.euclideanDistance(position) ? edgeLR : edgeLL;
+                        edgeLL.euclideanDistance(position) < edgeLR.euclideanDistance(position) ? edgeLL : edgeLR;
         if (position.getXCoordinate() <= pose.getXCoordinate() + width / 2 &&
                 position.getXCoordinate() >= pose.getXCoordinate() - width / 2) {
             closest.setXCoordinate(position.getXCoordinate());

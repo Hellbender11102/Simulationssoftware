@@ -48,7 +48,12 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
             setInArenaBounds();
         }
         for (PhysicalEntity physicalEntity : isCollidingWith()) {
-            collision(physicalEntity);
+            if (!physicalEntity.isMovable() && isMovable())
+                notMovableCollision(physicalEntity, this);
+            else if (physicalEntity.isMovable() && !isMovable())
+                notMovableCollision(this, physicalEntity);
+            else if (physicalEntity.isMovable() && isMovable())
+             collision(physicalEntity);
         }
     }
 
@@ -56,31 +61,26 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
         if (!physicalEntity.inArenaBounds()) {
             physicalEntity.setInArenaBounds();
         }
-        if (physicalEntity.getClass().isAssignableFrom(Box.class)) {
-            System.out.println("box "+ getClass() + "BoxPose:"+physicalEntity.getPose()+ " other:"+ getPose());
-        }
-        if (physicalEntity.hasAnBody() && hasAnBody()) {
-            //r2 gets bumped
-            if (physicalEntity.isPositionInEntity(pose.getPositionInDirection(getClosestPositionInEntity(physicalEntity.getPose()).euclideanDistance(pose)))) {
-                bump(this, physicalEntity, pose.getPositionInDirection(trajectorySpeed()));
-            } else if (isPositionInEntity(physicalEntity.getPose().getPositionInDirection(physicalEntity.getClosestPositionInEntity(pose).euclideanDistance(physicalEntity.getPose())))) {   //this gets pumped
-                bump(physicalEntity, this, physicalEntity.getPose().getPositionInDirection(physicalEntity.trajectorySpeed()));
+        //r2 gets bumped
+        if (physicalEntity.isPositionInEntity(pose.getPositionInDirection(getClosestPositionInEntity(physicalEntity.getPose()).euclideanDistance(pose)))) {
+            bump(this, physicalEntity, pose.getPositionInDirection(trajectorySpeed()));
+        } else if (isPositionInEntity(physicalEntity.getPose().getPositionInDirection(physicalEntity.getClosestPositionInEntity(pose).euclideanDistance(physicalEntity.getPose())))) {   //this gets pumped
+            bump(physicalEntity, this, physicalEntity.getPose().getPositionInDirection(physicalEntity.trajectorySpeed()));
+        } else {
+            //both are bumping cause no one drives directly in each other
+            if (pose.getXCoordinate() < physicalEntity.getPose().getXCoordinate()) {
+                bump(this, physicalEntity, new Position(pose.getXCoordinate() + trajectorySpeed(), pose.getYCoordinate()));
+                bump(physicalEntity, this, new Position(physicalEntity.getPose().getXCoordinate() - physicalEntity.trajectorySpeed(), physicalEntity.getPose().getYCoordinate()));
             } else {
-                //both are bumping cause no one drives directly in each other
-                if (pose.getXCoordinate() < physicalEntity.getPose().getXCoordinate()) {
-                    bump(this, physicalEntity, new Position(pose.getXCoordinate() + trajectorySpeed(), pose.getYCoordinate()));
-                    bump(physicalEntity, this, new Position(physicalEntity.getPose().getXCoordinate() - physicalEntity.trajectorySpeed(), physicalEntity.getPose().getYCoordinate()));
-                } else {
-                    bump(this, physicalEntity, new Position(pose.getXCoordinate() - trajectorySpeed(), pose.getYCoordinate()));
-                    bump(physicalEntity, this, new Position(physicalEntity.getPose().getXCoordinate() + physicalEntity.trajectorySpeed(), physicalEntity.getPose().getYCoordinate()));
-                }
-                if (pose.getYCoordinate() < physicalEntity.getPose().getYCoordinate()) {
-                    bump(this, physicalEntity, new Position(pose.getXCoordinate(), pose.getYCoordinate() + trajectorySpeed()));
-                    bump(physicalEntity, this, new Position(physicalEntity.getPose().getXCoordinate(), physicalEntity.getPose().getYCoordinate() - physicalEntity.trajectorySpeed()));
-                } else {
-                    bump(this, physicalEntity, new Position(pose.getXCoordinate(), pose.getYCoordinate() - trajectorySpeed()));
-                    bump(physicalEntity, this, new Position(physicalEntity.getPose().getXCoordinate(), physicalEntity.getPose().getYCoordinate() + physicalEntity.trajectorySpeed()));
-                }
+                bump(this, physicalEntity, new Position(pose.getXCoordinate() - trajectorySpeed(), pose.getYCoordinate()));
+                bump(physicalEntity, this, new Position(physicalEntity.getPose().getXCoordinate() + physicalEntity.trajectorySpeed(), physicalEntity.getPose().getYCoordinate()));
+            }
+            if (pose.getYCoordinate() < physicalEntity.getPose().getYCoordinate()) {
+                bump(this, physicalEntity, new Position(pose.getXCoordinate(), pose.getYCoordinate() + trajectorySpeed()));
+                bump(physicalEntity, this, new Position(physicalEntity.getPose().getXCoordinate(), physicalEntity.getPose().getYCoordinate() - physicalEntity.trajectorySpeed()));
+            } else {
+                bump(this, physicalEntity, new Position(pose.getXCoordinate(), pose.getYCoordinate() - trajectorySpeed()));
+                bump(physicalEntity, this, new Position(physicalEntity.getPose().getXCoordinate(), physicalEntity.getPose().getYCoordinate() + physicalEntity.trajectorySpeed()));
             }
         }
     }
@@ -92,26 +92,40 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
      */
     private void bump(PhysicalEntity bumping, PhysicalEntity getsBumped, Position positionInBumpDirection) {
         Position vector = bumping.getPose().creatPositionByDecreasing(positionInBumpDirection);
-        if (getsBumped.isMovable()) getsBumped.getPose().decPosition(vector);
+        getsBumped.getPose().decPosition(vector);
 
-        if (getPose().getXCoordinate() < width / 2 && bumping.isMovable())
+        if (getsBumped.getPose().getXCoordinate() < width / 2)
             bumping.getPose().incPosition(vector.getXCoordinate(), 0);
-        else if (getPose().getXCoordinate() > arena.getWidth() - width / 2 && bumping.isMovable())
+        else if (getsBumped.getPose().getXCoordinate() > arena.getWidth() - width / 2)
             bumping.getPose().incPosition(vector.getXCoordinate(), 0);
-        if (getPose().getYCoordinate() < height / 2 && bumping.isMovable())
+        if (getsBumped.getPose().getYCoordinate() < height / 2)
             bumping.getPose().incPosition(0, vector.getYCoordinate());
-        else if (getPose().getYCoordinate() > arena.getHeight() - height / 2 && bumping.isMovable())
+        else if (getsBumped.getPose().getYCoordinate() > arena.getHeight() - height / 2)
             bumping.getPose().incPosition(0, vector.getYCoordinate());
+    }
+
+    private void notMovableCollision(PhysicalEntity notMovable, PhysicalEntity other) {
+        double notMovableX = notMovable.getPose().getXCoordinate(), notMovableY = notMovable.getPose().getXCoordinate(),
+                movableX = other.getPose().getXCoordinate(), movableY = other.getPose().getYCoordinate();
+        double notMovableWidth = notMovable.getWidth(), notMovableHeight = notMovable.getHeight(),
+                movableWidth = other.getWidth(), movableHeight = other.getHeight();
+        boolean leftOrRight = (movableY > notMovableY + notMovableWidth || movableY < notMovableY - notMovableWidth);
+        boolean aboveOrBelow = (movableX > notMovableX + notMovableHeight || movableX < notMovableX - notMovableHeight);
+        if (notMovableX <= movableX && leftOrRight)
+            other.getPose().setXCoordinate(notMovableX + notMovableWidth / 2 + movableWidth / 2);
+        else if (notMovableX > movableX && leftOrRight)
+            other.getPose().setXCoordinate(notMovableX - notMovableWidth / 2 - movableWidth / 2);
+        if (notMovableY <= movableY && aboveOrBelow)
+            other.getPose().setYCoordinate(notMovableY + notMovableHeight / 2 + movableHeight / 2);
+        else if (notMovableY > movableY && aboveOrBelow)
+            other.getPose().setYCoordinate(notMovableY - notMovableHeight / 2 - movableHeight / 2);
     }
 
     public LinkedList<PhysicalEntity> isCollidingWith() {
         LinkedList<PhysicalEntity> physicalEntities = new LinkedList<>();
         for (PhysicalEntity physicalEntity : arena.getPhysicalEntityList()) {
-            if (isPositionInEntity(physicalEntity.getClosestPositionInEntity(pose)) && !equals(physicalEntity)){
+            if (isPositionInEntity(physicalEntity.getClosestPositionInEntity(pose)) && !equals(physicalEntity)) {
                 physicalEntities.add(physicalEntity);
-                if(physicalEntity.getClass().isAssignableFrom(Box.class)){
-                    System.out.println("Closest pose = "+physicalEntity.getClosestPositionInEntity(pose));
-                }
             }
         }
         return physicalEntities;
