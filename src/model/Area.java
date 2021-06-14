@@ -1,7 +1,6 @@
 package model;
 
 import model.AbstractModel.BaseEntity;
-import model.AbstractModel.PhysicalEntity;
 
 import java.awt.*;
 import java.util.Random;
@@ -42,5 +41,9 @@ public class Area extends BaseEntity {
 
     public double getNoticeableDistance() {
         return noticeableDistance;
+    }
+
+    public Position getClosestPositionInEntity(Position position) {
+        return closestPositionInEntityForCircle(position,width/2.);
     }
 }

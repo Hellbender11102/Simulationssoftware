@@ -1,8 +1,6 @@
 package model.AbstractModel;
 
-import model.Arena;
-import model.Pose;
-import model.Position;
+import model.*;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -50,19 +48,22 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
             setInArenaBounds();
         }
         for (PhysicalEntity physicalEntity : isCollidingWith()) {
-            recursiveCollision(physicalEntity);
+            collision(physicalEntity);
         }
     }
 
-    public void recursiveCollision(PhysicalEntity physicalEntity) {
+    public void collision(PhysicalEntity physicalEntity) {
         if (!physicalEntity.inArenaBounds()) {
-            setInArenaBounds();
+            physicalEntity.setInArenaBounds();
+        }
+        if (physicalEntity.getClass().isAssignableFrom(Box.class)) {
+            System.out.println("box "+ getClass() + "BoxPose:"+physicalEntity.getPose()+ " other:"+ getPose());
         }
         if (physicalEntity.hasAnBody() && hasAnBody()) {
             //r2 gets bumped
-            if (physicalEntity.isPositionInEntity(pose.getPositionInDirection(getClosestPositionInBody(physicalEntity.getPose()).euclideanDistance(pose)))) {
+            if (physicalEntity.isPositionInEntity(pose.getPositionInDirection(getClosestPositionInEntity(physicalEntity.getPose()).euclideanDistance(pose)))) {
                 bump(this, physicalEntity, pose.getPositionInDirection(trajectorySpeed()));
-            } else if (isPositionInEntity(physicalEntity.getPose().getPositionInDirection(physicalEntity.getClosestPositionInBody(pose).euclideanDistance(physicalEntity.getPose())))) {   //this gets pumped
+            } else if (isPositionInEntity(physicalEntity.getPose().getPositionInDirection(physicalEntity.getClosestPositionInEntity(pose).euclideanDistance(physicalEntity.getPose())))) {   //this gets pumped
                 bump(physicalEntity, this, physicalEntity.getPose().getPositionInDirection(physicalEntity.trajectorySpeed()));
             } else {
                 //both are bumping cause no one drives directly in each other
@@ -106,8 +107,12 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
     public LinkedList<PhysicalEntity> isCollidingWith() {
         LinkedList<PhysicalEntity> physicalEntities = new LinkedList<>();
         for (PhysicalEntity physicalEntity : arena.getPhysicalEntityList()) {
-            if (isPositionInEntity(physicalEntity.getClosestPositionInBody(pose)))
+            if (isPositionInEntity(physicalEntity.getClosestPositionInEntity(pose)) && !equals(physicalEntity)){
                 physicalEntities.add(physicalEntity);
+                if(physicalEntity.getClass().isAssignableFrom(Box.class)){
+                    System.out.println("Closest pose = "+physicalEntity.getClosestPositionInEntity(pose));
+                }
+            }
         }
         return physicalEntities;
     }

@@ -456,8 +456,8 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     }
 
     @Override
-    public Position getClosestPositionInBody(Position position) {
-        return pose.getPositionInDirection(getRadius(), pose.calcAngleForPosition(position));
+    public Position getClosestPositionInEntity(Position position) {
+        return closestPositionInEntityForCircle(position,getRadius());
     }
 
     public Color getColor() {

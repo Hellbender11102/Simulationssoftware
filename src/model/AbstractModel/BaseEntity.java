@@ -3,6 +3,7 @@ package model.AbstractModel;
 import controller.Logger;
 import model.Arena;
 import model.Pose;
+import model.Position;
 
 import java.awt.*;
 import java.util.LinkedList;
@@ -22,7 +23,7 @@ abstract public class BaseEntity extends Thread implements Entity {
     protected double width, height;
     protected final Color color;
 
-    protected BaseEntity(Arena arena, Random random, double width, double height,Pose pose) {
+    protected BaseEntity(Arena arena, Random random, double width, double height, Pose pose) {
         this.poseRingMemory = new Pose[ringMemorySize];
         this.pose = pose;
         this.arena = arena;
@@ -33,13 +34,13 @@ abstract public class BaseEntity extends Thread implements Entity {
     }
 
 
-
     // Ring memory logic
 
     /**
      * Reads the poseRingMemory and orders it correctly in a list
      * from list entry zero current position
      * to list entry ringMemorySize position furthest back in time
+     *
      * @return List<Pose>
      */
     protected List<Pose> getPosesFromMemory() {
@@ -117,7 +118,7 @@ abstract public class BaseEntity extends Thread implements Entity {
         return isPaused;
     }
 
-        public boolean equals(Entity entity) {
+    public boolean equals(Entity entity) {
         return pose.equals(entity.getPose()) && color == entity.getColor()
                 && entity.hasAnBody() == hasAnBody() && entity.getClass().equals(getClass());
     }
@@ -127,11 +128,35 @@ abstract public class BaseEntity extends Thread implements Entity {
     }
 
     @Override
-    public double getWidth(){
+    public double getWidth() {
         return width;
     }
+
     @Override
-    public double getHeight(){
+    public double getHeight() {
         return height;
     }
+
+    protected Position closestPositionInEntityForSquare(Position position, Position edgeUL, Position edgeUR, Position edgeLL, Position edgeLR) {
+        Position closest =
+                Math.min(edgeUL.euclideanDistance(position), edgeUR.euclideanDistance(position)) <
+                        Math.min(edgeLL.euclideanDistance(position), edgeLR.euclideanDistance(position)) ?
+                        edgeUL.euclideanDistance(position) < edgeUR.euclideanDistance(position) ? edgeUR : edgeUL
+                        :
+                        edgeLL.euclideanDistance(position) < edgeLR.euclideanDistance(position) ? edgeLR : edgeLL;
+        if (position.getXCoordinate() <= pose.getXCoordinate() + width / 2 &&
+                position.getXCoordinate() >= pose.getXCoordinate() - width / 2) {
+            closest.setXCoordinate(position.getXCoordinate());
+        } else if (position.getYCoordinate() <= pose.getYCoordinate() + height / 2 &&
+                position.getYCoordinate() >= pose.getYCoordinate() - height / 2) {
+            closest.setYCoordinate(position.getYCoordinate());
+        }
+        return closest;
+    }
+
+    protected Position closestPositionInEntityForCircle(Position position, double radius) {
+        return pose.getPositionInDirection(radius, pose.calcAngleForPosition(position));
+    }
+
+
 }

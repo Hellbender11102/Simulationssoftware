@@ -8,16 +8,16 @@
   },
   "robots": [
     {
-      "type": "1",
-      "engineR": 1.0,
-      "engineL": 1.0,
+      "type": "default",
+      "engineR": 4.0,
+      "engineL": 4.0,
       "distance": 1.0,
       "diameters": 4.0,
       "powerTransmission": 0.0,
       "position": {
         "x": 10.0,
-        "y": 10.0,
-        "rotation": 90.0
+        "y": 12.5,
+        "rotation": 0.0
       }
     },
     {
@@ -65,8 +65,8 @@
       "width": 2.0,
       "height": 2.0,
       "position": {
-        "x": 90.0,
-        "y": 90.0,
+        "x": 50.0,
+        "y": 10.0,
         "rotation": 0.0
       }
     }

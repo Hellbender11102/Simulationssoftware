@@ -22,9 +22,7 @@ public interface PhysicalEntity extends Entity {
 
     abstract public void collisionDetection();
 
-    abstract public void recursiveCollision(PhysicalEntity physicalEntity);
-
-    abstract public Position getClosestPositionInBody(Position position);
+    abstract public void collision(PhysicalEntity physicalEntity);
 
     abstract public int getTimeToSimulate();
 
