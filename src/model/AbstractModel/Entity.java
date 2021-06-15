@@ -39,4 +39,6 @@ public interface Entity {
     abstract public double getHeight();
 
     abstract public Position getClosestPositionInEntity(Position position);
+
+    abstract public Position getClosestPositionInTorus(Position position);
 }

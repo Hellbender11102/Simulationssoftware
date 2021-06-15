@@ -1,5 +1,6 @@
 package model.RobotTypes;
 
+import model.Position;
 import model.RobotBuilder;
 
 import java.awt.*;
@@ -15,13 +16,7 @@ public class Robot2 extends BaseRobot {
     @Override
     public void behavior() {
 
-        if (toggle == 0 && turn(-180,4,0)) {
-            System.out.println("case1");
-            toggle = 1;
-        } else if (toggle == 1 && turn(180)) {
-            System.out.println("case2");
-            toggle = 0;
-        }
+        driveToPosition(new Position(-1,-1),1,8);
     }
 
     @Override

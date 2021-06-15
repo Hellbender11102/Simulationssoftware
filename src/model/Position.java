@@ -96,4 +96,14 @@ public class Position {
     public Position creatPositionByDecreasing(Position vector) {
         return new Position(xCoordinate - vector.xCoordinate, yCoordinate - vector.yCoordinate);
     }
+
+    /**
+     * @param x double
+     * @param y double
+     * @return position - position
+     */
+    synchronized
+    public Position creatPositionByDecreasing(double x, double y) {
+        return new Position(xCoordinate - x, yCoordinate - y);
+    }
 }
