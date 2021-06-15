@@ -31,7 +31,7 @@ public class Area extends BaseEntity {
      * @return boolean
      */
     public boolean isPositionInEntity(Position position) {
-        return pose.euclideanDistance(position) <= width;
+       return isPositionInEntityCircle(position);
     }
 
     @Override

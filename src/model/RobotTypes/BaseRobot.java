@@ -143,7 +143,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * @return boolean
      */
     public boolean isPositionInEntity(Position position) {
-        return pose.euclideanDistance(position) <= getRadius();
+        return isPositionInEntityCircle(position);
     }
 
     /**
@@ -155,6 +155,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      */
     void driveToPosition(Position position, double precisionInDegree, double speed) {
         speed = speed < maxSpeed ? speed / 2 : maxSpeed / 2;
+            if(arena.isTorus) position = getClosestPositionInTorus(position);
         if (rotateToAngle(pose.calcAngleForPosition(position), Math.toRadians(precisionInDegree), speed, 0)) {
             setEngines(speed, speed);
         }

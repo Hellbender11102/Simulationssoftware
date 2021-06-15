@@ -41,19 +41,12 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
             pose.setYCoordinate(arena.getHeight() - height / 2);
     }
 
-    private void setInArenaWithTorus(PhysicalEntity physicalEntity) {
-        Pose pose = physicalEntity.getPose();
-        pose.setXCoordinate(pose.getXCoordinate() % arena.getWidth());
-        pose.setYCoordinate(pose.getYCoordinate() % arena.getHeight());
-        if (pose.getXCoordinate() < 0) pose.incPosition(arena.getWidth(), 0);
-        if (pose.getYCoordinate() < 0) pose.incPosition(0, arena.getHeight());
-    }
-
     //TODO
     @Override
     public void collisionDetection() {
-
         for (PhysicalEntity physicalEntity : isCollidingWith()) {
+            System.out.println(
+            pose.euclideanDistance(physicalEntity.getPose()));
             if (!physicalEntity.isMovable() && isMovable())
                 notMovableCollision(physicalEntity, this);
             else if (physicalEntity.isMovable() && !isMovable())
@@ -63,13 +56,13 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
             if (!physicalEntity.inArenaBounds() && !arena.isTorus) {
                 physicalEntity.setInArenaBounds();
             } else if (arena.isTorus) {
-                setInArenaWithTorus(physicalEntity);
+                arena.setEntityInTorusArena(physicalEntity);
             }
         }
         if (!inArenaBounds() && !arena.isTorus) {
             setInArenaBounds();
         } else if (arena.isTorus) {
-            setInArenaWithTorus(this);
+            arena.setEntityInTorusArena(this);
         }
     }
 

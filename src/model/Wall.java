@@ -29,10 +29,7 @@ public class Wall extends BasePhysicalEntity {
 
     @Override
     public boolean isPositionInEntity(Position position) {
-        return position.getXCoordinate() <= pose.getXCoordinate() + height / 2 &&
-                position.getXCoordinate() >= pose.getXCoordinate() - height / 2 &&
-                position.getYCoordinate() <= pose.getYCoordinate() + width / 2 &&
-                position.getYCoordinate() >= pose.getYCoordinate() - width / 2;
+        return isPositionInEntitySquare(position);
     }
 
     @Override

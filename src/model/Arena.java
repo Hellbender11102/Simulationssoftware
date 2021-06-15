@@ -48,6 +48,20 @@ public class Arena {
         this.isTorus = isTorus;
     }
 
+    public Position setPositionInBounds(Position position) {
+        Position buffPosition = position;
+        buffPosition.setXCoordinate(position.getXCoordinate() % width);
+        buffPosition.setYCoordinate(position.getYCoordinate() % height);
+        if (buffPosition.getXCoordinate() < 0) buffPosition.incPosition(width, 0);
+        if (buffPosition.getYCoordinate() < 0) buffPosition.incPosition(0, height);
+        return buffPosition;
+    }
+
+    public void setEntityInTorusArena(Entity entity) {
+        entity.getPose().setXCoordinate(setPositionInBounds(entity.getPose()).getXCoordinate());
+        entity.getPose().setYCoordinate(setPositionInBounds(entity.getPose()).getYCoordinate());
+    }
+
     @Override
     public String toString() {
         return "width:" + singleton.width + " height:" + singleton.height;

@@ -87,7 +87,15 @@ public class SimulationView extends JPanel {
                         convertZoom(arena.getHeight() - position.getYCoordinate() - offsetY)
                         , convertZoom(2), convertZoom(2));
             }
-
+        if (true) //TODO DEBUGGER
+            for (RobotInterface robot : arena.getRobots()) {
+                for (RobotInterface robot2 : arena.getRobots()) {
+                    Position position = robot.getClosestPositionInEntity(robot2.getPose());
+                    g2d.setColor(robot2.getColor());
+                    g2d.fillOval(convertZoom(position.getXCoordinate() - offsetX),
+                            convertZoom(arena.getHeight() - position.getYCoordinate() - offsetY), 5, 5);
+                }
+            }
         if (arena.getRobots() != null) {
             int x = convertZoom(arena.getWidth() - offsetX + fontSize) + 35, y = -convertZoom(offsetY) - fontSize * 5, n = 0;
             for (RobotInterface robot : arena.getRobots()) {

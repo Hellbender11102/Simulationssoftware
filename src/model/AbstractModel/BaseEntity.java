@@ -163,8 +163,22 @@ abstract public class BaseEntity extends Thread implements Entity {
         return pose.getPositionInDirection(radius, pose.calcAngleForPosition(position));
     }
 
+    protected boolean isPositionInEntitySquare(Position position) {
+        position =  arena.setPositionInBounds(position);
+        return position.getXCoordinate() <= pose.getXCoordinate() + height / 2 &&
+                position.getXCoordinate() >= pose.getXCoordinate() - height / 2 &&
+                position.getYCoordinate() <= pose.getYCoordinate() + width / 2 &&
+                position.getYCoordinate() >= pose.getYCoordinate() - width / 2;
+    }
+
+    public boolean isPositionInEntityCircle(Position position) {
+        position = arena.setPositionInBounds(position);
+        return pose.euclideanDistance(position) <= width /2.;
+    }
+
     /**
      * Checks if an Position outside of the Walls is closer due to the Torus Arena Transformation
+     *
      * @param position Position target
      * @return position
      */
@@ -177,18 +191,17 @@ abstract public class BaseEntity extends Thread implements Entity {
             position = pose.euclideanDistance(position.creatPositionByDecreasing(-arena.getWidth(), 0))
                     < pose.euclideanDistance(position) ? position.creatPositionByDecreasing(-arena.getWidth(), 0) :
                     position;
-        }  
-        if (position.getYCoordinate() >  arena.getHeight() / 2. && pose.getYCoordinate() <  arena.getHeight()/ 2.)
-            position = pose.euclideanDistance(position.creatPositionByDecreasing(arena.getWidth(), 0))
-                    < pose.euclideanDistance(position) ? position.creatPositionByDecreasing(arena.getWidth(), 0) :
+        }
+        if (position.getYCoordinate() > arena.getHeight() / 2. && pose.getYCoordinate() < arena.getHeight() / 2.)
+            position = pose.euclideanDistance(position.creatPositionByDecreasing(0, arena.getHeight()))
+                    < pose.euclideanDistance(position) ? position.creatPositionByDecreasing(0, arena.getHeight()) :
                     position;
         else if (position.getYCoordinate() < arena.getHeight() / 2. && pose.getYCoordinate() > arena.getHeight() / 2.) {
-            position = pose.euclideanDistance(position.creatPositionByDecreasing(0, arena.getHeight()))
+            position = pose.euclideanDistance(position.creatPositionByDecreasing(0, -arena.getHeight()))
                     < pose.euclideanDistance(position) ? position.creatPositionByDecreasing(0, -arena.getHeight()) :
                     position;
         }
         return position;
     }
-
 
 }
