@@ -79,9 +79,8 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
         double x=entity1.getPose().getXCoordinate(),y=entity1.getPose().getYCoordinate();
         Position v1 = entity1.getPose().creatPositionByDecreasing(entity1.getPose().getPositionInDirection(entity1.trajectorySpeed()));
         Position v2 = entity1.getPose().creatPositionByDecreasing(entity2.getPose().getPositionInDirection(entity2.trajectorySpeed()));
-        Position orientationOneNormalized = new Position(1/Math.sqrt(x*x+y*y *entity1.getPose().creatPositionByDecreasing().getXCoordinate());
-/*
-        v1o = v1 - p * (p*v1);
+   /*     Position orientationOneNormalized = new Position(1/Math.sqrt(x*x+y*y *entity1.getPose().creatPositionByDecreasing().getXCoordinate());
+     v1o = v1 - p * (p*v1);
         v2p = p * (p*v2);
 
         vNew = v1o + v2p;
