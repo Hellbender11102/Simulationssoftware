@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Random;
 
 abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalEntity {
-
     protected BasePhysicalEntity(Arena arena, Random random, double width, double height, Pose pose) {
         super(arena, random, width, height, pose);
     }
@@ -51,45 +50,44 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
                 notMovableCollision(this, physicalEntity);
             else if (physicalEntity.isMovable() && isMovable())
                 collision(physicalEntity);
-            if (!physicalEntity.inArenaBounds() && !arena.isTorus) {
-                physicalEntity.setInArenaBounds();
-            } else if (arena.isTorus) {
-                arena.setEntityInTorusArena(physicalEntity);
-            }
         }
         if (!inArenaBounds() && !arena.isTorus) {
             setInArenaBounds();
-        } else if (arena.isTorus) {
+        } else if (!inArenaBounds() && arena.isTorus) {
             arena.setEntityInTorusArena(this);
         }
     }
 
+    /**
+     * @param physicalEntity
+     */
     public void collision(PhysicalEntity physicalEntity) {
-        Position vector = pose.clone();
-        if (pose.getXCoordinate() < physicalEntity.getPose().getXCoordinate()) {
-            vector.incPosition(trajectorySpeed(),0);
-        } else {
-          vector.incPosition(-trajectorySpeed(),0);
+        Position inTrajectoryPath = pose.getPositionInDirection(trajectorySpeed(), pose.getRotation());
+        double direction = pose.calcAngleForPosition(physicalEntity.getPose());
+        inTrajectoryPath = pose.creatPositionByDecreasing(inTrajectoryPath);
+        if (!Double.isNaN(direction)) {
+            direction = (Math.PI + direction) % Math.PI * 2;
+            Position inOppositeDirections = pose.getPositionInDirection(trajectorySpeed() / 2, direction);
+            inTrajectoryPath.decPosition(inOppositeDirections);
         }
-        if (pose.getYCoordinate() < physicalEntity.getPose().getYCoordinate()) {
-        vector.incPosition(0,trajectorySpeed());
-        } else {
-           vector.incPosition(0,-trajectorySpeed());
-        }
-        bump(this,physicalEntity,vector);
+
+        physicalEntity.getPose().decPosition(inTrajectoryPath);
+        pose.incPosition(inTrajectoryPath);
     }
 
-    /**
-     * @param bumping                 Robot that bumps
-     * @param getsBumped              Robot that gets bumped
-     * @param positionInBumpDirection Position in which the bump directs
-     */
-    private void bump(PhysicalEntity bumping, PhysicalEntity getsBumped, Position positionInBumpDirection) {
-        Position vector = bumping.getPose().creatPositionByDecreasing(positionInBumpDirection);
-        while (isPositionInEntity(bumping.getClosestPositionInEntity(getsBumped.getPose()))) {
-            getsBumped.getPose().decPosition(vector);
-            bumping.getPose().incPosition(vector);
-        }
+    private void slateElasticShock(PhysicalEntity entity1, PhysicalEntity entity2) {
+        double x=entity1.getPose().getXCoordinate(),y=entity1.getPose().getYCoordinate();
+        Position v1 = entity1.getPose().creatPositionByDecreasing(entity1.getPose().getPositionInDirection(entity1.trajectorySpeed()));
+        Position v2 = entity1.getPose().creatPositionByDecreasing(entity2.getPose().getPositionInDirection(entity2.trajectorySpeed()));
+        Position orientationOneNormalized = new Position(1/Math.sqrt(x*x+y*y *entity1.getPose().creatPositionByDecreasing().getXCoordinate());
+/*
+        v1o = v1 - p * (p*v1);
+        v2p = p * (p*v2);
+
+        vNew = v1o + v2p;
+*/
+        double xValueForNormalizedVektor;
+        double yValueForNormalizedVektor;
     }
 
     /**
@@ -169,6 +167,20 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
     public double getHeight() {
         return height;
     }
+
+    @Override
+    public void run() {
+        while (!isPaused) {
+            collisionDetection();
+            updatePositionMemory();
+            try {
+                sleep(5);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 }
 
 

@@ -8,10 +8,11 @@ public class Position {
         this.yCoordinate = yCoordinate;
     }
 
-
+    synchronized
     public Position clone() {
         return new Position(xCoordinate, yCoordinate);
     }
+
 
     public double getXCoordinate() {
         return xCoordinate;
@@ -21,6 +22,7 @@ public class Position {
     public void setXCoordinate(double xCoordinate) {
         this.xCoordinate = xCoordinate;
     }
+
 
     public double getYCoordinate() {
         return yCoordinate;
@@ -37,10 +39,15 @@ public class Position {
         else return Double.NaN;
     }
 
-
+    /**
+     *
+     * @param position
+     * @return
+     */
     public double calcAngleForPosition(Position position) {
         return position.creatPositionByDecreasing(this).getPolarAngle();
     }
+
 
     public double getPolarDistance() {
         return Math.hypot(xCoordinate, yCoordinate);
@@ -59,7 +66,6 @@ public class Position {
     }
 
     @Override
-
     public String toString() {
         return "Position: " +
                 "x:" + String.format("%,.2f", xCoordinate) +
@@ -88,7 +94,6 @@ public class Position {
      * @param vector Position
      * @return position - position
      */
-    synchronized
     public Position creatPositionByDecreasing(Position vector) {
         return new Position(xCoordinate - vector.xCoordinate, yCoordinate - vector.yCoordinate);
     }
@@ -98,7 +103,6 @@ public class Position {
      * @param y double
      * @return position - position
      */
-    synchronized
     public Position creatPositionByDecreasing(double x, double y) {
         return new Position(xCoordinate - x, yCoordinate - y);
     }

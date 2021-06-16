@@ -215,35 +215,35 @@ class JsonLoader {
      * @param logger Logger
      * @return Map<RobotInterface, Position>
      */
-    Map<RobotInterface, Position> loadRobots(Random random, Logger logger) {
+    List<Entity> loadRobots(Random random, Logger logger) {
 
         if (variables != null && variables.containsKey("robots")) {
             JSONArray robots = (JSONArray) variables.get("robots");
             if (robots.size() == 0) System.err.println("Zero robots in variables.json.");
-            Map<RobotInterface, Position> robotsAndPositionOffsets = new HashMap<>();
+            List<Entity> robotList = new LinkedList<>();
             robots.forEach(entry -> loadRobots(
                     (JSONObject) entry,
-                    robotsAndPositionOffsets,
+                    robotList,
                     random,
                     arena,
                     logger
                     , loadSimulatedTime()));
-            return robotsAndPositionOffsets;
+            return robotList;
         }
         System.err.println("No entry robots found in the variables.json");
-        return new HashMap<>();
+        return new LinkedList<>();
     }
 
     /**
      * @param robotObject              JSONObject
-     * @param robotsAndPositionOffsets Map<RobotInterface, Position>
+     * @param robotList                List<Entity>
      * @param random                   Random
      * @param arena                    Arena
      * @param logger                   Logger
      * @param timeToSimulate           int
      */
     private void loadRobots(
-            JSONObject robotObject, Map<RobotInterface, Position> robotsAndPositionOffsets, Random random, Arena arena,
+            JSONObject robotObject,List<Entity> robotList, Random random, Arena arena,
             Logger logger, int timeToSimulate) {
         if (robotObject.containsKey("engineR") && robotObject.containsKey("engineL") &&
                 robotObject.containsKey("distance") && robotObject.containsKey("powerTransmission") &&
@@ -279,9 +279,9 @@ class JsonLoader {
                 default:
                     robot = builder.buildDefault();
             }
-            robotsAndPositionOffsets.put(robot, new Position(0, 0));
+            robotList.add(robot);
         } else
-        System.err.println("Could not load robot " + robotsAndPositionOffsets.size() + " correctly." +
+        System.err.println("Could not load robot " + robotList.size() + " correctly." +
                 "Entry engineR, engineL, distance, powerTransmission, diameters, type or position is missing.");
     }
 

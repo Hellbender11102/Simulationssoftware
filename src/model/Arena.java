@@ -62,6 +62,35 @@ public class Arena {
         entity.getPose().setYCoordinate(setPositionInBounds(entity.getPose()).getYCoordinate());
     }
 
+    /**
+     * Checks if an Position outside of the Walls is closer due to the Torus Arena Transformation
+     *
+     * @param position1 Position start
+     * @param position2 Position target
+     * @return position
+     */
+    public Position getClosestPositionInTorus(Position position1, Position position2) {
+        if (position2.getXCoordinate() > width / 2. && position1.getXCoordinate() < width / 2.)
+            position2 = position1.euclideanDistance(position2.creatPositionByDecreasing(width, 0))
+                    < position1.euclideanDistance(position2) ? position2.creatPositionByDecreasing(width, 0) :
+                    position2;
+        else if (position2.getXCoordinate() < width / 2. && position1.getXCoordinate() > width / 2.) {
+            position2 = position1.euclideanDistance(position2.creatPositionByDecreasing(-width, 0))
+                    < position1.euclideanDistance(position2) ? position2.creatPositionByDecreasing(-width, 0) :
+                    position2;
+        }
+        if (position2.getYCoordinate() > height / 2. && position1.getYCoordinate() < height / 2.)
+            position2 = position1.euclideanDistance(position2.creatPositionByDecreasing(0, height))
+                    < position1.euclideanDistance(position2) ? position2.creatPositionByDecreasing(0, height) :
+                    position2;
+        else if (position2.getYCoordinate() < height / 2. && position1.getYCoordinate() > height / 2.) {
+            position2 = position1.euclideanDistance(position2.creatPositionByDecreasing(0, -height))
+                    < position1.euclideanDistance(position2) ? position2.creatPositionByDecreasing(0, -height) :
+                    position2;
+        }
+        return position2;
+    }
+
     @Override
     public String toString() {
         return "width:" + singleton.width + " height:" + singleton.height;

@@ -15,7 +15,6 @@ public class Controller {
     private View view;
     private Arena arena;
     private List<Thread> entityThreads = new LinkedList<>();
-    private Map<RobotInterface, Position> robotsAndPositionOffsets;
     private Random random;
     private JsonLoader jsonLoader = new JsonLoader();
     private final Timer repaintTimer = new Timer();
@@ -59,9 +58,8 @@ public class Controller {
 
     void init() {
         random = jsonLoader.loadRandom();
-        robotsAndPositionOffsets = jsonLoader.loadRobots(random,logger);
         arena.getEntityList().clear();
-        arena.addEntities(new ArrayList<>(robotsAndPositionOffsets.keySet()));
+        arena.addEntities(jsonLoader.loadRobots(random,logger));
         arena.addEntities(jsonLoader.loadBoxes(random));
         arena.addEntities(jsonLoader.loadWalls(random));
         arena.getEntityList().addAll(jsonLoader.loadAreas(random));
@@ -123,27 +121,26 @@ public class Controller {
             public void keyPressed(KeyEvent e) {
                 switch (e.getKeyCode()) {
                     case KeyEvent.VK_SPACE:
-                        robots = new HashMap<>();
-                        for (RobotInterface robot : robotsAndPositionOffsets.keySet()) {
+                        for (PhysicalEntity entity : arena.getPhysicalEntityList()) {
                             if (stopped) {
-                                robot.setToLatestPose();
-                                robot.togglePause();
-                                startThread(robot);
+                                entity.setToLatestPose();
+                                entity.togglePause();
+                                startThread(entity);
                             } else {
-                                robot.togglePause();
+                                entity.togglePause();
                             }
                         }
                         stopped = !stopped;
                         break;
                     case KeyEvent.VK_B:
                         if (stopped)
-                            for (RobotInterface robot : robotsAndPositionOffsets.keySet()) {
+                            for (RobotInterface robot : arena.getRobots()) {
                                 robot.setPrevPose();
                             }
                         break;
                     case KeyEvent.VK_N:
                         if (stopped)
-                            for (RobotInterface robot : robotsAndPositionOffsets.keySet()) {
+                            for (RobotInterface robot : arena.getRobots()) {
                                 robot.setNextPose();
                             }
                         break;
@@ -236,7 +233,7 @@ public class Controller {
             logger.saveFullLogToFile(false);
         });
         view.getRestart().addActionListener(actionListener -> {
-            for (RobotInterface robot : robotsAndPositionOffsets.keySet()) {
+            for (RobotInterface robot : arena.getRobots()) {
                 if (!stopped) {
                     robot.togglePause();
                 }
@@ -245,7 +242,7 @@ public class Controller {
             init();
         });
         view.getFullRestart().addActionListener(actionListener -> {
-            for (RobotInterface robot : robotsAndPositionOffsets.keySet()) {
+            for (RobotInterface robot : arena.getRobots()) {
                 if (!stopped) {
                     robot.togglePause();
                 }

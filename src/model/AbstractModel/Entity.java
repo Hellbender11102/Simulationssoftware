@@ -40,5 +40,4 @@ public interface Entity {
 
     abstract public Position getClosestPositionInEntity(Position position);
 
-    abstract public Position getClosestPositionInTorus(Position position);
 }

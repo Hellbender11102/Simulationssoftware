@@ -18,10 +18,10 @@ abstract public class BaseEntity extends Thread implements Entity {
     protected Pose pose;
     protected Logger logger;
     protected final Arena arena;
-    protected boolean isPaused = true;
     protected final Random random;
     protected double width, height;
     protected final Color color;
+    protected boolean isPaused = true;
 
     protected BaseEntity(Arena arena, Random random, double width, double height, Pose pose) {
         this.poseRingMemory = new Pose[ringMemorySize];
@@ -139,7 +139,7 @@ abstract public class BaseEntity extends Thread implements Entity {
 
     protected Position closestPositionInEntityForSquare(Position position, Position edgeUL, Position edgeUR, Position edgeLL, Position edgeLR) {
         if (arena.isTorus) {
-            position = getClosestPositionInTorus(position);
+            position = arena.getClosestPositionInTorus(pose,position);
         }
         Position closest = Math.min(edgeUL.euclideanDistance(position), edgeUR.euclideanDistance(position)) <
                 Math.min(edgeLL.euclideanDistance(position), edgeLR.euclideanDistance(position)) ?
@@ -158,7 +158,7 @@ abstract public class BaseEntity extends Thread implements Entity {
 
     protected Position closestPositionInEntityForCircle(Position position, double radius) {
         if (arena.isTorus) {
-            position = getClosestPositionInTorus(position);
+            position = arena.getClosestPositionInTorus(pose,position);
         }
         return pose.getPositionInDirection(radius, pose.calcAngleForPosition(position));
     }
@@ -174,34 +174,6 @@ abstract public class BaseEntity extends Thread implements Entity {
     public boolean isPositionInEntityCircle(Position position) {
         position = arena.setPositionInBounds(position);
         return pose.euclideanDistance(position) <= width /2;
-    }
-
-    /**
-     * Checks if an Position outside of the Walls is closer due to the Torus Arena Transformation
-     *
-     * @param position Position target
-     * @return position
-     */
-    public Position getClosestPositionInTorus(Position position) {
-        if (position.getXCoordinate() > arena.getWidth() / 2. && pose.getXCoordinate() < arena.getWidth() / 2.)
-            position = pose.euclideanDistance(position.creatPositionByDecreasing(arena.getWidth(), 0))
-                    < pose.euclideanDistance(position) ? position.creatPositionByDecreasing(arena.getWidth(), 0) :
-                    position;
-        else if (position.getXCoordinate() < arena.getWidth() / 2. && pose.getXCoordinate() > arena.getWidth() / 2.) {
-            position = pose.euclideanDistance(position.creatPositionByDecreasing(-arena.getWidth(), 0))
-                    < pose.euclideanDistance(position) ? position.creatPositionByDecreasing(-arena.getWidth(), 0) :
-                    position;
-        }
-        if (position.getYCoordinate() > arena.getHeight() / 2. && pose.getYCoordinate() < arena.getHeight() / 2.)
-            position = pose.euclideanDistance(position.creatPositionByDecreasing(0, arena.getHeight()))
-                    < pose.euclideanDistance(position) ? position.creatPositionByDecreasing(0, arena.getHeight()) :
-                    position;
-        else if (position.getYCoordinate() < arena.getHeight() / 2. && pose.getYCoordinate() > arena.getHeight() / 2.) {
-            position = pose.euclideanDistance(position.creatPositionByDecreasing(0, -arena.getHeight()))
-                    < pose.euclideanDistance(position) ? position.creatPositionByDecreasing(0, -arena.getHeight()) :
-                    position;
-        }
-        return position;
     }
 
 }

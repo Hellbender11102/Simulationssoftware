@@ -16,7 +16,7 @@ public class Robot2 extends BaseRobot {
     @Override
     public void behavior() {
 
-        driveToPosition(new Position(1,1),1,8);
+        driveToPosition(new Position(20,20),1,8);
     }
 
     @Override
