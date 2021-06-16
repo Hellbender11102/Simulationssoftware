@@ -27,6 +27,7 @@ Key bindings
 - 'n'              : sets the robots to the next position
                      only functional when paused
 - 'k'              : draws the center of any robot class
+- 'v'              : toggle display the vision cone of LightConeRobots
                    
 Functionality
 Robots 'drive' through different settings on the two engines.

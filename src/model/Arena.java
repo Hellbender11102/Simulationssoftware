@@ -48,6 +48,19 @@ public class Arena {
         this.isTorus = isTorus;
     }
 
+    /**
+     * Checks if robots are in the arena bounds
+     */
+    public boolean inArenaBounds(Position position) {
+        if (position.getX() < 0)
+            return false;
+        else if (position.getX() > width)
+            return false;
+        if (position.getY() < 0)
+            return false;
+        else return !(position.getY() > height);
+    }
+
     public Position setPositionInBounds(Position position) {
         Position buffPosition = position;
         buffPosition.setX(position.getX() % width);

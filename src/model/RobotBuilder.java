@@ -179,7 +179,7 @@ public class RobotBuilder {
     /**
      * Builds the robot of type 4
      *
-     * @return Robot3
+     * @return Robot4
      */
     public Robot4 buildRobot4() {
         return new Robot4(this);

@@ -40,9 +40,9 @@ public class Position {
     }
 
     /**
-     *
-     * @param position
-     * @return
+     * Calculates the PolarAngle for an given position
+     * @param position Position
+     * @return double[-pi,pi]
      */
     public double calcAngleForPosition(Position position) {
         return position.creatPositionByDecreasing(this).getPolarAngle();

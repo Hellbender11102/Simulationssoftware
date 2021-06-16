@@ -5,6 +5,7 @@ import model.Area;
 import model.Arena;
 import model.Position;
 import model.AbstractModel.RobotInterface;
+import model.RobotTypes.LightConeRobot;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,6 +24,7 @@ public class SimulationView extends JPanel {
     private boolean drawInClassColor = false;
     private boolean drawCenter = false;
     private boolean infosLeft = false;
+    private boolean drawRobotCone = true;
     private int fontSize = 10;
     private double zoomFactor = 5;
 
@@ -118,6 +120,25 @@ public class SimulationView extends JPanel {
     private void drawRobot(RobotInterface robot, Graphics g2d) {
         double x = robot.getPose().getX() - offsetX - robot.getRadius();
         double y = arena.getHeight() - robot.getPose().getY() - offsetY - robot.getRadius();
+        if (LightConeRobot.class.isAssignableFrom(robot.getClass()) && drawRobotCone) {
+            g2d.setColor(new Color(240, 160, 60, 170));
+            LightConeRobot lRobot = (LightConeRobot) robot;
+            double visionRange = lRobot.getVisionRange(), visionAngle = lRobot.getVisionAngle();
+            Position pos1 = lRobot.getPose().getPositionInDirection(visionRange, lRobot.getPose().getRotation() + visionAngle / 2);
+            Position pos2 = lRobot.getPose().getPositionInDirection(visionRange, lRobot.getPose().getRotation() - visionAngle / 2);
+            g2d.drawLine(convertZoom(x + robot.getRadius()),
+                    convertZoom(y + robot.getRadius()),
+                    convertZoom(pos1.getX() - offsetX),
+                    convertZoom(arena.getHeight() - pos1.getY() - offsetY));
+            g2d.drawLine(convertZoom(x + robot.getRadius()),
+                    convertZoom(y + robot.getRadius()),
+                    convertZoom(pos2.getX() - offsetX),
+                    convertZoom(arena.getHeight() - pos2.getY() - offsetY));
+            g2d.drawLine(convertZoom(pos2.getX() - offsetX),
+                    convertZoom(arena.getHeight() - pos2.getY() - offsetY),
+                    convertZoom(pos1.getX() - offsetX),
+                    convertZoom(arena.getHeight() - pos1.getY() - offsetY));
+        }
         if (!drawInClassColor)
             g2d.setColor(robot.getColor());
         else g2d.setColor(robot.getClassColor());
@@ -221,6 +242,9 @@ public class SimulationView extends JPanel {
 
     public void toggleDrawCenter() {
         drawCenter = !drawCenter;
+    }
+    public void toggleDrawRobotCone() {
+        drawRobotCone = !drawRobotCone;
     }
 
     public void incFontSize(int addend) {

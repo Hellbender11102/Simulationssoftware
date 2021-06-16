@@ -196,6 +196,9 @@ public class Controller {
                     case KeyEvent.VK_K:
                         view.getSimView().toggleDrawCenter();
                         break;
+                    case KeyEvent.VK_V:
+                        view.getSimView().toggleDrawRobotCone();
+                        break;
                     case KeyEvent.VK_F1:
                         if (stopped) {
                             init();

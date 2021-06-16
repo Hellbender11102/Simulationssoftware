@@ -2,43 +2,70 @@ package model.RobotTypes;
 
 import model.AbstractModel.Entity;
 import model.AbstractModel.RobotInterface;
+import model.Position;
 import model.RobotBuilder;
 
-import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class LightConeRobot extends BaseRobot {
 
-    double visionRange, visionAngle;
+    final double visionRange, visionAngle;
 
     /**
      * Constructs object via Builder
      *
      * @param builder
      */
-    public LightConeRobot(RobotBuilder builder) {
+    public LightConeRobot(RobotBuilder builder, double visionRange, double visionAngle) {
         super(builder);
+        this.visionRange = visionRange;
+        this.visionAngle = Math.toRadians(visionAngle);
     }
 
     boolean isArenaBoundsInVision() {
-     return false;
+        Position pos1 = pose.getPositionInDirection(visionRange, pose.getRotation() + visionAngle / 2);
+        Position pos2 = pose.getPositionInDirection(visionRange, pose.getRotation() - visionAngle / 2);
+        Position pos3 = pose.getPositionInDirection(visionRange, pose.getRotation());
+        return arena.inArenaBounds(pos1) && arena.inArenaBounds(pos2) && arena.inArenaBounds(pos3);
     }
 
     double distanceToArenaBounds() {
-     return 0;
+        return 0;
     }
 
     List<Entity> listOfEntitysInVision() {
-     return new LinkedList<>();
+        List<Entity> entityList = new LinkedList<>();
+        for (Entity entity : arena.getEntityList()) {
+            Position closest = entity.getClosestPositionInEntity(pose);
+            if (pose.calcAngleForPosition(closest) <= pose.getRotation() + Math.toRadians(visionAngle) / 2 &&
+                    pose.calcAngleForPosition(closest) >= pose.getRotation() - Math.toRadians(visionAngle) / 2 &&
+                    pose.euclideanDistance(closest) <= visionRange)
+                entityList.add(entity);
+        }
+        return entityList;
     }
 
     List<RobotInterface> listOfRobotsInVision() {
-     return new LinkedList<>();
+        return listOfEntitysInVision().stream()
+                .filter(x->RobotInterface.class.isAssignableFrom(x.getClass()))
+                .map(x->(RobotInterface)x)
+                .collect(Collectors.toList());
     }
 
-    List<RobotInterface> listOfRobotsInVisionByCLass() {
-        return new LinkedList<>();
+    List<Object> listOfRobotsInVisionByCLass(Class type) {
+        return listOfEntitysInVision().stream()
+                .filter(x->type.getClass().isAssignableFrom(x.getClass()))
+                    .map(x->(type.cast(x)))
+                .collect(Collectors.toList());
     }
 
+    public double getVisionAngle() {
+        return visionAngle;
+    }
+
+    public double getVisionRange() {
+        return visionRange;
+    }
 }
