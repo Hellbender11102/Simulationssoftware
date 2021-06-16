@@ -1,7 +1,6 @@
 package controller;
 
 import model.*;
-import model.AbstractModel.Entity;
 import model.AbstractModel.PhysicalEntity;
 import model.RobotTypes.BaseRobot;
 import model.AbstractModel.RobotInterface;
@@ -90,16 +89,16 @@ public class Controller {
      */
     private synchronized RobotInterface convertPoseToGlobal(Position globalOffset, BaseRobot robot) {
         Pose pose = transPos(globalOffset, robot.getPose());
-        robot.getPose().setXCoordinate(pose.getXCoordinate());
-        robot.getPose().setYCoordinate(pose.getYCoordinate());
+        robot.getPose().setX(pose.getX());
+        robot.getPose().setY(pose.getY());
         robot.getPose().setRotation(pose.getRotation());
         return robot;
     }
 
 
     private synchronized Pose transPos(Position pGlobal, Pose pLocal) {
-        double x = pGlobal.getXCoordinate() + pLocal.getXCoordinate();
-        double y = pGlobal.getYCoordinate() + pLocal.getYCoordinate();
+        double x = pGlobal.getX() + pLocal.getX();
+        double y = pGlobal.getY() + pLocal.getY();
         double rotation = pLocal.getRotation();
         return new Pose(x, y, rotation);
     }

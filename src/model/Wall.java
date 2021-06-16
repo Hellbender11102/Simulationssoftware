@@ -11,10 +11,10 @@ public class Wall extends BasePhysicalEntity {
 
     public Wall(Arena arena, Random random, double width, double height, Pose pose) {
         super(arena, random, width, height, pose);
-        edgeUL = new Position(pose.getXCoordinate() - width / 2, pose.getYCoordinate() + height / 2);
-        edgeUR = new Position(pose.getXCoordinate() + width / 2, pose.getYCoordinate() + height / 2);
-        edgeLL = new Position(pose.getXCoordinate() - width / 2, pose.getYCoordinate() - height / 2);
-        edgeLR = new Position(pose.getXCoordinate() + width / 2, pose.getYCoordinate() - height / 2);
+        edgeUL = new Position(pose.getX() - width / 2, pose.getY() + height / 2);
+        edgeUR = new Position(pose.getX() + width / 2, pose.getY() + height / 2);
+        edgeLL = new Position(pose.getX() - width / 2, pose.getY() - height / 2);
+        edgeLR = new Position(pose.getX() + width / 2, pose.getY() - height / 2);
     }
 
     @Override

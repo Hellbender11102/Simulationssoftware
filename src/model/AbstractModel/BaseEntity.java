@@ -146,12 +146,12 @@ abstract public class BaseEntity extends Thread implements Entity {
                 edgeUL.euclideanDistance(position) < edgeUR.euclideanDistance(position) ? edgeUL : edgeUR
                 :
                 edgeLL.euclideanDistance(position) < edgeLR.euclideanDistance(position) ? edgeLL : edgeLR;
-        if (position.getXCoordinate() <= pose.getXCoordinate() + width / 2 &&
-                position.getXCoordinate() >= pose.getXCoordinate() - width / 2) {
-            closest.setXCoordinate(position.getXCoordinate());
-        } else if (position.getYCoordinate() <= pose.getYCoordinate() + height / 2 &&
-                position.getYCoordinate() >= pose.getYCoordinate() - height / 2) {
-            closest.setYCoordinate(position.getYCoordinate());
+        if (position.getX() <= pose.getX() + width / 2 &&
+                position.getX() >= pose.getX() - width / 2) {
+            closest.setX(position.getX());
+        } else if (position.getY() <= pose.getY() + height / 2 &&
+                position.getY() >= pose.getY() - height / 2) {
+            closest.setY(position.getY());
         }
         return closest;
     }
@@ -165,10 +165,10 @@ abstract public class BaseEntity extends Thread implements Entity {
 
     protected boolean isPositionInEntitySquare(Position position) {
         position =  arena.setPositionInBounds(position);
-        return position.getXCoordinate() <= pose.getXCoordinate() + width / 2 &&
-                position.getXCoordinate() >= pose.getXCoordinate() - width / 2 &&
-                position.getYCoordinate() <= pose.getYCoordinate() + height / 2 &&
-                position.getYCoordinate() >= pose.getYCoordinate() - height / 2;
+        return position.getX() <= pose.getX() + width / 2 &&
+                position.getX() >= pose.getX() - width / 2 &&
+                position.getY() <= pose.getY() + height / 2 &&
+                position.getY() >= pose.getY() - height / 2;
     }
 
     public boolean isPositionInEntityCircle(Position position) {

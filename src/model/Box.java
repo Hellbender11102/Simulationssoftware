@@ -28,10 +28,10 @@ public class Box extends BasePhysicalEntity {
 
     @Override
     public Position getClosestPositionInEntity(Position position) {
-        Position edgeUL = new Position(pose.getXCoordinate() - width / 2, pose.getYCoordinate() + height / 2);
-        Position edgeUR = new Position(pose.getXCoordinate() + width / 2, pose.getYCoordinate() + height / 2);
-        Position edgeLL = new Position(pose.getXCoordinate() - width / 2, pose.getYCoordinate() - height / 2);
-        Position edgeLR = new Position(pose.getXCoordinate() + width / 2, pose.getYCoordinate() - height / 2);
+        Position edgeUL = new Position(pose.getX() - width / 2, pose.getY() + height / 2);
+        Position edgeUR = new Position(pose.getX() + width / 2, pose.getY() + height / 2);
+        Position edgeLL = new Position(pose.getX() - width / 2, pose.getY() - height / 2);
+        Position edgeLR = new Position(pose.getX() + width / 2, pose.getY() - height / 2);
         return closestPositionInEntityForSquare(position, edgeUL, edgeUR, edgeLL, edgeLR);
     }
 

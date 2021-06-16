@@ -50,16 +50,16 @@ public class Arena {
 
     public Position setPositionInBounds(Position position) {
         Position buffPosition = position;
-        buffPosition.setXCoordinate(position.getXCoordinate() % width);
-        buffPosition.setYCoordinate(position.getYCoordinate() % height);
-        if (buffPosition.getXCoordinate() < 0) buffPosition.incPosition(width, 0);
-        if (buffPosition.getYCoordinate() < 0) buffPosition.incPosition(0, height);
+        buffPosition.setX(position.getX() % width);
+        buffPosition.setY(position.getY() % height);
+        if (buffPosition.getX() < 0) buffPosition.incPosition(width, 0);
+        if (buffPosition.getY() < 0) buffPosition.incPosition(0, height);
         return buffPosition;
     }
 
     public void setEntityInTorusArena(Entity entity) {
-        entity.getPose().setXCoordinate(setPositionInBounds(entity.getPose()).getXCoordinate());
-        entity.getPose().setYCoordinate(setPositionInBounds(entity.getPose()).getYCoordinate());
+        entity.getPose().setX(setPositionInBounds(entity.getPose()).getX());
+        entity.getPose().setY(setPositionInBounds(entity.getPose()).getY());
     }
 
     /**
@@ -70,20 +70,20 @@ public class Arena {
      * @return position
      */
     public Position getClosestPositionInTorus(Position position1, Position position2) {
-        if (position2.getXCoordinate() > width / 2. && position1.getXCoordinate() < width / 2.)
+        if (position2.getX() > width / 2. && position1.getX() < width / 2.)
             position2 = position1.euclideanDistance(position2.creatPositionByDecreasing(width, 0))
                     < position1.euclideanDistance(position2) ? position2.creatPositionByDecreasing(width, 0) :
                     position2;
-        else if (position2.getXCoordinate() < width / 2. && position1.getXCoordinate() > width / 2.) {
+        else if (position2.getX() < width / 2. && position1.getX() > width / 2.) {
             position2 = position1.euclideanDistance(position2.creatPositionByDecreasing(-width, 0))
                     < position1.euclideanDistance(position2) ? position2.creatPositionByDecreasing(-width, 0) :
                     position2;
         }
-        if (position2.getYCoordinate() > height / 2. && position1.getYCoordinate() < height / 2.)
+        if (position2.getY() > height / 2. && position1.getY() < height / 2.)
             position2 = position1.euclideanDistance(position2.creatPositionByDecreasing(0, height))
                     < position1.euclideanDistance(position2) ? position2.creatPositionByDecreasing(0, height) :
                     position2;
-        else if (position2.getYCoordinate() < height / 2. && position1.getYCoordinate() > height / 2.) {
+        else if (position2.getY() < height / 2. && position1.getY() > height / 2.) {
             position2 = position1.euclideanDistance(position2.creatPositionByDecreasing(0, -height))
                     < position1.euclideanDistance(position2) ? position2.creatPositionByDecreasing(0, -height) :
                     position2;

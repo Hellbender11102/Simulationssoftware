@@ -14,22 +14,22 @@ public class Position {
     }
 
 
-    public double getXCoordinate() {
+    public double getX() {
         return xCoordinate;
     }
 
     synchronized
-    public void setXCoordinate(double xCoordinate) {
+    public void setX(double xCoordinate) {
         this.xCoordinate = xCoordinate;
     }
 
 
-    public double getYCoordinate() {
+    public double getY() {
         return yCoordinate;
     }
 
     synchronized
-    public void setYCoordinate(double yCoordinate) {
+    public void setY(double yCoordinate) {
         this.yCoordinate = yCoordinate;
     }
 
@@ -79,15 +79,25 @@ public class Position {
     }
 
     synchronized
+    public void incPosition(Vector2D vector) {
+        xCoordinate += vector.getX();
+        yCoordinate += vector.getY();
+    }
+
+    synchronized
     public void incPosition(double addendX, double addendY) {
         xCoordinate += addendX;
         yCoordinate += addendY;
     }
-
     synchronized
     public void decPosition(Position vector) {
         xCoordinate -= vector.xCoordinate;
         yCoordinate -= vector.yCoordinate;
+    }
+    synchronized
+    public void decPosition(Vector2D vector) {
+        xCoordinate -= vector.getX();
+        yCoordinate -= vector.getY();
     }
 
     /**

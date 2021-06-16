@@ -16,13 +16,13 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
      */
     @Override
     public boolean inArenaBounds() {
-        if (getPose().getXCoordinate() < width / 2)
+        if (getPose().getX() < width / 2)
             return false;
-        else if (getPose().getXCoordinate() > arena.getWidth() - width / 2)
+        else if (getPose().getX() > arena.getWidth() - width / 2)
             return false;
-        if (getPose().getYCoordinate() < height / 2)
+        if (getPose().getY() < height / 2)
             return false;
-        else return !(getPose().getYCoordinate() > arena.getHeight() - height / 2);
+        else return !(getPose().getY() > arena.getHeight() - height / 2);
     }
 
     /**
@@ -30,14 +30,14 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
      */
     @Override
     public void setInArenaBounds() {
-        if (pose.getXCoordinate() < width / 2)
-            pose.setXCoordinate(width / 2);
-        else if (pose.getXCoordinate() > arena.getWidth() - width / 2)
-            pose.setXCoordinate(arena.getWidth() - width / 2);
-        if (pose.getYCoordinate() < height / 2)
-            pose.setYCoordinate(height / 2);
-        else if (pose.getYCoordinate() > arena.getHeight() - height / 2)
-            pose.setYCoordinate(arena.getHeight() - height / 2);
+        if (pose.getX() < width / 2)
+            pose.setX(width / 2);
+        else if (pose.getX() > arena.getWidth() - width / 2)
+            pose.setX(arena.getWidth() - width / 2);
+        if (pose.getY() < height / 2)
+            pose.setY(height / 2);
+        else if (pose.getY() > arena.getHeight() - height / 2)
+            pose.setY(arena.getHeight() - height / 2);
     }
 
     //TODO
@@ -62,31 +62,31 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
      * @param physicalEntity
      */
     public void collision(PhysicalEntity physicalEntity) {
-        Position inTrajectoryPath = pose.getPositionInDirection(trajectorySpeed(), pose.getRotation());
-        double direction = pose.calcAngleForPosition(physicalEntity.getPose());
-        inTrajectoryPath = pose.creatPositionByDecreasing(inTrajectoryPath);
-        if (!Double.isNaN(direction)) {
-            direction = (Math.PI + direction) % Math.PI * 2;
-            Position inOppositeDirections = pose.getPositionInDirection(trajectorySpeed() / 2, direction);
-            inTrajectoryPath.decPosition(inOppositeDirections);
-        }
-
-        physicalEntity.getPose().decPosition(inTrajectoryPath);
-        pose.incPosition(inTrajectoryPath);
+        slateElasticShock(this, physicalEntity);
     }
 
-    private void slateElasticShock(PhysicalEntity entity1, PhysicalEntity entity2) {
-        double x=entity1.getPose().getXCoordinate(),y=entity1.getPose().getYCoordinate();
-        Position v1 = entity1.getPose().creatPositionByDecreasing(entity1.getPose().getPositionInDirection(entity1.trajectorySpeed()));
-        Position v2 = entity1.getPose().creatPositionByDecreasing(entity2.getPose().getPositionInDirection(entity2.trajectorySpeed()));
-   /*     Position orientationOneNormalized = new Position(1/Math.sqrt(x*x+y*y *entity1.getPose().creatPositionByDecreasing().getXCoordinate());
-     v1o = v1 - p * (p*v1);
-        v2p = p * (p*v2);
+    private void slateElasticShock(PhysicalEntity pushing, PhysicalEntity target) {
+        Vector2D normalized = new Vector2D(pushing.getPose().creatPositionByDecreasing(target.getPose())).normalize();
 
-        vNew = v1o + v2p;
-*/
-        double xValueForNormalizedVektor;
-        double yValueForNormalizedVektor;
+        Vector2D velocityPushing = new Vector2D(pushing.getPose().creatPositionByDecreasing(pushing.getPose().getPositionInDirection(pushing.trajectorySpeed())));
+        Vector2D velocityTarget = new Vector2D(target.getPose().creatPositionByDecreasing(target.getPose().getPositionInDirection(target.trajectorySpeed())));
+
+        Vector2D v1o = velocityPushing.subtract(normalized.multiplication(normalized.scalarProdukt(velocityPushing)));
+        Vector2D v2p = normalized.multiplication(normalized.scalarProdukt(velocityTarget));
+        Vector2D result = v1o.add(v2p);
+
+        if (!result.containsNaN()) {
+            if (pushing.getPose().getY() > target.getPose().getY() && result.getY() > 0) {
+                target.getPose().incPosition(0, -result.getY());
+            } else if (pushing.getPose().getY() < target.getPose().getY() && result.getY() > 0) {
+                target.getPose().incPosition(0, result.getY());
+            }
+            if (pushing.getPose().getX() > target.getPose().getX() && result.getX() > 0) {
+                target.getPose().incPosition(-result.getX(), 0);
+            } else if (pushing.getPose().getX() < target.getPose().getX() && result.getX() > 0) {
+                target.getPose().incPosition(result.getX(), 0);
+            } else target.getPose().decPosition(result);
+        }
     }
 
     /**
@@ -94,24 +94,26 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
      * @param other
      */
     private void notMovableCollision(PhysicalEntity notMovable, PhysicalEntity other) {
-        double notMovableX = notMovable.getPose().getXCoordinate(), notMovableY = notMovable.getPose().getYCoordinate(),
-                movableX = other.getPose().getXCoordinate(), movableY = other.getPose().getYCoordinate();
+        double notMovableX = notMovable.getPose().getX(), notMovableY = notMovable.getPose().getY(),
+                movableX = other.getPose().getX(), movableY = other.getPose().getY();
         double notMovableWidth = notMovable.getWidth(), notMovableHeight = notMovable.getHeight(),
                 movableWidth = other.getWidth(), movableHeight = other.getHeight();
         boolean leftOrRight = (movableX > notMovableX + notMovableWidth / 2 || movableX < notMovableX - notMovableWidth / 2);
         boolean aboveOrBelow = (movableY > notMovableY + notMovableHeight / 2 || movableY < notMovableY - notMovableHeight / 2);
         if (notMovableX <= movableX && !aboveOrBelow)
-            other.getPose().setXCoordinate(notMovableX + notMovableWidth / 2 + movableWidth / 2);
+            other.getPose().setX(notMovableX + notMovableWidth / 2 + movableWidth / 2);
         else if (notMovableX > movableX && !aboveOrBelow)
-            other.getPose().setXCoordinate(notMovableX - notMovableWidth / 2 - movableWidth / 2);
+            other.getPose().setX(notMovableX - notMovableWidth / 2 - movableWidth / 2);
         if (notMovableY <= movableY && !leftOrRight)
-            other.getPose().setYCoordinate(notMovableY + notMovableHeight / 2 + movableHeight / 2);
+            other.getPose().setY(notMovableY + notMovableHeight / 2 + movableHeight / 2);
         else if (notMovableY > movableY && !leftOrRight)
-            other.getPose().setYCoordinate(notMovableY - notMovableHeight / 2 - movableHeight / 2);
+            other.getPose().setY(notMovableY - notMovableHeight / 2 - movableHeight / 2);
     }
 
     public LinkedList<PhysicalEntity> isCollidingWith() {
+
         LinkedList<PhysicalEntity> physicalEntities = new LinkedList<>();
+
         for (PhysicalEntity physicalEntity : arena.getPhysicalEntityList()) {
             if (isPositionInEntity(physicalEntity.getClosestPositionInEntity(pose)) && !equals(physicalEntity)) {
                 physicalEntities.add(physicalEntity);
@@ -125,8 +127,8 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
         for (Entity entity : group) {
             center.incPosition(entity.getPose());
         }
-        center.setXCoordinate(center.getXCoordinate() / group.size());
-        center.setYCoordinate(center.getYCoordinate() / group.size());
+        center.setX(center.getX() / group.size());
+        center.setY(center.getY() / group.size());
         return center;
     }
 

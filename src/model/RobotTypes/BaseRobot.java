@@ -212,7 +212,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     public void stayGroupedWithRobotType(double distanceToKeep, List<Class> classList, double speed, double percisionInDegree) {
         List<RobotInterface> group = robotGroupByClasses(classList);
         Position center = centerOfGroupWithRobots(group);
-        Pose dummyPose = new Pose(pose.getXCoordinate(), pose.getYCoordinate(), 0);
+        Pose dummyPose = new Pose(pose.getX(), pose.getY(), 0);
         boolean isEnoughDistance = true;
         for (RobotInterface robot : group) {
             Pose robotPose = robot.getPose();

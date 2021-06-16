@@ -67,8 +67,8 @@ public class BaseRobotTest {
         for (int i = 0; i < rounds / speed; i++) {
             baseRobot.setNextPosition();
         }
-        Assert.assertTrue(Math.round(baseRobot.getPose().getXCoordinate()) == Math.round(position.getXCoordinate()) &&
-                Math.round(baseRobot.getPose().getYCoordinate()) == Math.round(position.getYCoordinate()));
+        Assert.assertTrue(Math.round(baseRobot.getPose().getX()) == Math.round(position.getX()) &&
+                Math.round(baseRobot.getPose().getY()) == Math.round(position.getY()));
     }
 
     @Test
@@ -78,7 +78,7 @@ public class BaseRobotTest {
         for (double i = 0; i < rounds * 2 * Math.PI && i > rounds * 2 * Math.PI; i += degree) {
             baseRobot.setNextPosition();
         }
-        Assert.assertTrue(Math.round(baseRobot.getPose().getXCoordinate()) == Math.round(position.getXCoordinate()) &&
-                Math.round(baseRobot.getPose().getYCoordinate()) == Math.round(position.getYCoordinate()));
+        Assert.assertTrue(Math.round(baseRobot.getPose().getX()) == Math.round(position.getX()) &&
+                Math.round(baseRobot.getPose().getY()) == Math.round(position.getY()));
     }
 }
