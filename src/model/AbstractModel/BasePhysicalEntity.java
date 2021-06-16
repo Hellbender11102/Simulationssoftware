@@ -45,8 +45,6 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
     @Override
     public void collisionDetection() {
         for (PhysicalEntity physicalEntity : isCollidingWith()) {
-            System.out.println(
-            pose.euclideanDistance(physicalEntity.getPose()));
             if (!physicalEntity.isMovable() && isMovable())
                 notMovableCollision(physicalEntity, this);
             else if (physicalEntity.isMovable() && !isMovable())
@@ -67,28 +65,18 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
     }
 
     public void collision(PhysicalEntity physicalEntity) {
-        //r2 gets bumped
-        if (physicalEntity.isPositionInEntity(pose.getPositionInDirection(getClosestPositionInEntity(physicalEntity.getPose()).euclideanDistance(pose)))) {
-            bump(this, physicalEntity, pose.getPositionInDirection(trajectorySpeed()));
-        } else if (isPositionInEntity(physicalEntity.getPose().getPositionInDirection(physicalEntity.getClosestPositionInEntity(pose).euclideanDistance(physicalEntity.getPose())))) {   //this gets pumped
-            bump(physicalEntity, this, physicalEntity.getPose().getPositionInDirection(physicalEntity.trajectorySpeed()));
+        Position vector = pose.clone();
+        if (pose.getXCoordinate() < physicalEntity.getPose().getXCoordinate()) {
+            vector.incPosition(trajectorySpeed(),0);
         } else {
-            //both are bumping cause no one drives directly in each other
-            if (pose.getXCoordinate() < physicalEntity.getPose().getXCoordinate()) {
-                bump(this, physicalEntity, new Position(pose.getXCoordinate() + trajectorySpeed(), pose.getYCoordinate()));
-                bump(physicalEntity, this, new Position(physicalEntity.getPose().getXCoordinate() - physicalEntity.trajectorySpeed(), physicalEntity.getPose().getYCoordinate()));
-            } else {
-                bump(this, physicalEntity, new Position(pose.getXCoordinate() - trajectorySpeed(), pose.getYCoordinate()));
-                bump(physicalEntity, this, new Position(physicalEntity.getPose().getXCoordinate() + physicalEntity.trajectorySpeed(), physicalEntity.getPose().getYCoordinate()));
-            }
-            if (pose.getYCoordinate() < physicalEntity.getPose().getYCoordinate()) {
-                bump(this, physicalEntity, new Position(pose.getXCoordinate(), pose.getYCoordinate() + trajectorySpeed()));
-                bump(physicalEntity, this, new Position(physicalEntity.getPose().getXCoordinate(), physicalEntity.getPose().getYCoordinate() - physicalEntity.trajectorySpeed()));
-            } else {
-                bump(this, physicalEntity, new Position(pose.getXCoordinate(), pose.getYCoordinate() - trajectorySpeed()));
-                bump(physicalEntity, this, new Position(physicalEntity.getPose().getXCoordinate(), physicalEntity.getPose().getYCoordinate() + physicalEntity.trajectorySpeed()));
-            }
+          vector.incPosition(-trajectorySpeed(),0);
         }
+        if (pose.getYCoordinate() < physicalEntity.getPose().getYCoordinate()) {
+        vector.incPosition(0,trajectorySpeed());
+        } else {
+           vector.incPosition(0,-trajectorySpeed());
+        }
+        bump(this,physicalEntity,vector);
     }
 
     /**
@@ -98,32 +86,30 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
      */
     private void bump(PhysicalEntity bumping, PhysicalEntity getsBumped, Position positionInBumpDirection) {
         Position vector = bumping.getPose().creatPositionByDecreasing(positionInBumpDirection);
-        getsBumped.getPose().decPosition(vector);
-
-        if (getsBumped.getPose().getXCoordinate() < width / 2)
-            bumping.getPose().incPosition(vector.getXCoordinate(), 0);
-        else if (getsBumped.getPose().getXCoordinate() > arena.getWidth() - width / 2)
-            bumping.getPose().incPosition(vector.getXCoordinate(), 0);
-        if (getsBumped.getPose().getYCoordinate() < height / 2)
-            bumping.getPose().incPosition(0, vector.getYCoordinate());
-        else if (getsBumped.getPose().getYCoordinate() > arena.getHeight() - height / 2)
-            bumping.getPose().incPosition(0, vector.getYCoordinate());
+        while (isPositionInEntity(bumping.getClosestPositionInEntity(getsBumped.getPose()))) {
+            getsBumped.getPose().decPosition(vector);
+            bumping.getPose().incPosition(vector);
+        }
     }
 
+    /**
+     * @param notMovable
+     * @param other
+     */
     private void notMovableCollision(PhysicalEntity notMovable, PhysicalEntity other) {
-        double notMovableX = notMovable.getPose().getXCoordinate(), notMovableY = notMovable.getPose().getXCoordinate(),
+        double notMovableX = notMovable.getPose().getXCoordinate(), notMovableY = notMovable.getPose().getYCoordinate(),
                 movableX = other.getPose().getXCoordinate(), movableY = other.getPose().getYCoordinate();
         double notMovableWidth = notMovable.getWidth(), notMovableHeight = notMovable.getHeight(),
                 movableWidth = other.getWidth(), movableHeight = other.getHeight();
-        boolean leftOrRight = (movableY > notMovableY + notMovableWidth || movableY < notMovableY - notMovableWidth);
-        boolean aboveOrBelow = (movableX > notMovableX + notMovableHeight || movableX < notMovableX - notMovableHeight);
-        if (notMovableX <= movableX && leftOrRight)
+        boolean leftOrRight = (movableX > notMovableX + notMovableWidth / 2 || movableX < notMovableX - notMovableWidth / 2);
+        boolean aboveOrBelow = (movableY > notMovableY + notMovableHeight / 2 || movableY < notMovableY - notMovableHeight / 2);
+        if (notMovableX <= movableX && !aboveOrBelow)
             other.getPose().setXCoordinate(notMovableX + notMovableWidth / 2 + movableWidth / 2);
-        else if (notMovableX > movableX && leftOrRight)
+        else if (notMovableX > movableX && !aboveOrBelow)
             other.getPose().setXCoordinate(notMovableX - notMovableWidth / 2 - movableWidth / 2);
-        if (notMovableY <= movableY && aboveOrBelow)
+        if (notMovableY <= movableY && !leftOrRight)
             other.getPose().setYCoordinate(notMovableY + notMovableHeight / 2 + movableHeight / 2);
-        else if (notMovableY > movableY && aboveOrBelow)
+        else if (notMovableY > movableY && !leftOrRight)
             other.getPose().setYCoordinate(notMovableY - notMovableHeight / 2 - movableHeight / 2);
     }
 

@@ -165,15 +165,15 @@ abstract public class BaseEntity extends Thread implements Entity {
 
     protected boolean isPositionInEntitySquare(Position position) {
         position =  arena.setPositionInBounds(position);
-        return position.getXCoordinate() <= pose.getXCoordinate() + height / 2 &&
-                position.getXCoordinate() >= pose.getXCoordinate() - height / 2 &&
-                position.getYCoordinate() <= pose.getYCoordinate() + width / 2 &&
-                position.getYCoordinate() >= pose.getYCoordinate() - width / 2;
+        return position.getXCoordinate() <= pose.getXCoordinate() + width / 2 &&
+                position.getXCoordinate() >= pose.getXCoordinate() - width / 2 &&
+                position.getYCoordinate() <= pose.getYCoordinate() + height / 2 &&
+                position.getYCoordinate() >= pose.getYCoordinate() - height / 2;
     }
 
     public boolean isPositionInEntityCircle(Position position) {
         position = arena.setPositionInBounds(position);
-        return pose.euclideanDistance(position) <= width /2.;
+        return pose.euclideanDistance(position) <= width /2;
     }
 
     /**

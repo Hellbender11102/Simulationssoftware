@@ -7,7 +7,7 @@ import java.util.Random;
 
 //TODO, passing through sometimes
 public class Wall extends BasePhysicalEntity {
-    final Position edgeUL, edgeUR, edgeLL, edgeLR;
+    final public Position edgeUL, edgeUR, edgeLL, edgeLR;
 
     public Wall(Arena arena, Random random, double width, double height, Pose pose) {
         super(arena, random, width, height, pose);

@@ -13,7 +13,6 @@ public class Position {
         return new Position(xCoordinate, yCoordinate);
     }
 
-    synchronized
     public double getXCoordinate() {
         return xCoordinate;
     }
@@ -23,7 +22,6 @@ public class Position {
         this.xCoordinate = xCoordinate;
     }
 
-    synchronized
     public double getYCoordinate() {
         return yCoordinate;
     }
@@ -33,7 +31,6 @@ public class Position {
         this.yCoordinate = yCoordinate;
     }
 
-    synchronized
     public double getPolarAngle() {
         if (getPolarDistance() != 0.0)
             return Math.atan2(yCoordinate, xCoordinate);
@@ -45,7 +42,6 @@ public class Position {
         return position.creatPositionByDecreasing(this).getPolarAngle();
     }
 
-    synchronized
     public double getPolarDistance() {
         return Math.hypot(xCoordinate, yCoordinate);
     }
