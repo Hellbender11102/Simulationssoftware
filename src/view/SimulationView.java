@@ -121,23 +121,7 @@ public class SimulationView extends JPanel {
         double x = robot.getPose().getX() - offsetX - robot.getRadius();
         double y = arena.getHeight() - robot.getPose().getY() - offsetY - robot.getRadius();
         if (LightConeRobot.class.isAssignableFrom(robot.getClass()) && drawRobotCone) {
-            g2d.setColor(new Color(240, 160, 60, 170));
-            LightConeRobot lRobot = (LightConeRobot) robot;
-            double visionRange = lRobot.getVisionRange(), visionAngle = lRobot.getVisionAngle();
-            Position pos1 = lRobot.getPose().getPositionInDirection(visionRange, lRobot.getPose().getRotation() + visionAngle / 2);
-            Position pos2 = lRobot.getPose().getPositionInDirection(visionRange, lRobot.getPose().getRotation() - visionAngle / 2);
-            g2d.drawLine(convertZoom(x + robot.getRadius()),
-                    convertZoom(y + robot.getRadius()),
-                    convertZoom(pos1.getX() - offsetX),
-                    convertZoom(arena.getHeight() - pos1.getY() - offsetY));
-            g2d.drawLine(convertZoom(x + robot.getRadius()),
-                    convertZoom(y + robot.getRadius()),
-                    convertZoom(pos2.getX() - offsetX),
-                    convertZoom(arena.getHeight() - pos2.getY() - offsetY));
-            g2d.drawLine(convertZoom(pos2.getX() - offsetX),
-                    convertZoom(arena.getHeight() - pos2.getY() - offsetY),
-                    convertZoom(pos1.getX() - offsetX),
-                    convertZoom(arena.getHeight() - pos1.getY() - offsetY));
+           drawVisionCone(robot, g2d);
         }
         if (!drawInClassColor)
             g2d.setColor(robot.getColor());
@@ -149,11 +133,30 @@ public class SimulationView extends JPanel {
         g2d.setColor(Color.BLACK);
         if (drawRotationIndicator) {
             Position direction = robot.getPose().getPositionInDirection(robot.getRadius());
-            g2d.drawLine(convertZoom(x + robot.getRadius()),
-                    convertZoom(y + robot.getRadius()),
-                    convertZoom(direction.getX() - offsetX),
-                    convertZoom(arena.getHeight() - direction.getY() - offsetY));
+                   drawLine(robot.getPose(),direction,g2d);
         }
+    }
+
+    private void drawVisionCone(RobotInterface robot, Graphics g) {
+         g.setColor(new Color(240, 160, 60, 170));
+            LightConeRobot lRobot = (LightConeRobot) robot;
+            double visionRange = lRobot.getVisionRange(), visionAngle = lRobot.getVisionAngle();
+            Position edge1 = lRobot.getPose().getPositionInDirection(visionRange, lRobot.getPose().getRotation() + visionAngle / 2);
+            Position edge2 = lRobot.getPose().getPositionInDirection(visionRange, lRobot.getPose().getRotation() - visionAngle / 2);
+            drawLine(robot.getPose(),edge1,g);
+            drawLine(robot.getPose(),edge2,g);
+            for (double i = lRobot.getPose().getRotation() - visionAngle / 2; i <lRobot.getPose().getRotation() + visionAngle / 2;i+=Math.toRadians(2) ){
+              Position pos1 = lRobot.getPose().getPositionInDirection(visionRange, i );
+              Position pos2 = lRobot.getPose().getPositionInDirection(visionRange, i+Math.toRadians(1));
+                drawLine(pos1,pos2,g);
+            }
+    }
+
+    private void drawLine(Position position1, Position position2, Graphics g){
+                    g.drawLine(convertZoom(position1.getX() - offsetX),
+                    convertZoom(arena.getHeight() - position1.getY() - offsetY),
+                    convertZoom(position2.getX() - offsetX),
+                    convertZoom(arena.getHeight() - position2.getY() - offsetY));
     }
 
     private void drawInfo(Graphics g2d, RobotInterface robot, int x, int y) {
@@ -212,7 +215,7 @@ public class SimulationView extends JPanel {
         else return offset;
     }
 
-    public void toggleDrawrobotCoordinates() {
+    public void toggleDrawRobotCoordinates() {
         drawRobotCoordinates = !drawRobotCoordinates;
     }
 
@@ -243,6 +246,7 @@ public class SimulationView extends JPanel {
     public void toggleDrawCenter() {
         drawCenter = !drawCenter;
     }
+
     public void toggleDrawRobotCone() {
         drawRobotCone = !drawRobotCone;
     }

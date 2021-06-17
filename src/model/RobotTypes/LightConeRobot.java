@@ -21,6 +21,7 @@ public abstract class LightConeRobot extends BaseRobot {
     public LightConeRobot(RobotBuilder builder, double visionRange, double visionAngle) {
         super(builder);
         this.visionRange = visionRange;
+        visionAngle = visionAngle > 360?360:visionAngle < 0 ? 0: visionAngle;
         this.visionAngle = Math.toRadians(visionAngle);
     }
 
@@ -40,11 +41,21 @@ public abstract class LightConeRobot extends BaseRobot {
         for (Entity entity : arena.getEntityList()) {
             if (!equals(entity)) {
                 Position closest = entity.getClosestPositionInEntity(pose);
-                double angel = pose.calcAngleForPosition(closest) < 0 ? pose.calcAngleForPosition(closest) + 2*Math.PI:pose.calcAngleForPosition(closest) ;
-                if (angel <= pose.getRotation() + visionAngle / 2 &&
-                        angel >= pose.getRotation() - visionAngle / 2 &&
-                        pose.euclideanDistance(closest) <= visionRange)
-                    entityList.add(entity);
+                if (pose.euclideanDistance(closest) <= visionRange) {
+                    double angleOfEntity = pose.calcAngleForPosition(closest) < 0 ? pose.calcAngleForPosition(closest) + 2 * Math.PI : pose.calcAngleForPosition(closest);
+                    double upperAngle = pose.getRotation() + visionAngle / 2;
+                    double lowerAngle = pose.getRotation() - visionAngle / 2;
+                    if (angleOfEntity <= upperAngle && angleOfEntity >= lowerAngle)
+                        entityList.add(entity);
+                    else if (upperAngle > 2 * Math.PI || lowerAngle < 0) {
+                        if (upperAngle > 2 * Math.PI && angleOfEntity < upperAngle %(2 * Math.PI)) {
+                            entityList.add(entity);
+                        }
+                       else if (lowerAngle < 0 && angleOfEntity > lowerAngle + 2 * Math.PI) {
+                            entityList.add(entity);
+                        }
+                    }
+                }
             }
         }
         return entityList;

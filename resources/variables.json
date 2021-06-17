@@ -9,7 +9,7 @@
   },
   "robots": [
     {
-      "type": "default",
+      "type": "4",
       "engineR": 4.0,
       "engineL": 4.0,
       "distance": 4.0,
@@ -22,7 +22,7 @@
       }
     },
     {
-      "type": "default",
+      "type": "2",
       "engineR": 0.0,
       "engineL": 0.0,
       "distance": 4.0,
@@ -35,7 +35,20 @@
       }
     },
     {
-      "type": "4",
+      "type": "2",
+      "engineR": 0.0,
+      "engineL": 0.0,
+      "distance": 4.0,
+      "diameters": 4.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 90.0,
+        "y": 10.0,
+        "rotation": 180.0
+      }
+    },
+    {
+      "type": "2",
       "engineR": 0.0,
       "engineL": 0.0,
       "distance": 4.0,
@@ -49,36 +62,9 @@
     }
   ],
   "boxes": [
-    {
-      "width": 2.0,
-      "height": 2.0,
-      "position": {
-        "x": 50.0,
-        "y": 10.0,
-        "rotation": 0.0
-      }
-    }
   ],
   "walls": [
-    {
-      "width": 100.0,
-      "height": 3.0,
-      "position": {
-        "x": 50.0,
-        "y": 50.0,
-        "rotation": 0.0
-      }
-    }
   ],
   "areas": [
-    {
-      "diameters": 15.0,
-      "noticeableDistance": 15.0,
-      "position": {
-        "x": 90.0,
-        "y": 90.0,
-        "rotation": 0.0
-      }
-    }
   ]
 }

@@ -71,7 +71,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * @param builder
      */
     public BaseRobot(RobotBuilder builder) {
-        super(builder.getArena(), builder.getRandom(), builder.getDiameters(), builder.getDiameters(),builder.getPose());
+        super(builder.getArena(), builder.getRandom(), builder.getDiameters(), builder.getDiameters(), builder.getPose());
         poseRingMemory[poseRingMemoryHead] = builder.getPose();
         engineL = builder.getEngineL();
         engineR = builder.getEngineR();
@@ -122,8 +122,8 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     public void run() {
         while (!isPaused || (timeToSimulate > 0 && !simulateWithView)) {
             behavior();
-            setNextPosition();
-            collisionDetection();
+            if (!collisionDetection())
+                setNextPosition();
             updatePositionMemory();
             if (timeToSimulate <= 0 || simulateWithView) {
                 try {
@@ -155,7 +155,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      */
     void driveToPosition(Position position, double precisionInDegree, double speed) {
         speed = speed < maxSpeed ? speed / 2 : maxSpeed / 2;
-            if(arena.isTorus) position = arena.getClosestPositionInTorus(pose,position);
+        if (arena.isTorus) position = arena.getClosestPositionInTorus(pose, position);
         if (rotateToAngle(pose.calcAngleForPosition(position), Math.toRadians(precisionInDegree), speed, 0)) {
             setEngines(speed, speed);
         }
@@ -454,7 +454,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
 
     @Override
     public Position getClosestPositionInEntity(Position position) {
-        return closestPositionInEntityForCircle(position,getRadius());
+        return closestPositionInEntityForCircle(position, getRadius());
     }
 
     public Color getColor() {

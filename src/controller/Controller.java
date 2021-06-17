@@ -2,7 +2,6 @@ package controller;
 
 import model.*;
 import model.AbstractModel.PhysicalEntity;
-import model.RobotTypes.BaseRobot;
 import model.AbstractModel.RobotInterface;
 import view.View;
 
@@ -33,9 +32,9 @@ public class Controller {
             int timeToSimulate = arena.getRobots().get(0).getTimeToSimulate();
             arena.getPhysicalEntityList().forEach(this::startThread);
             Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
-            while (entityThreads.stream().anyMatch(Thread::isAlive)){
+            while (entityThreads.stream().anyMatch(Thread::isAlive)) {
                 System.out.print(
-                   Math.round((1- ((double)arena.getRobots().get(0).getTimeToSimulate() / (double)timeToSimulate))*100 )+ "%\r");
+                        Math.round((1 - ((double) arena.getRobots().get(0).getTimeToSimulate() / (double) timeToSimulate)) * 100) + "%\r");
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException interruptedException) {
@@ -43,22 +42,36 @@ public class Controller {
                 }
             }
             logger.saveFullLogToFile(true);
-            if(entityThreads.stream().noneMatch(Thread::isAlive)
-                    && (logger.saveThread == null || !logger.saveThread.isAlive())){
-                timeToSimulate=jsonLoader.loadSimulatedTime();
+            if (entityThreads.stream().noneMatch(Thread::isAlive)
+                    && (logger.saveThread == null || !logger.saveThread.isAlive())) {
+                timeToSimulate = jsonLoader.loadSimulatedTime();
                 long endTime = System.currentTimeMillis();
                 System.out.println("Done simulating.\nSimulated "
-                        + (timeToSimulate / 60)/60+ "h " + (timeToSimulate / 60)%60+ "min " + timeToSimulate%60 +"sec ("+timeToSimulate+")");
-                System.out.println("That took " + ((endTime - startTime) /1000) / 60+ " min and " +  ((endTime - startTime) /1000) %60 + " sec");
+                        + (timeToSimulate / 60) / 60 + "h " + (timeToSimulate / 60) % 60 + "min " + timeToSimulate % 60 + "sec (" + timeToSimulate + ")");
+                System.out.println("That took " + ((endTime - startTime) / 1000) / 60 + " min and " + ((endTime - startTime) / 1000) % 60 + " sec");
                 System.exit(0);
             }
         }
     }
 
+      /**
+     * Starts an scheduled timer which logs in an set time interval
+     *
+     * @param logsPerSimulatedTime int
+     */
+    public void logTimer(int logsPerSimulatedTime) {
+        logTimer.schedule(new TimerTask() {
+            @Override
+            public void run() { // logging can be done here
+
+            }
+        }, 1000, 1000 );
+    }
+
     void init() {
         random = jsonLoader.loadRandom();
         arena.getEntityList().clear();
-        arena.addEntities(jsonLoader.loadRobots(random,logger));
+        arena.addEntities(jsonLoader.loadRobots(random, logger));
         arena.addEntities(jsonLoader.loadBoxes(random));
         arena.addEntities(jsonLoader.loadWalls(random));
         arena.getEntityList().addAll(jsonLoader.loadAreas(random));
@@ -80,28 +93,6 @@ public class Controller {
         }, 1000, 1000 / framesPerSecond);
     }
 
-    /**
-     * Translates the local position of an robot into an global position of the map
-     *
-     * @param globalOffset offset which the robot had when created
-     * @param robot        robot
-     * @return RobotInterface
-     */
-    private synchronized RobotInterface convertPoseToGlobal(Position globalOffset, BaseRobot robot) {
-        Pose pose = transPos(globalOffset, robot.getPose());
-        robot.getPose().setX(pose.getX());
-        robot.getPose().setY(pose.getY());
-        robot.getPose().setRotation(pose.getRotation());
-        return robot;
-    }
-
-
-    private synchronized Pose transPos(Position pGlobal, Pose pLocal) {
-        double x = pGlobal.getX() + pLocal.getX();
-        double y = pGlobal.getY() + pLocal.getY();
-        double rotation = pLocal.getRotation();
-        return new Pose(x, y, rotation);
-    }
 
     /**
      * Adds event listener for the Simulation view
@@ -169,7 +160,7 @@ public class Controller {
                         view.getSimView().toggleDrawrobotRotationo();
                         break;
                     case KeyEvent.VK_C:
-                        view.getSimView().toggleDrawrobotCoordinates();
+                        view.getSimView().toggleDrawRobotCoordinates();
                         break;
                     case KeyEvent.VK_SHIFT:
                         view.getSimView().incFontSize(1);

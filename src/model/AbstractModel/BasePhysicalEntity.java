@@ -40,10 +40,11 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
             pose.setY(arena.getHeight() - height / 2);
     }
 
-    //TODO
     @Override
-    public void collisionDetection() {
+    public boolean collisionDetection() {
+        boolean returnValue = false;
         for (PhysicalEntity physicalEntity : isCollidingWith()) {
+            returnValue = true;
             if (!physicalEntity.isMovable() && isMovable())
                 notMovableCollision(physicalEntity, this);
             else if (physicalEntity.isMovable() && !isMovable())
@@ -56,6 +57,7 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
         } else if (!inArenaBounds() && arena.isTorus) {
             arena.setEntityInTorusArena(this);
         }
+        return returnValue;
     }
 
     /**
@@ -118,9 +120,7 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
     }
 
     public LinkedList<PhysicalEntity> isCollidingWith() {
-
         LinkedList<PhysicalEntity> physicalEntities = new LinkedList<>();
-
         for (PhysicalEntity physicalEntity : arena.getPhysicalEntityList()) {
             if (isPositionInEntity(physicalEntity.getClosestPositionInEntity(pose)) && !equals(physicalEntity)) {
                 physicalEntities.add(physicalEntity);

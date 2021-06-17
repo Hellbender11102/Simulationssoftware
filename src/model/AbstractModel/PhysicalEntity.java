@@ -20,7 +20,7 @@ public interface PhysicalEntity extends Entity,Runnable {
 
     abstract public LinkedList<PhysicalEntity> isCollidingWith();
 
-    abstract public void collisionDetection();
+    abstract public boolean collisionDetection();
 
     abstract public void collision(PhysicalEntity physicalEntity);
 

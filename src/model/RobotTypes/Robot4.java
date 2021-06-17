@@ -8,14 +8,14 @@ import java.awt.*;
 public class Robot4 extends LightConeRobot {
 
     public Robot4(RobotBuilder builder) {
-        super(builder,20,45);
+        super(builder,20,-10);
     }
     Position position=new Position(40,10);
     @Override
     public void behavior() {
 
         driveToPosition(position,2,8);
-        listOfEntityInVision();
+        System.out.println(listOfEntityInVision().size());
     }
 
     @Override
