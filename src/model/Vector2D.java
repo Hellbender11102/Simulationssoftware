@@ -85,6 +85,6 @@ public class Vector2D {
 
     @Override
     public String toString() {
-        return "Vector starts at x:" + origin.getX() + " y:" + origin.getY() + " and goes to x:" + destination.getX() + "y:" + destination.getY();
+        return "Vector starts at x:" + origin.getX() + " y:" + origin.getY() + " and goes to x:" + destination.getX() + " y:" + destination.getY();
     }
 }

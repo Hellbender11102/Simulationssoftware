@@ -15,7 +15,7 @@ public class Robot4 extends LightConeRobot {
     public void behavior() {
 
         driveToPosition(position,2,8);
-        System.out.println(listOfEntitysInVision().size());
+        listOfEntityInVision();
     }
 
     @Override

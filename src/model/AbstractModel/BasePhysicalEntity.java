@@ -62,32 +62,39 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
      * @param physicalEntity
      */
     public void collision(PhysicalEntity physicalEntity) {
-        slateElasticShock(this, physicalEntity);
-    }
-
-    private void slateElasticShock(PhysicalEntity pushing, PhysicalEntity target) {
-        Vector2D normalized = new Vector2D(pushing.getPose().creatPositionByDecreasing(target.getPose())).normalize();
-
-        Vector2D velocityPushing = new Vector2D(pushing.getPose().creatPositionByDecreasing(pushing.getPose().getPositionInDirection(pushing.trajectorySpeed())));
-        Vector2D velocityTarget = new Vector2D(target.getPose().creatPositionByDecreasing(target.getPose().getPositionInDirection(target.trajectorySpeed())));
+          Vector2D normalized = new Vector2D(getPose().creatPositionByDecreasing(physicalEntity.getPose())).normalize();
+        double speedPushing = trajectorySpeed();
+        double speedPEntity = physicalEntity.trajectorySpeed();
+        if(speedPushing == 0 && speedPEntity == 0){
+            speedPushing = 0.1;
+            speedPEntity = 0.1;
+        }
+        Vector2D velocityPushing = new Vector2D(getPose().creatPositionByDecreasing(getPose().getPositionInDirection(speedPushing)));
+        Vector2D velocityPEntity = new Vector2D(physicalEntity.getPose().creatPositionByDecreasing(physicalEntity.getPose().getPositionInDirection(speedPEntity)));
 
         Vector2D v1o = velocityPushing.subtract(normalized.multiplication(normalized.scalarProdukt(velocityPushing)));
-        Vector2D v2p = normalized.multiplication(normalized.scalarProdukt(velocityTarget));
+        Vector2D v2p = normalized.multiplication(normalized.scalarProdukt(velocityPEntity));
+
         Vector2D result = v1o.add(v2p);
 
         if (!result.containsNaN()) {
-            if (pushing.getPose().getY() > target.getPose().getY() && result.getY() > 0) {
-                target.getPose().incPosition(0, -result.getY());
-            } else if (pushing.getPose().getY() < target.getPose().getY() && result.getY() > 0) {
-                target.getPose().incPosition(0, result.getY());
+            if (getPose().getY() > physicalEntity.getPose().getY() && result.getY() > 0) {
+                physicalEntity.getPose().incPosition(0, -result.getY());
+                getPose().incPosition(0, result.getY());
+            } else if (getPose().getY() < physicalEntity.getPose().getY() && result.getY() > 0) {
+                physicalEntity.getPose().incPosition(0, result.getY());
+                getPose().incPosition(0, -result.getY());
             }
-            if (pushing.getPose().getX() > target.getPose().getX() && result.getX() > 0) {
-                target.getPose().incPosition(-result.getX(), 0);
-            } else if (pushing.getPose().getX() < target.getPose().getX() && result.getX() > 0) {
-                target.getPose().incPosition(result.getX(), 0);
-            } else target.getPose().decPosition(result);
+            if (getPose().getX() > physicalEntity.getPose().getX() && result.getX() > 0) {
+                physicalEntity.getPose().incPosition(-result.getX(), 0);
+                getPose().incPosition(result.getX(), 0);
+            } else if (getPose().getX() < physicalEntity.getPose().getX() && result.getX() > 0) {
+                physicalEntity.getPose().incPosition(result.getX(), 0);
+                getPose().incPosition(-result.getX(), 0);
+            } else physicalEntity.getPose().decPosition(result);
         }
     }
+
 
     /**
      * @param notMovable

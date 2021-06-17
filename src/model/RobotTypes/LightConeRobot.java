@@ -35,29 +35,32 @@ public abstract class LightConeRobot extends BaseRobot {
         return 0;
     }
 
-    List<Entity> listOfEntitysInVision() {
+    List<Entity> listOfEntityInVision() {
         List<Entity> entityList = new LinkedList<>();
         for (Entity entity : arena.getEntityList()) {
-            Position closest = entity.getClosestPositionInEntity(pose);
-            if (pose.calcAngleForPosition(closest) <= pose.getRotation() + Math.toRadians(visionAngle) / 2 &&
-                    pose.calcAngleForPosition(closest) >= pose.getRotation() - Math.toRadians(visionAngle) / 2 &&
-                    pose.euclideanDistance(closest) <= visionRange)
-                entityList.add(entity);
+            if (!equals(entity)) {
+                Position closest = entity.getClosestPositionInEntity(pose);
+                double angel = pose.calcAngleForPosition(closest) < 0 ? pose.calcAngleForPosition(closest) + 2*Math.PI:pose.calcAngleForPosition(closest) ;
+                if (angel <= pose.getRotation() + visionAngle / 2 &&
+                        angel >= pose.getRotation() - visionAngle / 2 &&
+                        pose.euclideanDistance(closest) <= visionRange)
+                    entityList.add(entity);
+            }
         }
         return entityList;
     }
 
     List<RobotInterface> listOfRobotsInVision() {
-        return listOfEntitysInVision().stream()
-                .filter(x->RobotInterface.class.isAssignableFrom(x.getClass()))
-                .map(x->(RobotInterface)x)
+        return listOfEntityInVision().stream()
+                .filter(x -> RobotInterface.class.isAssignableFrom(x.getClass()))
+                .map(x -> (RobotInterface) x)
                 .collect(Collectors.toList());
     }
 
     List<Object> listOfRobotsInVisionByCLass(Class type) {
-        return listOfEntitysInVision().stream()
-                .filter(x->type.getClass().isAssignableFrom(x.getClass()))
-                    .map(x->(type.cast(x)))
+        return listOfEntityInVision().stream()
+                .filter(x -> type.getClass().isAssignableFrom(x.getClass()))
+                .map(x -> (type.cast(x)))
                 .collect(Collectors.toList());
     }
 
