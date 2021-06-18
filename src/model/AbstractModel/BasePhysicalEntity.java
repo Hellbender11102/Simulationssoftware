@@ -51,7 +51,7 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
                 notMovableCollision(this, physicalEntity);
             else if (physicalEntity.isMovable() && isMovable())
                 recursiveCollision(physicalEntity);
-                //collision(physicalEntity);
+            //collision(physicalEntity);
         }
         if (!inArenaBounds() && !arena.isTorus) {
             setInArenaBounds();
@@ -60,7 +60,8 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
         }
         return returnValue;
     }
- public void recursiveCollision(PhysicalEntity physicalEntity) {
+
+    public void recursiveCollision(PhysicalEntity physicalEntity) {
         if (!physicalEntity.inArenaBounds()) {
             setInArenaBounds();
         }
@@ -110,15 +111,14 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
     }
 
 
-
     /**
      * @param physicalEntity
      */
     public void collision(PhysicalEntity physicalEntity) {
-          Vector2D normalized = new Vector2D(getPose().creatPositionByDecreasing(physicalEntity.getPose())).normalize();
+        Vector2D normalized = new Vector2D(getPose().creatPositionByDecreasing(physicalEntity.getPose())).normalize();
         double speedPushing = trajectorySpeed();
         double speedPEntity = physicalEntity.trajectorySpeed();
-        if(speedPushing == 0 && speedPEntity == 0){
+        if (speedPushing == 0 && speedPEntity == 0) {
             speedPushing = 0.1;
             speedPEntity = 0.1;
         }
@@ -180,10 +180,14 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
         return physicalEntities;
     }
 
+    //TODO FOR TORUS
     public Position centerOfGroupWithEntities(List<Entity> group) {
         Position center = new Position(0, 0);
         for (Entity entity : group) {
-            center.incPosition(entity.getPose());
+            if (arena.isTorus)
+                 center.incPosition(arena.getClosestPositionInTorus(center,entity.getPose()));
+            else
+                center.incPosition(entity.getPose());
         }
         center.setX(center.getX() / group.size());
         center.setY(center.getY() / group.size());

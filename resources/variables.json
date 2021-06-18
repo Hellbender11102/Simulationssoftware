@@ -1,5 +1,4 @@
 {
-  "seed": 1,
   "ticsPerSimulatedSecond": 1000,
   "maxSpeed": 8.0,
   "minSpeed": 0.0,

@@ -1,7 +1,7 @@
 {
   "fps": 50,
   "mode": {
-    "display-view": false,
+    "display-view": true,
     "simulate-seconds": 86400,
     "simulate-second": 86400
   }

@@ -216,7 +216,8 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         Pose dummyPose = new Pose(pose.getX(), pose.getY(), 0);
         boolean isEnoughDistance = true;
         for (RobotInterface robot : group) {
-            Pose robotPose = robot.getPose();
+            Position robotPose = robot.getPose();
+            if (arena.isTorus) robotPose = arena.getClosestPositionInTorus(pose,robotPose);
             double distance = pose.euclideanDistance(robotPose);
             if (!equals(robot) && distance <= distanceToKeep + getRadius() + robot.getRadius()) {
                 isEnoughDistance = false;
@@ -260,23 +261,16 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * @return
      */
     public double distanceToClosestEntity() {
-        double closest = -1;
-        for (Entity entity : arena.getEntityList()) {
-            double distance = pose.euclideanDistance(entity.getPose());
-            if (!equals(entity)) {
-                if (closest == -1) closest = distance;
-                else closest = Math.min(closest, distance);
-            }
-        }
-        //distanceToClosestEntityOfClass(List.of(Entity.class))
-        return closest;
+       return distanceToClosestEntityOfClass(List.of(Entity.class));
     }
 
     public double distanceToClosestEntityOfClass(List<Class> classList) {
         LinkedList<Entity> group = entityGroupByClasses(classList);
         double closest = -1;
         for (Entity entity : group) {
-            double distance = pose.euclideanDistance(entity.getPose());
+             double distance;
+            if(arena.isTorus) distance = arena.getEuclideanDistanceToClosestPosition(pose,entity.getPose());
+            else distance = pose.euclideanDistance(entity.getPose());
             if (!equals(entity)) {
                 if (closest == -1) closest = distance;
                 else closest = Math.min(closest, distance);

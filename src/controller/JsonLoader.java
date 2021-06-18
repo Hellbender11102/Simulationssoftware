@@ -57,7 +57,7 @@ class JsonLoader {
         if (variables != null && variables.containsKey("seed"))
             return new Random((long) variables.get("seed"));
         else {
-            System.err.println("Could not read seed from variables.json.");
+            System.out.println("No seed is used.");
             return new Random();
         }
     }

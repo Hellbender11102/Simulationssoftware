@@ -15,8 +15,8 @@ public class Robot2 extends BaseRobot {
 
     @Override
     public void behavior() {
-        stayGroupedWithAll(10, 8);
-        if (getTimeToSimulate() % (ticsPerSimulatedSecond / 20) == 0) {
+        stayGroupedWithAll(15, 8);
+        if (getTimeToSimulate() % (ticsPerSimulatedSecond / 2) == 0) {
             logger.logDouble("x" + getId(), pose.getX(), 2);
             logger.logDouble("y" + getId(), pose.getY(), 2);
             logger.logDouble("closest" + getId(), distanceToClosestEntityOfClass(java.util.List.of(RobotInterface.class)), 2);

@@ -6,11 +6,18 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Logger {
-    private File outpotFile = new File("out/Log.csv");
+    private File outpotFile;
     DecimalFormat df;
     Thread saveThread;
     private boolean headWritten = false;
     private ConcurrentHashMap<String, List<String>> logMap = new ConcurrentHashMap<>();
+
+    public Logger() {
+        outpotFile = new File("out/Log.csv");
+        int i = 0;
+        while (outpotFile.exists())
+            outpotFile = new File("out/Log" + i++ + ".csv");
+    }
 
     synchronized
     public void log(String key, String value) {

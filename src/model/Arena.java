@@ -104,9 +104,15 @@ public class Arena {
         return position2;
     }
 
+    public double getEuclideanDistanceToClosestPosition(Position position1, Position position2) {
+        return  isTorus ?
+                position1.euclideanDistance(getClosestPositionInTorus(position1,position2)) :
+                position1.euclideanDistance(position2);
+    }
+
     @Override
     public String toString() {
-        return "width:" + singleton.width + " height:" + singleton.height;
+        return "width:" + singleton.width + " height:" + singleton.height + " is torus "+ isTorus;
     }
 
     synchronized public void addEntities(List<Entity> entities) {
