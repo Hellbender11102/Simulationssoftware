@@ -1,9 +1,11 @@
 package model.RobotTypes;
 
+import model.AbstractModel.RobotInterface;
 import model.Position;
 import model.RobotBuilder;
 
 import java.awt.*;
+import java.util.List;
 
 public class Robot2 extends BaseRobot {
 
@@ -11,12 +13,19 @@ public class Robot2 extends BaseRobot {
         super(builder);
     }
 
-    int toggle = 0;
-
     @Override
     public void behavior() {
-
-        driveToPosition(new Position(20,20),1,8);
+        stayGroupedWithAll(10, 8);
+        if (getTimeToSimulate() % (ticsPerSimulatedSecond / 20) == 0) {
+            logger.logDouble("x" + getId(), pose.getX(), 2);
+            logger.logDouble("y" + getId(), pose.getY(), 2);
+            logger.logDouble("closest" + getId(), distanceToClosestEntityOfClass(java.util.List.of(RobotInterface.class)), 2);
+            Position center = arena.getRobots().get(0).centerOfGroupWithClasses(List.of(RobotInterface.class));
+            if (getId() == 18) {
+                logger.logDouble("centerX", center.getX(), 2);
+                logger.logDouble("centerY", center.getY(), 2);
+            }
+        }
     }
 
     @Override

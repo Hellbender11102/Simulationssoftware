@@ -3,9 +3,7 @@ package controller;
 import model.*;
 import model.AbstractModel.Entity;
 import model.AbstractModel.RobotInterface;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
+import org.json.simple.*;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -115,9 +113,18 @@ class JsonLoader {
         if (settings != null && settings.containsKey("mode"))
             return (JSONObject) settings.get("mode");
         else {
-            System.err.println("Could not read settings or entry mode from variables.json.");
+            System.err.println("Could not read settings or entry mode from settings.json.");
         }
         return null;
+    }
+
+    int loadTicsPerSimulatedSecond() {
+        if (variables != null && variables.containsKey("ticsPerSimulatedSecond"))
+            return (int) (long) variables.get("ticsPerSimulatedSecond");
+        else {
+            System.err.println("Could not read variables or entry ticsPerSimulatedSecond from variables.json.");
+        }
+        return 1;
     }
 
     /**
@@ -254,6 +261,7 @@ class JsonLoader {
                     .engineDistnace((Double) robotObject.get("distance"))
                     .random(new Random(random.nextInt()))
                     .pose(loadPose(robotObject))
+                    .ticsPerSimulatedSecond(loadTicsPerSimulatedSecond())
                     .minSpeed(loadMinSpeed())
                     .maxSpeed(loadMaxSpeed())
                     .timeToSimulate(timeToSimulate)

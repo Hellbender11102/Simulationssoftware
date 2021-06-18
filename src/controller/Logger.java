@@ -50,7 +50,7 @@ public class Logger {
             StringBuilder stringBuilder = new StringBuilder();
             if (!headWritten) {
                 for (String key : logMap.keySet()) {
-                    stringBuilder.append(key).append(", ");
+                    stringBuilder.append(key).append(",");
                 }
                 headWritten = true;
             }
@@ -59,8 +59,8 @@ public class Logger {
             while (i < longestListSize) {
                 for (String key : logMap.keySet()) {
                     if (i < logMap.get(key).size())
-                        stringBuilder.append(logMap.get(key).get(i)).append(", ");
-                    else stringBuilder.append(", ");
+                        stringBuilder.append(logMap.get(key).get(i)).append(",");
+                    else stringBuilder.append(",");
                 }
                 stringBuilder.append("\n");
                 i++;

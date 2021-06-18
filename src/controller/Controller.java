@@ -16,12 +16,14 @@ public class Controller {
     private Random random;
     private JsonLoader jsonLoader = new JsonLoader();
     private final Timer repaintTimer = new Timer();
-    private final Timer logTimer = new Timer();
+    private final Timer loggerTimer = new Timer();
     private final Logger logger = new Logger();
+    private int ticsPerSimulatedSecond;
 
     public Controller() {
         long startTime = System.currentTimeMillis();
         arena = jsonLoader.initArena();
+        ticsPerSimulatedSecond = jsonLoader.loadTicsPerSimulatedSecond();
         if (jsonLoader.loadDisplayView()) {
             init();
             view = new View(arena);
@@ -30,11 +32,16 @@ public class Controller {
         } else {
             init();
             int timeToSimulate = arena.getRobots().get(0).getTimeToSimulate();
+            startLoggerTimer(1000);
             arena.getPhysicalEntityList().forEach(this::startThread);
             Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
             while (entityThreads.stream().anyMatch(Thread::isAlive)) {
+                int finalTimeToSimulate = timeToSimulate;
+                Optional<Long> percantageUntilDone = arena.getRobots().stream()
+                        .map(robot -> Math.round((1 - ((double) robot.getTimeToSimulate() / (double) finalTimeToSimulate)) * 100))
+                        .reduce(Long::sum);
                 System.out.print(
-                        Math.round((1 - ((double) arena.getRobots().get(0).getTimeToSimulate() / (double) timeToSimulate)) * 100) + "%\r");
+                        (percantageUntilDone.map(Math::toIntExact).orElse(0) / arena.getRobots().size()) + "%\r");
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException interruptedException) {
@@ -54,18 +61,18 @@ public class Controller {
         }
     }
 
-      /**
+    /**
      * Starts an scheduled timer which logs in an set time interval
      *
-     * @param logsPerSimulatedTime int
+     * @param logsPerSec int
      */
-    public void logTimer(int logsPerSimulatedTime) {
-        logTimer.schedule(new TimerTask() {
+    public void startLoggerTimer(int logsPerSec) {
+        loggerTimer.schedule(new TimerTask() {
             @Override
-            public void run() { // logging can be done here
+            public void run() { // logging can be done her
 
             }
-        }, 1000, 1000 );
+        }, 0, 1000 / logsPerSec);
     }
 
     void init() {
@@ -251,7 +258,8 @@ public class Controller {
 
     private void startThread(PhysicalEntity physicalEntity) {
         Thread t = new Thread(physicalEntity);
-        entityThreads.add(t);
+        if (RobotInterface.class.isAssignableFrom(physicalEntity.getClass()))
+            entityThreads.add(t);
         t.start();
     }
 }

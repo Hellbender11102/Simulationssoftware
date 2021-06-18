@@ -29,7 +29,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * 100 = 10ms
      * 1 = 1 second
      */
-    final int ticsPerSimulatedSecond = 1000;
+    final int ticsPerSimulatedSecond;
     /**
      * in centimeters
      */
@@ -81,7 +81,8 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         logger = builder.getLogger();
         maxSpeed = builder.getMaxSpeed();
         minSpeed = builder.getMinSpeed();
-        timeToSimulate = builder.getTimeToSimulate() * ticsPerSimulatedSecond;
+        ticsPerSimulatedSecond =  builder.getTicsPerSimulatedSecond();
+        timeToSimulate = builder.getTimeToSimulate() * builder.getTicsPerSimulatedSecond();
         simulateWithView = builder.getSimulateWithView();
     }
 
@@ -245,10 +246,19 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         return entityInGroup;
     }
 
+    /**
+     * The robots will drive to the center which results from all robot positions
+     * @param distanceToClosestRobot distance the robots like to have between themselves and other robots
+     * @param speed double
+     */
     public void stayGroupedWithAll(double distanceToClosestRobot, double speed) {
         stayGroupedWithRobotType(distanceToClosestRobot, List.of(RobotInterface.class), speed, 2);
     }
 
+    /**
+     *
+     * @return
+     */
     public double distanceToClosestEntity() {
         double closest = -1;
         for (Entity entity : arena.getEntityList()) {

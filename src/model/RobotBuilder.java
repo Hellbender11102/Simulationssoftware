@@ -14,6 +14,7 @@ public class RobotBuilder {
     private Arena arena;
     private Logger logger;
     private boolean simulateWithView;
+    private int ticsPerSimulatedSecond;
 
     public double getEngineL() {
         return engineL;
@@ -29,6 +30,10 @@ public class RobotBuilder {
 
     public Pose getPose() {
         return pose;
+    }
+
+    public int getTicsPerSimulatedSecond() {
+        return ticsPerSimulatedSecond;
     }
 
     public double getDistanceE() {
@@ -99,6 +104,11 @@ public class RobotBuilder {
 
     public RobotBuilder pose(Pose pose) {
         this.pose = pose;
+        return this;
+    }
+
+    public RobotBuilder ticsPerSimulatedSecond(int ticsPerSimulatedSecond) {
+        this.ticsPerSimulatedSecond = ticsPerSimulatedSecond;
         return this;
     }
 
@@ -184,6 +194,7 @@ public class RobotBuilder {
     public Robot4 buildRobot4() {
         return new Robot4(this);
     }
+
 
     /* Space to add own robot types */
 }

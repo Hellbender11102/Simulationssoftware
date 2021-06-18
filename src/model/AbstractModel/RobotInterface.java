@@ -1,5 +1,7 @@
 package model.AbstractModel;
 
+import java.util.List;
+
 public interface RobotInterface extends PhysicalEntity {
 
     abstract void behavior();
@@ -13,4 +15,6 @@ public interface RobotInterface extends PhysicalEntity {
     abstract public double getEngineR();
 
     abstract public boolean getSignal();
+
+    abstract public double distanceToClosestEntityOfClass(List<Class> classList);
 }

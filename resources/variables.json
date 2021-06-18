@@ -1,5 +1,6 @@
 {
   "seed": 1,
+  "ticsPerSimulatedSecond": 1000,
   "maxSpeed": 8.0,
   "minSpeed": 0.0,
   "arena": {
@@ -9,16 +10,16 @@
   },
   "robots": [
     {
-      "type": "4",
-      "engineR": 4.0,
-      "engineL": 4.0,
+      "type": "2",
+      "engineR": 0.0,
+      "engineL": 0.0,
       "distance": 4.0,
       "diameters": 4.0,
       "powerTransmission": 0.0,
       "position": {
-        "x": 30.0,
-        "y": 11.0,
-        "rotation": 0.0
+        "x": 10.0,
+        "y": 10.0,
+        "rotation": 90.0
       }
     },
     {
@@ -29,9 +30,22 @@
       "diameters": 4.0,
       "powerTransmission": 0.0,
       "position": {
-        "x": 55.0,
-        "y": 10.0,
-        "rotation": 0.0
+        "x": 10.0,
+        "y": 90.0,
+        "rotation": 270.0
+      }
+    },
+    {
+      "type": "2",
+      "engineR": 0.0,
+      "engineL": 0.0,
+      "distance": 4.0,
+      "diameters": 4.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 90.0,
+        "y": 90.0,
+        "rotation": 270.0
       }
     },
     {
@@ -44,20 +58,7 @@
       "position": {
         "x": 90.0,
         "y": 10.0,
-        "rotation": 180.0
-      }
-    },
-    {
-      "type": "2",
-      "engineR": 0.0,
-      "engineL": 0.0,
-      "distance": 4.0,
-      "diameters": 4.0,
-      "powerTransmission": 0.0,
-      "position": {
-        "x": 90.0,
-        "y": 10.0,
-        "rotation": 180.0
+        "rotation": 90.0
       }
     }
   ],

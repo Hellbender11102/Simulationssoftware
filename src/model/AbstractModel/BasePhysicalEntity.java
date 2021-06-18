@@ -50,7 +50,8 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
             else if (physicalEntity.isMovable() && !isMovable())
                 notMovableCollision(this, physicalEntity);
             else if (physicalEntity.isMovable() && isMovable())
-                collision(physicalEntity);
+                recursiveCollision(physicalEntity);
+                //collision(physicalEntity);
         }
         if (!inArenaBounds() && !arena.isTorus) {
             setInArenaBounds();
@@ -59,6 +60,56 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
         }
         return returnValue;
     }
+ public void recursiveCollision(PhysicalEntity physicalEntity) {
+        if (!physicalEntity.inArenaBounds()) {
+            setInArenaBounds();
+        }
+        if (physicalEntity.isMovable()) {
+            //r2 gets bumped
+            if (physicalEntity.isPositionInEntity(pose.getPositionInDirection(getClosestPositionInEntity(physicalEntity.getPose()).euclideanDistance(pose)))) {
+                bump(this, physicalEntity, pose.getPositionInDirection(trajectorySpeed()));
+            } else if (isPositionInEntity(physicalEntity.getPose().getPositionInDirection(physicalEntity.getClosestPositionInEntity(pose).euclideanDistance(physicalEntity.getPose())))) {   //this gets pumped
+                bump(physicalEntity, this, physicalEntity.getPose().getPositionInDirection(physicalEntity.trajectorySpeed()));
+            } else {
+                //both are bumping cause no one drives directly in each other
+                if (pose.getX() < physicalEntity.getPose().getX()) {
+                    bump(this, physicalEntity, new Position(pose.getX() + trajectorySpeed(), pose.getY()));
+                    bump(physicalEntity, this, new Position(physicalEntity.getPose().getX() - physicalEntity.trajectorySpeed(), physicalEntity.getPose().getY()));
+                } else {
+                    bump(this, physicalEntity, new Position(pose.getX() - trajectorySpeed(), pose.getY()));
+                    bump(physicalEntity, this, new Position(physicalEntity.getPose().getX() + physicalEntity.trajectorySpeed(), physicalEntity.getPose().getY()));
+                }
+                if (pose.getY() < physicalEntity.getPose().getY()) {
+                    bump(this, physicalEntity, new Position(pose.getX(), pose.getY() + trajectorySpeed()));
+                    bump(physicalEntity, this, new Position(physicalEntity.getPose().getX(), physicalEntity.getPose().getY() - physicalEntity.trajectorySpeed()));
+                } else {
+                    bump(this, physicalEntity, new Position(pose.getX(), pose.getY() - trajectorySpeed()));
+                    bump(physicalEntity, this, new Position(physicalEntity.getPose().getX(), physicalEntity.getPose().getY() + physicalEntity.trajectorySpeed()));
+                }
+            }
+        }
+    }
+
+    /**
+     * @param bumping                 Robot that bumps
+     * @param getsBumped              Robot that gets bumped
+     * @param positionInBumpDirection Position in which the bump directs
+     */
+    private void bump(PhysicalEntity bumping, PhysicalEntity getsBumped, Position positionInBumpDirection) {
+        Position vector = bumping.getPose().creatPositionByDecreasing(positionInBumpDirection);
+        getsBumped.getPose().decPosition(vector);
+
+        if (getPose().getX() < width / 2)
+            bumping.getPose().incPosition(vector.getX(), 0);
+        else if (getPose().getX() > arena.getWidth() - width / 2)
+            bumping.getPose().incPosition(vector.getX(), 0);
+        if (getPose().getY() < height / 2)
+            bumping.getPose().incPosition(0, vector.getY());
+        else if (getPose().getY() > arena.getHeight() - height / 2)
+            bumping.getPose().incPosition(0, vector.getY());
+    }
+
+
 
     /**
      * @param physicalEntity
