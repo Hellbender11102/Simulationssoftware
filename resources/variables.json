@@ -1,30 +1,44 @@
 {
-  "ticsPerSimulatedSecond": 1000,
+  "seed": 1,
+  "ticsPerSimulatedSecond": 500,
   "maxSpeed": 8.0,
   "minSpeed": 0.0,
   "arena": {
-    "torus": true,
+    "torus": false,
     "width": 100,
     "height": 100
   },
   "robots": [
     {
-      "type": "2",
-      "engineR": 0.0,
-      "engineL": 0.0,
+      "type": "4",
+      "engineR": 4.0,
+      "engineL": 4.0,
       "distance": 4.0,
       "diameters": 4.0,
       "powerTransmission": 0.0,
       "position": {
         "x": 10.0,
         "y": 10.0,
+        "rotation": 0.0
+      }
+    },
+    {
+      "type": "default",
+      "engineR": 4.0,
+      "engineL": 4.0,
+      "distance": 4.0,
+      "diameters": 4.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 90.0,
+        "y": 10.0,
         "rotation": 90.0
       }
     },
     {
-      "type": "2",
-      "engineR": 0.0,
-      "engineL": 0.0,
+      "type": "default",
+      "engineR": 3.0,
+      "engineL": 3.0,
       "distance": 4.0,
       "diameters": 4.0,
       "powerTransmission": 0.0,
@@ -35,9 +49,9 @@
       }
     },
     {
-      "type": "2",
-      "engineR": 0.0,
-      "engineL": 0.0,
+      "type": "1",
+      "engineR": 1.0,
+      "engineL": 1.0,
       "distance": 4.0,
       "diameters": 4.0,
       "powerTransmission": 0.0,
@@ -48,23 +62,63 @@
       }
     },
     {
-      "type": "2",
+      "type": "default",
+      "engineR": 4.0,
+      "engineL": 4.0,
+      "distance": 4.0,
+      "diameters": 4.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 40.0,
+        "y": 91.0,
+        "rotation": 0.0
+      }
+    },
+    {
+      "type": "default",
       "engineR": 0.0,
       "engineL": 0.0,
       "distance": 4.0,
       "diameters": 4.0,
       "powerTransmission": 0.0,
       "position": {
-        "x": 90.0,
-        "y": 10.0,
-        "rotation": 90.0
+        "x": 60.0,
+        "y": 90.0,
+        "rotation": 180.0
       }
     }
   ],
   "boxes": [
+    {
+      "width": 2.0,
+      "height": 2.0,
+      "position": {
+        "x": 50.0,
+        "y": 10.0,
+        "rotation": 0.0
+      }
+    }
   ],
   "walls": [
+    {
+      "width": 100.0,
+      "height": 3.0,
+      "position": {
+        "x": 50.0,
+        "y": 50.0,
+        "rotation": 0.0
+      }
+    }
   ],
   "areas": [
+    {
+      "diameters": 15.0,
+      "noticeableDistance": 0.0,
+      "position": {
+        "x": 90.0,
+        "y": 90.0,
+        "rotation": 0.0
+      }
+    }
   ]
 }

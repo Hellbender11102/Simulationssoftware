@@ -30,14 +30,16 @@ public interface Entity {
 
     abstract public void updatePositionMemory();
 
-    abstract public boolean hasAnBody();
+    abstract public boolean isCollidable();
 
     abstract public boolean isPositionInEntity(Position position);
+
+    abstract public Position getClosestPositionInEntity(Position position);
 
     abstract public double getWidth();
 
     abstract public double getHeight();
 
-    abstract public Position getClosestPositionInEntity(Position position);
+    abstract public double getArea();
 
 }

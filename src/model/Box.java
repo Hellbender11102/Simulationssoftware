@@ -40,4 +40,10 @@ public class Box extends BasePhysicalEntity {
         return 0;
     }
 
+
+
+    @Override
+    public double getArea() {
+        return getAreaSquare();
+    }
 }

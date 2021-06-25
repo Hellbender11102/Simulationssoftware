@@ -20,7 +20,7 @@ public class Area extends BaseEntity {
     }
 
     @Override
-    public boolean hasAnBody() {
+    public boolean isCollidable() {
         return false;
     }
 
@@ -45,5 +45,10 @@ public class Area extends BaseEntity {
 
     public Position getClosestPositionInEntity(Position position) {
         return closestPositionInEntityForCircle(position,width/2.);
+    }
+
+        @Override
+    public double getArea() {
+        return getAreaCircle();
     }
 }

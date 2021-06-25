@@ -8,9 +8,13 @@ public class Pose extends Position {
         setRotation(rotation);
     }
 
-    Pose(Position position, double rotation) {
+    public Pose(Position position, double rotation) {
         super(position.xCoordinate, position.yCoordinate);
         setRotation(rotation);
+    }
+    public Pose(Pose pose) {
+        super(pose.xCoordinate, pose.yCoordinate);
+        setRotation(pose.getRotation());
     }
 
     public Pose clone() {
@@ -43,11 +47,23 @@ public class Pose extends Position {
         return new Pose(getPositionInDirection(distance, rotation, xCoordinate, yCoordinate), rotation);
     }
 
+    public Pose getPoseInDirection(Vector2D vector2D) {
+        return new Pose(xCoordinate + vector2D.getX() ,yCoordinate+  vector2D.getY(), rotation);
+    }
+
     public Position getPositionInDirection(double distance, double rotation) {
         return getPositionInDirection(distance, rotation, xCoordinate, yCoordinate);
     }
 
-    public static Position getPositionInDirection(double distance, double rotation, double x, double y) {
+    /**
+     *
+     * @param distance double
+     * @param rotation double
+     * @param x double
+     * @param y double
+     * @return
+     */
+     private static Position getPositionInDirection(double distance, double rotation, double x, double y) {
         x += distance * Math.cos(rotation);
         y += distance * Math.sin(rotation);
         return new Position(x, y);

@@ -3,6 +3,11 @@ package model;
 public class Position {
     double xCoordinate, yCoordinate;
 
+    public Position(Position position) {
+        this.xCoordinate = position.getX();
+        this.yCoordinate = position.getY();
+    }
+
     public Position(double xCoordinate, double yCoordinate) {
         this.xCoordinate = xCoordinate;
         this.yCoordinate = yCoordinate;
@@ -41,6 +46,7 @@ public class Position {
 
     /**
      * Calculates the PolarAngle for an given position
+     *
      * @param position Position
      * @return double[-pi,pi]
      */
@@ -89,11 +95,13 @@ public class Position {
         xCoordinate += addendX;
         yCoordinate += addendY;
     }
+
     synchronized
     public void decPosition(Position vector) {
         xCoordinate -= vector.xCoordinate;
         yCoordinate -= vector.yCoordinate;
     }
+
     synchronized
     public void decPosition(Vector2D vector) {
         xCoordinate -= vector.getX();

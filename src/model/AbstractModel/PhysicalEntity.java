@@ -18,7 +18,7 @@ public interface PhysicalEntity extends Entity,Runnable {
 
     abstract public void setInArenaBounds();
 
-    abstract public LinkedList<PhysicalEntity> isCollidingWith();
+    abstract public LinkedList<PhysicalEntity> hasAnBody();
 
     abstract public boolean collisionDetection();
 
@@ -27,4 +27,6 @@ public interface PhysicalEntity extends Entity,Runnable {
     abstract public int getTimeToSimulate();
 
     abstract public boolean isMovable();
+
+    abstract public double getWeight();
 }

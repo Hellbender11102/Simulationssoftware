@@ -61,8 +61,8 @@ public class Arena {
         else return !(position.getY() > height);
     }
 
-    public Position setPositionInBounds(Position position) {
-        Position buffPosition = position;
+    public Position setPositionInBoundsTorus(Position position) {
+        Position buffPosition = new Position(position);
         buffPosition.setX(position.getX() % width);
         buffPosition.setY(position.getY() % height);
         if (buffPosition.getX() < 0) buffPosition.incPosition(width, 0);
@@ -70,9 +70,18 @@ public class Arena {
         return buffPosition;
     }
 
+    public Position setPositionInBounds(Position position) {
+            Position buffPosition = new Position(position);
+            if (buffPosition.getX() < 0) buffPosition.setX(0);
+            if (buffPosition.getY() < 0) buffPosition.setY(0);
+            if (buffPosition.getX() > width) buffPosition.setX(width);
+            if (buffPosition.getY() > height) buffPosition.setY(height);
+            return buffPosition;
+    }
+
     public void setEntityInTorusArena(Entity entity) {
-        entity.getPose().setX(setPositionInBounds(entity.getPose()).getX());
-        entity.getPose().setY(setPositionInBounds(entity.getPose()).getY());
+        entity.getPose().setX(setPositionInBoundsTorus(entity.getPose()).getX());
+        entity.getPose().setY(setPositionInBoundsTorus(entity.getPose()).getY());
     }
 
     /**
@@ -105,14 +114,14 @@ public class Arena {
     }
 
     public double getEuclideanDistanceToClosestPosition(Position position1, Position position2) {
-        return  isTorus ?
-                position1.euclideanDistance(getClosestPositionInTorus(position1,position2)) :
+        return isTorus ?
+                position1.euclideanDistance(getClosestPositionInTorus(position1, position2)) :
                 position1.euclideanDistance(position2);
     }
 
     @Override
     public String toString() {
-        return "width:" + singleton.width + " height:" + singleton.height + " is torus "+ isTorus;
+        return "width:" + singleton.width + " height:" + singleton.height + " is torus " + isTorus;
     }
 
     synchronized public void addEntities(List<Entity> entities) {
@@ -135,7 +144,7 @@ public class Arena {
     }
 
     synchronized public List<Entity> getNonPhysicalEntityList() {
-        return singleton.entityList.stream().filter(x -> !x.hasAnBody()).map(x -> (Entity) x).collect(Collectors.toList());
+        return singleton.entityList.stream().filter(x -> !x.isCollidable()).map(x -> (Entity) x).collect(Collectors.toList());
     }
 
     synchronized public List<Area> getAreaList() {

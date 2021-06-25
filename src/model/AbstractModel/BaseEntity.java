@@ -120,7 +120,7 @@ abstract public class BaseEntity extends Thread implements Entity {
 
     public boolean equals(Entity entity) {
         return pose.equals(entity.getPose()) && color == entity.getColor()
-                && entity.hasAnBody() == hasAnBody() && entity.getClass().equals(getClass());
+                && entity.isCollidable() == isCollidable() && entity.getClass().equals(getClass());
     }
 
     public Color getColor() {
@@ -164,7 +164,7 @@ abstract public class BaseEntity extends Thread implements Entity {
     }
 
     protected boolean isPositionInEntitySquare(Position position) {
-        position =  arena.setPositionInBounds(position);
+        position =  arena.setPositionInBoundsTorus(position);
         return position.getX() <= pose.getX() + width / 2 &&
                 position.getX() >= pose.getX() - width / 2 &&
                 position.getY() <= pose.getY() + height / 2 &&
@@ -172,8 +172,14 @@ abstract public class BaseEntity extends Thread implements Entity {
     }
 
     public boolean isPositionInEntityCircle(Position position) {
-        position = arena.setPositionInBounds(position);
+        position = arena.setPositionInBoundsTorus(position);
         return pose.euclideanDistance(position) <= width /2;
     }
 
+    public double getAreaSquare(){
+        return width*height;
+    }
+    public double getAreaCircle(){
+        return Math.PI * Math.pow(width/2,2);
+    }
 }

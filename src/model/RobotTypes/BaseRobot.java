@@ -6,6 +6,7 @@ import model.Pose;
 import model.Position;
 import model.RobotBuilder;
 import model.AbstractModel.RobotInterface;
+import model.Vector2D;
 import org.uncommons.maths.random.ExponentialGenerator;
 import org.uncommons.maths.random.GaussianGenerator;
 
@@ -24,10 +25,10 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * this ensures the atomic actions of the robot will be changed to the action result / ticsPerSimulatedSecond
      * thus 1000 will mean a single robot run() call will simulate 1 ms of time.
      * to simulate coarser time intervals reduce this number.
-     * 2000 = 0.5 ms
      * 1000 = 1 ms
      * 100 = 10ms
      * 1 = 1 second
+     * the lowest time scale is 1 ms
      */
     final int ticsPerSimulatedSecond;
     /**
@@ -81,7 +82,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         logger = builder.getLogger();
         maxSpeed = builder.getMaxSpeed();
         minSpeed = builder.getMinSpeed();
-        ticsPerSimulatedSecond =  builder.getTicsPerSimulatedSecond();
+        ticsPerSimulatedSecond = builder.getTicsPerSimulatedSecond();
         timeToSimulate = builder.getTimeToSimulate() * builder.getTicsPerSimulatedSecond();
         simulateWithView = builder.getSimulateWithView();
     }
@@ -104,8 +105,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     public double angularVelocity() {
         return (((engineR * (1 - powerTransmission) + engineL * powerTransmission)
                 - (engineL * (1 - powerTransmission) + engineR * powerTransmission))
-                / distanceE)
-                / ticsPerSimulatedSecond;
+                / distanceE) / ticsPerSimulatedSecond;
     }
 
     /**
@@ -113,7 +113,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      */
     public void setNextPosition() {
         pose.incRotation(angularVelocity());
-        pose = pose.getPoseInDirection(trajectorySpeed());
+        pose = pose.getPoseInDirection( new Vector2D(Math.cos(pose.getRotation())*trajectorySpeed(),Math.sin(pose.getRotation())*trajectorySpeed()));
     }
 
     /**
@@ -123,8 +123,8 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     public void run() {
         while (!isPaused || (timeToSimulate > 0 && !simulateWithView)) {
             behavior();
-            if (!collisionDetection())
-                setNextPosition();
+            if(!collisionDetection())
+            setNextPosition();
             updatePositionMemory();
             if (timeToSimulate <= 0 || simulateWithView) {
                 try {
@@ -217,7 +217,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         boolean isEnoughDistance = true;
         for (RobotInterface robot : group) {
             Position robotPose = robot.getPose();
-            if (arena.isTorus) robotPose = arena.getClosestPositionInTorus(pose,robotPose);
+            if (arena.isTorus) robotPose = arena.getClosestPositionInTorus(pose, robotPose);
             double distance = pose.euclideanDistance(robotPose);
             if (!equals(robot) && distance <= distanceToKeep + getRadius() + robot.getRadius()) {
                 isEnoughDistance = false;
@@ -249,27 +249,27 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
 
     /**
      * The robots will drive to the center which results from all robot positions
+     *
      * @param distanceToClosestRobot distance the robots like to have between themselves and other robots
-     * @param speed double
+     * @param speed                  double
      */
     public void stayGroupedWithAll(double distanceToClosestRobot, double speed) {
         stayGroupedWithRobotType(distanceToClosestRobot, List.of(RobotInterface.class), speed, 2);
     }
 
     /**
-     *
      * @return
      */
     public double distanceToClosestEntity() {
-       return distanceToClosestEntityOfClass(List.of(Entity.class));
+        return distanceToClosestEntityOfClass(List.of(Entity.class));
     }
 
     public double distanceToClosestEntityOfClass(List<Class> classList) {
         LinkedList<Entity> group = entityGroupByClasses(classList);
         double closest = -1;
         for (Entity entity : group) {
-             double distance;
-            if(arena.isTorus) distance = arena.getEuclideanDistanceToClosestPosition(pose,entity.getPose());
+            double distance;
+            if (arena.isTorus) distance = arena.getEuclideanDistanceToClosestPosition(pose, entity.getPose());
             else distance = pose.euclideanDistance(entity.getPose());
             if (!equals(entity)) {
                 if (closest == -1) closest = distance;
@@ -479,6 +479,11 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
 
     public double getEngineR() {
         return engineR;
+    }
+
+    @Override
+    public double getArea() {
+        return getAreaCircle();
     }
 
     @Override
