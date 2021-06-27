@@ -17,4 +17,7 @@ public interface RobotInterface extends PhysicalEntity {
     abstract public boolean getSignal();
 
     abstract public double distanceToClosestEntityOfClass(List<Class> classList);
+
+    abstract public int getTimeToSimulate();
+
 }

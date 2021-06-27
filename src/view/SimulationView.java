@@ -199,6 +199,25 @@ public class SimulationView extends JPanel {
         offsetY = calcBorders(amount, arena.getHeight(), offsetY);
     }
 
+    private int calcBorders(int amount, int border, int offset) {
+        if (-border / 2 < offset + amount && offset + amount < border + border / 2)
+            return offset + amount;
+        else if (-border / 2 > offset + amount) return -border / 2;
+        else if (offset + amount > border + border / 2) return border + border / 2;
+        else return offset;
+    }
+
+    //zoom
+    public void incZoom() {
+        zoomFactor *= 1.1;
+        repaint();
+    }
+
+    public void decZoom() {
+        zoomFactor /= 1.1;
+        repaint();
+    }
+
     private int convertZoom(int number) {
         return (int) Math.round(number * zoomFactor);
     }
@@ -207,12 +226,10 @@ public class SimulationView extends JPanel {
         return (int) Math.round(number * zoomFactor);
     }
 
-    private int calcBorders(int amount, int border, int offset) {
-        if (-border / 2 < offset + amount && offset + amount < border + border / 2)
-            return offset + amount;
-        else if (-border / 2 > offset + amount) return -border / 2;
-        else if (offset + amount > border + border / 2) return border + border / 2;
-        else return offset;
+    //toggle functions for visuals
+
+    public void incFontSize(int addend) {
+        fontSize += addend + fontSize < 10 ? 0 : addend + fontSize > 30 ? 0 : addend;
     }
 
     public void toggleDrawRobotCoordinates() {
@@ -251,18 +268,5 @@ public class SimulationView extends JPanel {
         drawRobotCone = !drawRobotCone;
     }
 
-    public void incFontSize(int addend) {
-        fontSize += addend + fontSize < 10 ? 0 : addend + fontSize > 30 ? 0 : addend;
-    }
-
-    public void incZoom() {
-        zoomFactor *= 1.1;
-        repaint();
-    }
-
-    public void decZoom() {
-        zoomFactor /= 1.1;
-        repaint();
-    }
 
 }

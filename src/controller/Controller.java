@@ -20,6 +20,7 @@ public class Controller {
     private final Logger logger = new Logger();
     private int ticsPerSimulatedSecond;
 
+
     public Controller() {
         long startTime = System.currentTimeMillis();
         arena = jsonLoader.initArena();
@@ -75,20 +76,21 @@ public class Controller {
         }, 0, 1000 / logsPerSec);
     }
 
+    /**
+     * loads all entities from the JSON file and adds them to the arena
+     */
     void init() {
         random = jsonLoader.loadRandom();
         arena.getEntityList().clear();
         arena.addEntities(jsonLoader.loadRobots(random, logger));
         arena.addEntities(jsonLoader.loadBoxes(random));
         arena.addEntities(jsonLoader.loadWalls(random));
-        arena.getEntityList().addAll(jsonLoader.loadAreas(random));
+        arena.addEntities(jsonLoader.loadAreas(random));
     }
 
 
     /**
-     * Starts an scheduled timer which checks for new robot locations and puts these on the arena
-     * Repaints the view after
-     *
+     * Starts an scheduled timer to repaint the view
      * @param framesPerSecond int
      */
     public void repaintTimer(int framesPerSecond) {
@@ -228,10 +230,12 @@ public class Controller {
         };
         view.addKeyListener(keyListener);
 
-        //Menu listener
+        //Menu listener events
+        //saves a log to file causes overwriting an if existing
         view.getLog().addActionListener(actionListener -> {
             logger.saveFullLogToFile(false);
         });
+        //Restarts the simulation
         view.getRestart().addActionListener(actionListener -> {
             for (RobotInterface robot : arena.getRobots()) {
                 if (!stopped) {
@@ -241,6 +245,8 @@ public class Controller {
             stopped = true;
             init();
         });
+        //Restarts the simulation after initializing all resources again
+        //Can lead to different behavior without random seed
         view.getFullRestart().addActionListener(actionListener -> {
             for (RobotInterface robot : arena.getRobots()) {
                 if (!stopped) {
@@ -253,9 +259,13 @@ public class Controller {
             repaintTimer(jsonLoader.loadFps());
             init();
         });
-
     }
 
+    /**
+     * Starts a thread for any given PhysicalEntity
+     * PhysicalEntity extends Runnable
+     * @param physicalEntity PhysicalEntity
+     */
     private void startThread(PhysicalEntity physicalEntity) {
         Thread t = new Thread(physicalEntity);
         if (RobotInterface.class.isAssignableFrom(physicalEntity.getClass()))

@@ -12,6 +12,7 @@ public class Pose extends Position {
         super(position.xCoordinate, position.yCoordinate);
         setRotation(rotation);
     }
+
     public Pose(Pose pose) {
         super(pose.xCoordinate, pose.yCoordinate);
         setRotation(pose.getRotation());
@@ -43,30 +44,45 @@ public class Pose extends Position {
         return getPositionInDirection(distance, rotation, xCoordinate, yCoordinate);
     }
 
+    public Position getPositionInDirection(double distance, double rotation) {
+        return getPositionInDirection(distance, rotation, xCoordinate, yCoordinate);
+    }
+
     public Pose getPoseInDirection(double distance) {
         return new Pose(getPositionInDirection(distance, rotation, xCoordinate, yCoordinate), rotation);
     }
 
     public Pose getPoseInDirection(Vector2D vector2D) {
-        return new Pose(xCoordinate + vector2D.getX() ,yCoordinate+  vector2D.getY(), rotation);
+        return new Pose(xCoordinate + vector2D.getX(), yCoordinate + vector2D.getY(), rotation);
     }
 
-    public Position getPositionInDirection(double distance, double rotation) {
-        return getPositionInDirection(distance, rotation, xCoordinate, yCoordinate);
+    public Pose getPoseInDirection(double distance, double rotation) {
+        return new Pose(getPositionInDirection(distance, rotation, xCoordinate, yCoordinate), rotation);
     }
+
 
     /**
-     *
      * @param distance double
      * @param rotation double
-     * @param x double
-     * @param y double
-     * @return
+     * @param x        double
+     * @param y        double
+     * @return Position
      */
-     private static Position getPositionInDirection(double distance, double rotation, double x, double y) {
+    private static Position getPositionInDirection(double distance, double rotation, double x, double y) {
         x += distance * Math.cos(rotation);
         y += distance * Math.sin(rotation);
         return new Position(x, y);
+    }
+
+    /**
+     * Calculates the difference between current orientation and angleInRadians
+     * Returns difference between angles[0,2*PI]
+     * @param angleInRadians double
+     * @return double
+     */
+    public double getAngleDiff(double angleInRadians) {
+        double angleDiff = (getRotation() - angleInRadians) % (2 * Math.PI);
+        return angleDiff < 0 ? angleDiff + (2 * Math.PI) : angleDiff;
     }
 
 }

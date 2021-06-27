@@ -16,7 +16,9 @@ public abstract class LightConeRobot extends BaseRobot {
     /**
      * Constructs object via Builder
      *
-     * @param builder
+     * @param builder RobotBuilder
+     * @param visionRange double
+     * @param visionAngle double
      */
     public LightConeRobot(RobotBuilder builder, double visionRange, double visionAngle) {
         super(builder);
@@ -25,6 +27,10 @@ public abstract class LightConeRobot extends BaseRobot {
         this.visionAngle = Math.toRadians(visionAngle);
     }
 
+    /**
+     * Returns true if the the bounds are in sight
+     * @return boolean
+     */
     boolean isArenaBoundsInVision() {
         double rotation = pose.getRotation();
         boolean inSight = false;
@@ -56,12 +62,16 @@ public abstract class LightConeRobot extends BaseRobot {
             position.setX(x);
             position.setY(y);
             System.out.println(position + " " + smallest);
-            smallest = Math.min(pose.euclideanDistance(position), smallest);
+            smallest = Math.min(pose.getEuclideanDistance(position), smallest);
         }
 
         return smallest;
     }
 
+    /**
+     * Gets all entities in the current vision
+     * @return List<Entity>
+     */
     List<Entity> listOfEntityInVision() {
         List<Entity> entityList = new LinkedList<>();
         for (Entity entity : arena.getEntityList()) {
@@ -70,8 +80,8 @@ public abstract class LightConeRobot extends BaseRobot {
                 if (arena.isTorus) {
                     closest = arena.getClosestPositionInTorus(pose, closest);
                 }
-                if (pose.euclideanDistance(closest) <= visionRange) {
-                    double angleOfEntity = pose.calcAngleForPosition(closest) < 0 ? pose.calcAngleForPosition(closest) + 2 * Math.PI : pose.calcAngleForPosition(closest);
+                if (pose.getEuclideanDistance(closest) <= visionRange) {
+                    double angleOfEntity = pose.getAngleForPosition(closest) < 0 ? pose.getAngleForPosition(closest) + 2 * Math.PI : pose.getAngleForPosition(closest);
                     double upperAngle = pose.getRotation() + visionAngle / 2;
                     double lowerAngle = pose.getRotation() - visionAngle / 2;
                     if (angleOfEntity <= upperAngle && angleOfEntity >= lowerAngle)
@@ -89,6 +99,10 @@ public abstract class LightConeRobot extends BaseRobot {
         return entityList;
     }
 
+    /**
+     *
+     * @return List<RobotInterface>
+     */
     List<RobotInterface> listOfRobotsInVision() {
         return listOfEntityInVision().stream()
                 .filter(x -> RobotInterface.class.isAssignableFrom(x.getClass()))
@@ -96,13 +110,19 @@ public abstract class LightConeRobot extends BaseRobot {
                 .collect(Collectors.toList());
     }
 
-    List<Object> listOfRobotsInVisionByCLass(Class type) {
+    /**
+     * Creates a list of entities with given class
+     * @param c Class
+     * @return List<Object>
+     */
+    List<Object> listOfRobotsInVisionByCLass(Class c) {
         return listOfEntityInVision().stream()
-                .filter(x -> type.getClass().isAssignableFrom(x.getClass()))
-                .map(x -> (type.cast(x)))
+                .filter(x -> c.getClass().isAssignableFrom(x.getClass()))
+                .map(x -> (c.cast(x)))
                 .collect(Collectors.toList());
     }
 
+    //getter
     public double getVisionAngle() {
         return visionAngle;
     }

@@ -6,6 +6,7 @@ import java.awt.*;
 import java.util.Random;
 
 //TODO
+//TODO Arena
 public class Box extends BasePhysicalEntity {
     public Box(Arena arena, Random random, double width, double height, Pose pose) {
         super(arena, random, width, height, pose);
@@ -26,6 +27,11 @@ public class Box extends BasePhysicalEntity {
         return isPositionInEntitySquare(position);
     }
 
+    /**
+     * Returns the closest position in the body of the box to the given position
+     * @param position Position
+     * @return Position
+     */
     @Override
     public Position getClosestPositionInEntity(Position position) {
         Position edgeUL = new Position(pose.getX() - width / 2, pose.getY() + height / 2);
@@ -34,13 +40,6 @@ public class Box extends BasePhysicalEntity {
         Position edgeLR = new Position(pose.getX() + width / 2, pose.getY() - height / 2);
         return closestPositionInEntityForSquare(position, edgeUL, edgeUR, edgeLL, edgeLR);
     }
-
-    @Override
-    public int getTimeToSimulate() {
-        return 0;
-    }
-
-
 
     @Override
     public double getArea() {

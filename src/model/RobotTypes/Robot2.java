@@ -15,7 +15,7 @@ public class Robot2 extends BaseRobot {
 
     @Override
     public void behavior() {
-        stayGroupedWithAll(15, 8);
+        stayGroupedWithAllRobots(15, 8);
         if (getTimeToSimulate() % (ticsPerSimulatedSecond / 2) == 0) {
             logger.logDouble("x" + getId(), pose.getX(), 2);
             logger.logDouble("y" + getId(), pose.getY(), 2);

@@ -15,10 +15,14 @@ class JsonLoader {
     private JSONObject variables;
 
     private Arena arena;
-
+    private boolean displayView = false;
     private String pathSettings = "resources/settings.json";
     private String pathVariables = "resources/variables.json";
 
+    /**
+     * Constructor
+     * Loads default path for settings and variables
+     */
     JsonLoader() {
         {
             try {
@@ -32,6 +36,11 @@ class JsonLoader {
         }
     }
 
+    /**
+     * Loads the arena
+     *
+     * @return Arena
+     */
     Arena initArena() {
         if (variables != null) {
             JSONObject arenaObj = (JSONObject) variables.get("arena");
@@ -43,6 +52,11 @@ class JsonLoader {
         return arena;
     }
 
+    /**
+     * Reloads the arena and overwrites its singleton instance
+     *
+     * @return Arena
+     */
     Arena reloadArena() {
         if (variables != null && variables.containsKey("arena")) {
             JSONObject arenaObj = (JSONObject) variables.get("arena");
@@ -90,9 +104,8 @@ class JsonLoader {
     }
 
     int loadSimulatedTime() {
-        if (settings != null && !settings.containsKey("simulate-seconds")) {
-            JSONObject mode = getMode();
-            return (int) (long) mode.get("simulate-seconds");
+        if (settings != null && settings.containsKey("simulate-seconds")) {
+            return (int) (long) settings.get("simulate-seconds");
         } else {
             System.err.println("Could not read simulated-seconds from settings.json.");
             return 0;
@@ -100,22 +113,13 @@ class JsonLoader {
     }
 
     boolean loadDisplayView() {
-        if (settings != null && !settings.containsKey("display-view")) {
-            JSONObject mode = getMode();
-            return (boolean) mode.get("display-view");
+        if (settings != null && settings.containsKey("display-view")) {
+            displayView = (boolean) settings.get("display-view");
+            return displayView;
         } else {
             System.err.println("Could not read display-view from settings.json.");
             return true;
         }
-    }
-
-    JSONObject getMode() {
-        if (settings != null && settings.containsKey("mode"))
-            return (JSONObject) settings.get("mode");
-        else {
-            System.err.println("Could not read settings or entry mode from settings.json.");
-        }
-        return null;
     }
 
     int loadTicsPerSimulatedSecond() {
@@ -128,8 +132,11 @@ class JsonLoader {
     }
 
     /**
+     * Loads all boxes from the variables.json
+     * Returns a list of all boxes
+     *
      * @param random Random
-     * @return
+     * @return List<Entity>
      */
     List<Entity> loadBoxes(Random random) {
         LinkedList<Entity> boxList = new LinkedList();
@@ -154,8 +161,12 @@ class JsonLoader {
         return boxList;
     }
 
+
     /**
-     * @return
+     * Loads all walls from the variables.json
+     * Returns a list of all walls
+     *
+     * @return List<Entity>
      */
     List<Entity> loadWalls(Random random) {
         LinkedList<Entity> wallList = new LinkedList();
@@ -176,8 +187,11 @@ class JsonLoader {
     }
 
     /**
+     * Loads all areas from the variables.json
+     * Returns a list of all areas
+     *
      * @param random Random
-     * @return
+     * @return List<Entity>
      */
     List<Entity> loadAreas(Random random) {
         LinkedList<Entity> areaList = new LinkedList();
@@ -198,6 +212,9 @@ class JsonLoader {
     }
 
     /**
+     * Loads an file given by it's path as JSON file
+     * Returns the key structure of that file as JSONObject
+     *
      * @param filePath String
      * @return JSONObject
      */
@@ -218,9 +235,12 @@ class JsonLoader {
     }
 
     /**
+     * Goes through any entry in the variables robots keys and turns it into an JSONObject which goes into the loadRobot function
+     * Returns an List filled with any Robot from the current variables.json
+     *
      * @param random Random
      * @param logger Logger
-     * @return Map<RobotInterface, Position>
+     * @return List<Entity>
      */
     List<Entity> loadRobots(Random random, Logger logger) {
 
@@ -228,7 +248,7 @@ class JsonLoader {
             JSONArray robots = (JSONArray) variables.get("robots");
             if (robots.size() == 0) System.err.println("Zero robots in variables.json.");
             List<Entity> robotList = new LinkedList<>();
-            robots.forEach(entry -> loadRobots(
+            robots.forEach(entry -> loadRobot(
                     (JSONObject) entry,
                     robotList,
                     random,
@@ -242,15 +262,17 @@ class JsonLoader {
     }
 
     /**
-     * @param robotObject              JSONObject
-     * @param robotList                List<Entity>
-     * @param random                   Random
-     * @param arena                    Arena
-     * @param logger                   Logger
-     * @param timeToSimulate           int
+     * Loads one robot and adds them to the robotList
+     *
+     * @param robotObject    JSONObject
+     * @param robotList      List<Entity>
+     * @param random         Random
+     * @param arena          Arena
+     * @param logger         Logger
+     * @param timeToSimulate int
      */
-    private void loadRobots(
-            JSONObject robotObject,List<Entity> robotList, Random random, Arena arena,
+    private void loadRobot(
+            JSONObject robotObject, List<Entity> robotList, Random random, Arena arena,
             Logger logger, int timeToSimulate) {
         if (robotObject.containsKey("engineR") && robotObject.containsKey("engineL") &&
                 robotObject.containsKey("distance") && robotObject.containsKey("powerTransmission") &&
@@ -269,7 +291,7 @@ class JsonLoader {
                     .powerTransmission((Double) robotObject.get("powerTransmission"))
                     .diameters((Double) robotObject.get("diameters"))
                     .logger(logger)
-                    .simulateWithView(loadDisplayView());
+                    .simulateWithView(displayView);
             RobotInterface robot;
             switch ((String) robotObject.get("type")) {
                 case "1":
@@ -289,10 +311,16 @@ class JsonLoader {
             }
             robotList.add(robot);
         } else
-        System.err.println("Could not load robot " + robotList.size() + " correctly." +
-                "Entry engineR, engineL, distance, powerTransmission, diameters, type or position is missing.");
+            System.err.println("Could not load robot " + robotList.size() + " correctly." +
+                    "Entry engineR, engineL, distance, powerTransmission, diameters, type or position is missing.");
     }
 
+    /**
+     * Loads the Pose of an given
+     *
+     * @param object JSONObject
+     * @return Pose
+     */
     private Pose loadPose(JSONObject object) {
         if (!object.containsKey("position")) {
             System.err.println("Could not load position for " + object);
@@ -305,5 +333,13 @@ class JsonLoader {
         }
         return new Pose((Double) positionObject.get("x"), (Double) positionObject.get("y"),
                 Math.toRadians((Double) positionObject.get("rotation")));
+    }
+
+    void setSettings(JSONObject settings) {
+        this.settings = settings;
+    }
+
+    void setVariables(JSONObject variables) {
+        this.variables = variables;
     }
 }

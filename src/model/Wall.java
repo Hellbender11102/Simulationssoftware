@@ -6,6 +6,7 @@ import java.awt.*;
 import java.util.Random;
 
 //TODO, passing through sometimes
+//TODO Arena
 public class Wall extends BasePhysicalEntity {
     final public Position edgeUL, edgeUR, edgeLL, edgeLR;
 
@@ -35,11 +36,6 @@ public class Wall extends BasePhysicalEntity {
     @Override
     public Position getClosestPositionInEntity(Position position) {
        return closestPositionInEntityForSquare(position,edgeUL,edgeUR,edgeLL,edgeLR);
-    }
-
-    @Override
-    public int getTimeToSimulate() {
-        return 0;
     }
 
     @Override

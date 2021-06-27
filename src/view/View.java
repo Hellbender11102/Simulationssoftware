@@ -7,17 +7,17 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class View extends JFrame {
-    private SimulationView simView;
-    private JMenuItem itemHelp = new JMenuItem("Hilfe",1);
-    private JMenuItem itemLog = new JMenuItem("Log erstellen",2);
-    private JMenuItem itemLogEditor = new JMenuItem("Log einsehen",3);
-    private JMenuItem itemVariablesEditor = new JMenuItem("Einstellung",4);
-    private JMenuItem itemSettingsEditor = new JMenuItem("Simulationsvariablen",5);
-    private JMenuItem itemRestart = new JMenuItem("Versuch neu starten",6);
-    private JMenuItem itemFullRestart= new JMenuItem("Neu laden und neu Starten",7);
+    private final SimulationView simView;
+    private final JMenuItem itemHelp = new JMenuItem("Hilfe",1);
+    private final JMenuItem itemLog = new JMenuItem("Log erstellen",2);
+    private final JMenuItem itemLogEditor = new JMenuItem("Log einsehen",3);
+    private final JMenuItem itemVariablesEditor = new JMenuItem("Einstellung",4);
+    private final JMenuItem itemSettingsEditor = new JMenuItem("Simulationsvariablen",5);
+    private final JMenuItem itemRestart = new JMenuItem("Versuch neu starten",6);
+    private final JMenuItem itemFullRestart= new JMenuItem("Neu laden und neu Starten",7);
     private TextView settings;
-    private TextView log;
     private TextView variabls;
+    private TextView log;
     private TextView help;
     private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
@@ -46,7 +46,7 @@ public class View extends JFrame {
         simView = new SimulationView(arena);
         getContentPane().add(bar, BorderLayout.NORTH);
         getContentPane().add(simView, BorderLayout.CENTER);
-        setJmenuItemlogic();
+        setMenuLogic();
         setVisible(true);
     }
 
@@ -54,7 +54,7 @@ public class View extends JFrame {
         return simView;
     }
 
-    private void setJmenuItemlogic() {
+    private void setMenuLogic() {
         ActionListener helpAction = e -> {
             if(help==null)
            help = new TextView("Hilfe","README.md", 0, false);
@@ -87,6 +87,7 @@ public class View extends JFrame {
         itemLogEditor.addActionListener(logAction);
     }
 
+    //Jmenu getter
     public JMenuItem getRestart() {
         return itemRestart;
     }
@@ -94,6 +95,7 @@ public class View extends JFrame {
     public JMenuItem getLog() {
         return itemLog;
     }
+
     public JMenuItem getFullRestart() {
         return itemFullRestart;
     }

@@ -17,9 +17,9 @@ public class Arena {
 
     /**
      * Constructor
-     *
-     * @param width  in centemeter
-     * @param height in centemeter
+     * @param width     int
+     * @param height    int
+     * @param isTorus   boolean
      */
     synchronized
     public static Arena getInstance(int width, int height, boolean isTorus) {
@@ -32,9 +32,11 @@ public class Arena {
 
     /**
      * Constructor
-     *
-     * @param width  in centemeter
-     * @param height in centemeter
+     * Overwrites the singleton
+     * This is only to use for restart purposes
+     * @param width     int
+     * @param height    int
+     * @param isTorus   boolean
      */
     synchronized
     public static Arena overWriteInstance(int width, int height, boolean isTorus) {
@@ -49,7 +51,9 @@ public class Arena {
     }
 
     /**
-     * Checks if robots are in the arena bounds
+     * Returns true if position is in arena bounds
+     * @param position Position
+     * @return boolean
      */
     public boolean inArenaBounds(Position position) {
         if (position.getX() < 0)
@@ -61,15 +65,25 @@ public class Arena {
         else return !(position.getY() > height);
     }
 
+    /**
+     * Returns the position in the arena as if the arena body is an torus
+     * @param position Position
+     * @return Position
+     */
     public Position setPositionInBoundsTorus(Position position) {
         Position buffPosition = new Position(position);
         buffPosition.setX(position.getX() % width);
         buffPosition.setY(position.getY() % height);
-        if (buffPosition.getX() < 0) buffPosition.incPosition(width, 0);
-        if (buffPosition.getY() < 0) buffPosition.incPosition(0, height);
+        if (buffPosition.getX() < 0) buffPosition.addToPosition(width, 0);
+        if (buffPosition.getY() < 0) buffPosition.addToPosition(0, height);
         return buffPosition;
     }
 
+    /**
+     * Sets the position inside the arena
+     * @param position Position
+     * @return Position
+     */
     public Position setPositionInBounds(Position position) {
             Position buffPosition = new Position(position);
             if (buffPosition.getX() < 0) buffPosition.setX(0);
@@ -79,44 +93,53 @@ public class Arena {
             return buffPosition;
     }
 
+    /**
+     * Sets the entity in the arena as if the arena body is an torus
+     * @param entity Entity
+     */
     public void setEntityInTorusArena(Entity entity) {
-        entity.getPose().setX(setPositionInBoundsTorus(entity.getPose()).getX());
-        entity.getPose().setY(setPositionInBoundsTorus(entity.getPose()).getY());
+        entity.getPose().set(setPositionInBoundsTorus(entity.getPose()));
     }
 
     /**
-     * Checks if an Position outside of the Walls is closer due to the Torus Arena Transformation
+     * Checks if an position outside of the walls is closer due to the torus arena
      *
-     * @param position1 Position start
-     * @param position2 Position target
+     * @param position1 Position
+     * @param position2 Position
      * @return position
      */
     public Position getClosestPositionInTorus(Position position1, Position position2) {
         if (position2.getX() > width / 2. && position1.getX() < width / 2.)
-            position2 = position1.euclideanDistance(position2.creatPositionByDecreasing(width, 0))
-                    < position1.euclideanDistance(position2) ? position2.creatPositionByDecreasing(width, 0) :
+            position2 = position1.getEuclideanDistance(position2.creatPositionByDecreasing(width, 0))
+                    < position1.getEuclideanDistance(position2) ? position2.creatPositionByDecreasing(width, 0) :
                     position2;
         else if (position2.getX() < width / 2. && position1.getX() > width / 2.) {
-            position2 = position1.euclideanDistance(position2.creatPositionByDecreasing(-width, 0))
-                    < position1.euclideanDistance(position2) ? position2.creatPositionByDecreasing(-width, 0) :
+            position2 = position1.getEuclideanDistance(position2.creatPositionByDecreasing(-width, 0))
+                    < position1.getEuclideanDistance(position2) ? position2.creatPositionByDecreasing(-width, 0) :
                     position2;
         }
         if (position2.getY() > height / 2. && position1.getY() < height / 2.)
-            position2 = position1.euclideanDistance(position2.creatPositionByDecreasing(0, height))
-                    < position1.euclideanDistance(position2) ? position2.creatPositionByDecreasing(0, height) :
+            position2 = position1.getEuclideanDistance(position2.creatPositionByDecreasing(0, height))
+                    < position1.getEuclideanDistance(position2) ? position2.creatPositionByDecreasing(0, height) :
                     position2;
         else if (position2.getY() < height / 2. && position1.getY() > height / 2.) {
-            position2 = position1.euclideanDistance(position2.creatPositionByDecreasing(0, -height))
-                    < position1.euclideanDistance(position2) ? position2.creatPositionByDecreasing(0, -height) :
+            position2 = position1.getEuclideanDistance(position2.creatPositionByDecreasing(0, -height))
+                    < position1.getEuclideanDistance(position2) ? position2.creatPositionByDecreasing(0, -height) :
                     position2;
         }
         return position2;
     }
 
+    /**
+     * Returns the distance between two positions in an torus arena
+     * @param position1 Position
+     * @param position2 Position
+     * @return double
+     */
     public double getEuclideanDistanceToClosestPosition(Position position1, Position position2) {
         return isTorus ?
-                position1.euclideanDistance(getClosestPositionInTorus(position1, position2)) :
-                position1.euclideanDistance(position2);
+                position1.getEuclideanDistance(getClosestPositionInTorus(position1, position2)) :
+                position1.getEuclideanDistance(position2);
     }
 
     @Override

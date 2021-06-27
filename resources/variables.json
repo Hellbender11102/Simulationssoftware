@@ -1,5 +1,5 @@
 {
-  "seed": 1,
+  "seed": 10,
   "ticsPerSimulatedSecond": 500,
   "maxSpeed": 8.0,
   "minSpeed": 0.0,

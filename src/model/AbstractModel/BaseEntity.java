@@ -13,6 +13,7 @@ import java.util.Random;
 abstract public class BaseEntity extends Thread implements Entity {
     protected int poseRingMemoryHead = 0;
     protected int poseRingMemoryPointer = 0;
+    // determines the size of the ring memory
     int ringMemorySize = 10000;
     protected Pose[] poseRingMemory;
     protected Pose pose;
@@ -21,6 +22,7 @@ abstract public class BaseEntity extends Thread implements Entity {
     protected final Random random;
     protected double width, height;
     protected final Color color;
+    //starts paused in order to have more control over the simulation
     protected boolean isPaused = true;
 
     protected BaseEntity(Arena arena, Random random, double width, double height, Pose pose) {
@@ -79,7 +81,7 @@ abstract public class BaseEntity extends Thread implements Entity {
     }
 
     /**
-     * Sets the pose of the entity to the latest pose saved in the memory
+     * Sets the pose of the entity to the latest pose saved in the ring memory
      */
     @Override
     public void setToLatestPose() {
@@ -88,19 +90,81 @@ abstract public class BaseEntity extends Thread implements Entity {
         poseRingMemoryPointer = 0;
     }
 
+    /**
+     * Saves the current position in the ring memory
+     */
     @Override
     public void updatePositionMemory() {
         poseRingMemory[poseRingMemoryHead] = pose.clone();
         poseRingMemoryHead = (poseRingMemoryHead + 1) % (ringMemorySize - 1);
     }
 
-    //setter & getter
+    /**
+     * Calculates the nearest Position to the given position inside of the entity's square shaped body
+     * @param position Position
+     * @param edgeUL Position upper left
+     * @param edgeUR Position upper right
+     * @param edgeLL Position lower left
+     * @param edgeLR Position lower right
+     * @return Position
+     */
+    protected Position closestPositionInEntityForSquare(Position position, Position edgeUL, Position edgeUR, Position edgeLL, Position edgeLR) {
+        if (arena.isTorus) {
+            position = arena.getClosestPositionInTorus(pose,position);
+        }
+        Position closest = Math.min(edgeUL.getEuclideanDistance(position), edgeUR.getEuclideanDistance(position)) <
+                Math.min(edgeLL.getEuclideanDistance(position), edgeLR.getEuclideanDistance(position)) ?
+                edgeUL.getEuclideanDistance(position) < edgeUR.getEuclideanDistance(position) ? edgeUL : edgeUR
+                :
+                edgeLL.getEuclideanDistance(position) < edgeLR.getEuclideanDistance(position) ? edgeLL : edgeLR;
+        if (position.getX() <= pose.getX() + width / 2 &&
+                position.getX() >= pose.getX() - width / 2) {
+            closest.setX(position.getX());
+        } else if (position.getY() <= pose.getY() + height / 2 &&
+                position.getY() >= pose.getY() - height / 2) {
+            closest.setY(position.getY());
+        }
+        return closest;
+    }
 
     /**
-     * @return Pose
+     * Calculates the nearest Position to the given position inside of the entity's circle shaped body
+     * @param position position
+     * @param radius radius
+     * @return Position
      */
+    protected Position closestPositionInEntityForCircle(Position position, double radius) {
+        if (arena.isTorus) {
+            position = arena.getClosestPositionInTorus(pose,position);
+        }
+        return pose.getPositionInDirection(radius, pose.getAngleForPosition(position));
+    }
+
+    /**
+     * Returns true if the position is inside the body of an square
+     * @param position Position
+     * @return boolean
+     */
+    protected boolean isPositionInEntitySquare(Position position) {
+        position =  arena.setPositionInBoundsTorus(position);
+        return position.getX() <= pose.getX() + width / 2 &&
+                position.getX() >= pose.getX() - width / 2 &&
+                position.getY() <= pose.getY() + height / 2 &&
+                position.getY() >= pose.getY() - height / 2;
+    }
+
+    /**
+     * Returns true if the position is inside the body of an circle
+     * @param position Position
+     * @return boolean
+     */
+    public boolean isPositionInEntityCircle(Position position) {
+        position = arena.setPositionInBoundsTorus(position);
+        return pose.getEuclideanDistance(position) <= width /2;
+    }
+    //setter & getter
+
     @Override
-    synchronized
     public Pose getPose() {
         return pose;
     }
@@ -137,48 +201,17 @@ abstract public class BaseEntity extends Thread implements Entity {
         return height;
     }
 
-    protected Position closestPositionInEntityForSquare(Position position, Position edgeUL, Position edgeUR, Position edgeLL, Position edgeLR) {
-        if (arena.isTorus) {
-            position = arena.getClosestPositionInTorus(pose,position);
-        }
-        Position closest = Math.min(edgeUL.euclideanDistance(position), edgeUR.euclideanDistance(position)) <
-                Math.min(edgeLL.euclideanDistance(position), edgeLR.euclideanDistance(position)) ?
-                edgeUL.euclideanDistance(position) < edgeUR.euclideanDistance(position) ? edgeUL : edgeUR
-                :
-                edgeLL.euclideanDistance(position) < edgeLR.euclideanDistance(position) ? edgeLL : edgeLR;
-        if (position.getX() <= pose.getX() + width / 2 &&
-                position.getX() >= pose.getX() - width / 2) {
-            closest.setX(position.getX());
-        } else if (position.getY() <= pose.getY() + height / 2 &&
-                position.getY() >= pose.getY() - height / 2) {
-            closest.setY(position.getY());
-        }
-        return closest;
-    }
-
-    protected Position closestPositionInEntityForCircle(Position position, double radius) {
-        if (arena.isTorus) {
-            position = arena.getClosestPositionInTorus(pose,position);
-        }
-        return pose.getPositionInDirection(radius, pose.calcAngleForPosition(position));
-    }
-
-    protected boolean isPositionInEntitySquare(Position position) {
-        position =  arena.setPositionInBoundsTorus(position);
-        return position.getX() <= pose.getX() + width / 2 &&
-                position.getX() >= pose.getX() - width / 2 &&
-                position.getY() <= pose.getY() + height / 2 &&
-                position.getY() >= pose.getY() - height / 2;
-    }
-
-    public boolean isPositionInEntityCircle(Position position) {
-        position = arena.setPositionInBoundsTorus(position);
-        return pose.euclideanDistance(position) <= width /2;
-    }
-
+    /**
+     * Calculates the area of square
+     * @return double
+     */
     public double getAreaSquare(){
         return width*height;
     }
+    /**
+     * Calculates the area of circular
+     * @return double
+     */
     public double getAreaCircle(){
         return Math.PI * Math.pow(width/2,2);
     }

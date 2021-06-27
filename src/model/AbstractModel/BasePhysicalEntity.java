@@ -41,10 +41,16 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
             pose.setY(arena.getHeight() - height / 2);
     }
 
+    /**
+     * Determines with which entity a collision takes place
+     * Calculates the collision and the resulting position
+     * Returns if any collision happens
+     * @return boolean
+     */
     @Override
     public boolean collisionDetection() {
         boolean returnValue = false;
-        for (PhysicalEntity physicalEntity : hasAnBody()) {
+        for (PhysicalEntity physicalEntity : collidingWith()) {
             returnValue = true;
             if (!physicalEntity.isMovable() && isMovable())
                 notMovableCollision(physicalEntity, this);
@@ -63,7 +69,8 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
 
 
     /**
-     * @param physicalEntity
+     * Calculates the collision with an elastic shock
+     * @param physicalEntity PhysicalEntity
      */
     public void collision(PhysicalEntity physicalEntity) {
         Vector2D normalized = new Vector2D(getPose().creatPositionByDecreasing(physicalEntity.getPose())).normalize();
@@ -82,14 +89,15 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
             System.out.println(getWeight() /2 + physicalEntity.getWeight()/2);
            result= result.multiplication(getWeight() /2 + physicalEntity.getWeight()/2);
             System.out.println(result);
-            pose.incPosition(result);
+            pose.addToPosition(result);
         }
     }
 
 
     /**
-     * @param notMovable
-     * @param other
+     * Sets the colliding entity next to the Body
+     * @param notMovable PhysicalEntity
+     * @param other PhysicalEntity
      */
     private void notMovableCollision(PhysicalEntity notMovable, PhysicalEntity other) {
         double notMovableX = notMovable.getPose().getX(), notMovableY = notMovable.getPose().getY(),
@@ -108,7 +116,11 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
             other.getPose().setY(notMovableY - notMovableHeight / 2 - movableHeight / 2);
     }
 
-    public LinkedList<PhysicalEntity> hasAnBody() {
+    /**
+     * Returns all entities where an collision is occurring
+     * @return LinkedList<PhysicalEntity>
+     */
+    public LinkedList<PhysicalEntity> collidingWith() {
         LinkedList<PhysicalEntity> physicalEntities = new LinkedList<>();
         for (PhysicalEntity physicalEntity : arena.getPhysicalEntityList()) {
             if (isPositionInEntity(physicalEntity.getClosestPositionInEntity(pose)) && !equals(physicalEntity)) {
@@ -119,24 +131,39 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
     }
 
     //TODO FOR TORUS
+    /**
+     * Returns the center of a group
+     * @param group List<Entity>
+     * @return Position
+     */
     public Position centerOfGroupWithEntities(List<Entity> group) {
         Position center = new Position(0, 0);
         for (Entity entity : group) {
             if (arena.isTorus)
-                center.incPosition(arena.getClosestPositionInTorus(center, entity.getPose()));
+                center.addToPosition(arena.getClosestPositionInTorus(center, entity.getPose()));
             else
-                center.incPosition(entity.getPose());
+                center.addToPosition(entity.getPose());
         }
         center.setX(center.getX() / group.size());
         center.setY(center.getY() / group.size());
         return center;
     }
 
+    /**
+     * Returns the center of a group composed of all entities which are assignable from any given class
+     * @param classList List<Class>
+     * @return Position
+     */
     public Position centerOfGroupWithClasses(List<Class> classList) {
         LinkedList<Entity> group = entityGroupByClasses(classList);
         return centerOfGroupWithEntities(group);
     }
 
+    /**
+     * Returns a list of all entities which are assignable from any given class
+     * @param classList List<Class>
+     * @return LinkedList<Entity>
+     */
     public LinkedList<Entity> entityGroupByClasses(List<Class> classList) {
         LinkedList<Entity> entityInGroup = new LinkedList<>();
         for (Entity entity : arena.getPhysicalEntityList()) {
@@ -149,6 +176,22 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
         return entityInGroup;
     }
 
+    /**
+     * The code will be run by threaded physical entities
+     */
+    @Override
+    public void run() {
+        while (!isPaused) {
+            collisionDetection();
+            updatePositionMemory();
+            try {
+                sleep(5);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     @Override
     public boolean isCollidable() {
         return true;
@@ -159,6 +202,7 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
         return true;
     }
 
+    // getter
     @Override
     public double getWidth() {
         return width;
@@ -174,18 +218,6 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
         return getArea();
     }
 
-    @Override
-    public void run() {
-        while (!isPaused) {
-            collisionDetection();
-            updatePositionMemory();
-            try {
-               sleep(5);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
 }
 

@@ -6,10 +6,13 @@ import model.RobotTypes.*;
 import java.awt.*;
 import java.util.Random;
 
+/**
+ * Builder class for simple expansions
+ */
 public class RobotBuilder {
     private double engineL, engineR, distanceE, maxSpeed, minSpeed, powerTransmission;
     private Pose pose;
-    private int diameters = 20, timeToSimulate;
+    private int diameters, timeToSimulate;
     private Random random;
     private Arena arena;
     private Logger logger;

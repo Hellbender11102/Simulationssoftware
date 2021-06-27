@@ -5,20 +5,30 @@ import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+
 public class Logger {
-    private File outpotFile;
+    private File outputFile;
     DecimalFormat df;
     Thread saveThread;
     private boolean headWritten = false;
     private ConcurrentHashMap<String, List<String>> logMap = new ConcurrentHashMap<>();
 
+    /**
+     * Constructor
+     * sets an output file for the current simulation
+     */
     public Logger() {
-        outpotFile = new File("out/Log.csv");
+        outputFile = new File("out/Log.csv");
         int i = 0;
-        while (outpotFile.exists())
-            outpotFile = new File("out/Log" + i++ + ".csv");
+        while (outputFile.exists())
+            outputFile = new File("out/Log" + i++ + ".csv");
     }
 
+    /**
+     * Inserts an entry to the logMap for given key
+     * @param key String
+     * @param value String
+     */
     synchronized
     public void log(String key, String value) {
         threadedSave(true);
@@ -31,6 +41,13 @@ public class Logger {
         }
     }
 
+    /**
+     * Inserts an entry to the logMap for given key
+     * cuts of the double value at the given decimal place
+     * @param key String
+     * @param value String
+     * @param decimalPlaces int
+     */
     synchronized
     public void logDouble(String key, double value, int decimalPlaces) {
         StringBuilder stringBuilder = new StringBuilder().append("#.");
@@ -41,6 +58,10 @@ public class Logger {
         log(key, df.format(value).replaceAll(",", "."));
     }
 
+    /**
+     * Saves the current log to an file
+     * @param append boolean
+     */
     synchronized
     public void saveFullLogToFile(boolean append) {
         Optional<Integer> longestList = logMap.values().stream()
@@ -50,18 +71,23 @@ public class Logger {
         saveLogToFile(append, longestListSize);
     }
 
+    /**
+     * Writing in the file
+     * @param append boolean
+     * @param longestListSize int
+     */
     synchronized
     public void saveLogToFile(boolean append, int longestListSize) {
         try {
-            FileWriter fileWriter = new FileWriter(outpotFile, append);
+            FileWriter fileWriter = new FileWriter(outputFile, append);
             StringBuilder stringBuilder = new StringBuilder();
             if (!headWritten) {
                 for (String key : logMap.keySet()) {
                     stringBuilder.append(key).append(",");
                 }
                 headWritten = true;
+                stringBuilder.append('\n');
             }
-            stringBuilder.append('\n');
             int i = 0;
             while (i < longestListSize) {
                 for (String key : logMap.keySet()) {
@@ -81,9 +107,14 @@ public class Logger {
         }
     }
 
+    /**
+     * Starts an thread if any key has more entries as 5000
+     * The thread will save to an file and reduce the entries
+     * @param appendDataInFIle boolean
+     */
     private void threadedSave(boolean appendDataInFIle) {
         synchronized (this) {
-            if (logMap.values().stream().anyMatch(x -> x.size() > 2000) && (saveThread == null || !saveThread.isAlive())) {
+            if (logMap.values().stream().anyMatch(x -> x.size() > 5000) && (saveThread == null || !saveThread.isAlive())) {
                 saveThread = (new Thread(() -> {
                     Optional<Integer> optionalListSize;
                     optionalListSize = logMap.values().stream().map(List::size)
