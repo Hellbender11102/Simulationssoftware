@@ -3,8 +3,12 @@ package view;
 import model.Arena;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.plaf.FileChooserUI;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 
 public class View extends JFrame {
     private final SimulationView simView;
@@ -12,16 +16,20 @@ public class View extends JFrame {
     private final JMenuItem itemLog = new JMenuItem("Log erstellen",2);
     private final JMenuItem itemLogEditor = new JMenuItem("Log einsehen",3);
     private final JMenuItem itemVariablesEditor = new JMenuItem("Einstellung",4);
-    private final JMenuItem itemSettingsEditor = new JMenuItem("Simulationsvariablen",5);
-    private final JMenuItem itemRestart = new JMenuItem("Versuch neu starten",6);
-    private final JMenuItem itemFullRestart= new JMenuItem("Neu laden und neu Starten",7);
+    private final JMenuItem itemSettingsEditor = new JMenuItem("Simulationsvariablen",6);
+    private final JMenuItem itemLoadVariables = new JMenuItem("Simulationsvariablen laden von",5);
+    private final JMenuItem itemRestart = new JMenuItem("Versuch neu starten",7);
+    private final JMenuItem itemFullRestart= new JMenuItem("Neu laden und neu Starten",8);
     private TextView settings;
     private TextView variabls;
     private TextView log;
     private TextView help;
     private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    JFileChooser fileChooserUI = new JFileChooser();
+    FileFilter filter = new FileNameExtensionFilter("txt, JSON","txt","JSON","Json");
 
     public View(Arena arena) {
+
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
@@ -41,6 +49,7 @@ public class View extends JFrame {
         menu.add(itemLogEditor);
         menu.add(itemVariablesEditor);
         menu.add(itemSettingsEditor);
+        menu.add(itemLoadVariables);
         bar.add(menu);
 
         simView = new SimulationView(arena);
@@ -98,6 +107,15 @@ public class View extends JFrame {
 
     public JMenuItem getFullRestart() {
         return itemFullRestart;
+    }
+    public JMenuItem getItemLoadVariables() {
+        return itemLoadVariables;
+    }
+
+    public String getPathOfSelectedFile() {
+        fileChooserUI.setFileFilter(filter);
+        fileChooserUI.showOpenDialog(this);
+        return fileChooserUI.getSelectedFile().getAbsolutePath();
     }
 
 }

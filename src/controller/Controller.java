@@ -6,6 +6,7 @@ import model.AbstractModel.RobotInterface;
 import view.View;
 
 import java.awt.event.*;
+import java.io.IOException;
 import java.util.*;
 
 public class Controller {
@@ -91,6 +92,7 @@ public class Controller {
 
     /**
      * Starts an scheduled timer to repaint the view
+     *
      * @param framesPerSecond int
      */
     public void repaintTimer(int framesPerSecond) {
@@ -245,6 +247,15 @@ public class Controller {
             stopped = true;
             init();
         });
+
+        view.getItemLoadVariables().addActionListener(actionListener -> {
+            try {
+                jsonLoader.setVariables(JsonLoader.loadJSON(view.getPathOfSelectedFile()));
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+            init();
+        });
         //Restarts the simulation after initializing all resources again
         //Can lead to different behavior without random seed
         view.getFullRestart().addActionListener(actionListener -> {
@@ -264,6 +275,7 @@ public class Controller {
     /**
      * Starts a thread for any given PhysicalEntity
      * PhysicalEntity extends Runnable
+     *
      * @param physicalEntity PhysicalEntity
      */
     private void startThread(PhysicalEntity physicalEntity) {

@@ -218,7 +218,7 @@ class JsonLoader {
      * @param filePath String
      * @return JSONObject
      */
-    private static JSONObject loadJSON(String filePath) throws IOException {
+    public static JSONObject loadJSON(String filePath) throws IOException {
         JSONObject object = null;
         try {
             FileReader inputFile = new FileReader(filePath);
@@ -333,10 +333,6 @@ class JsonLoader {
         }
         return new Pose((Double) positionObject.get("x"), (Double) positionObject.get("y"),
                 Math.toRadians((Double) positionObject.get("rotation")));
-    }
-
-    void setSettings(JSONObject settings) {
-        this.settings = settings;
     }
 
     void setVariables(JSONObject variables) {
