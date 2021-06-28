@@ -101,52 +101,57 @@ abstract public class BaseEntity extends Thread implements Entity {
 
     /**
      * Calculates the nearest Position to the given position inside of the entity's square shaped body
+     *
      * @param position Position
-     * @param edgeUL Position upper left
-     * @param edgeUR Position upper right
-     * @param edgeLL Position lower left
-     * @param edgeLR Position lower right
      * @return Position
      */
-    protected Position closestPositionInEntityForSquare(Position position, Position edgeUL, Position edgeUR, Position edgeLL, Position edgeLR) {
+    protected Position closestPositionInEntityForSquare(Position position) {
         if (arena.isTorus) {
-            position = arena.getClosestPositionInTorus(pose,position);
+            position = arena.getClosestPositionInTorus(pose, position);
         }
-        Position closest = Math.min(edgeUL.getEuclideanDistance(position), edgeUR.getEuclideanDistance(position)) <
-                Math.min(edgeLL.getEuclideanDistance(position), edgeLR.getEuclideanDistance(position)) ?
-                edgeUL.getEuclideanDistance(position) < edgeUR.getEuclideanDistance(position) ? edgeUL : edgeUR
-                :
-                edgeLL.getEuclideanDistance(position) < edgeLR.getEuclideanDistance(position) ? edgeLL : edgeLR;
+        Position closest = pose.clone();
         if (position.getX() <= pose.getX() + width / 2 &&
                 position.getX() >= pose.getX() - width / 2) {
             closest.setX(position.getX());
+            if(position.getY() > pose.getY()){
+                closest.setY(closest.getY()+height/2);
+            } else{
+                closest.setY(closest.getY()-height/2);
+            }
         } else if (position.getY() <= pose.getY() + height / 2 &&
                 position.getY() >= pose.getY() - height / 2) {
             closest.setY(position.getY());
+            if(position.getX() > pose.getX()){
+                closest.setX(closest.getX()+width/2);
+            } else{
+                closest.setX(closest.getX()-width/2);
+            }
         }
         return closest;
     }
 
     /**
      * Calculates the nearest Position to the given position inside of the entity's circle shaped body
+     *
      * @param position position
-     * @param radius radius
+     * @param radius   radius
      * @return Position
      */
     protected Position closestPositionInEntityForCircle(Position position, double radius) {
         if (arena.isTorus) {
-            position = arena.getClosestPositionInTorus(pose,position);
+            position = arena.getClosestPositionInTorus(pose, position);
         }
         return pose.getPositionInDirection(radius, pose.getAngleForPosition(position));
     }
 
     /**
      * Returns true if the position is inside the body of an square
+     *
      * @param position Position
      * @return boolean
      */
     protected boolean isPositionInEntitySquare(Position position) {
-        position =  arena.setPositionInBoundsTorus(position);
+        position = arena.setPositionInBoundsTorus(position);
         return position.getX() <= pose.getX() + width / 2 &&
                 position.getX() >= pose.getX() - width / 2 &&
                 position.getY() <= pose.getY() + height / 2 &&
@@ -155,12 +160,13 @@ abstract public class BaseEntity extends Thread implements Entity {
 
     /**
      * Returns true if the position is inside the body of an circle
+     *
      * @param position Position
      * @return boolean
      */
     public boolean isPositionInEntityCircle(Position position) {
         position = arena.setPositionInBoundsTorus(position);
-        return pose.getEuclideanDistance(position) <= width /2;
+        return pose.getEuclideanDistance(position) <= width / 2;
     }
     //setter & getter
 
@@ -203,16 +209,19 @@ abstract public class BaseEntity extends Thread implements Entity {
 
     /**
      * Calculates the area of square
+     *
      * @return double
      */
-    public double getAreaSquare(){
-        return width*height;
+    public double getAreaSquare() {
+        return width * height;
     }
+
     /**
      * Calculates the area of circular
+     *
      * @return double
      */
-    public double getAreaCircle(){
-        return Math.PI * Math.pow(width/2,2);
+    public double getAreaCircle() {
+        return Math.PI * Math.pow(width / 2, 2);
     }
 }

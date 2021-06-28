@@ -8,9 +8,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-public interface PhysicalEntity extends Entity,Runnable {
+public interface PhysicalEntity extends Entity, Runnable {
 
-     abstract Position centerOfGroupWithClasses(List<Class> classList);
+    abstract Position centerOfGroupWithClasses(List<Class> classList);
 
     abstract public double trajectorySpeed();
 

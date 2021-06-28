@@ -13,8 +13,9 @@ public class Robot4 extends LightConeRobot {
     Position position=new Position(60,10);
     @Override
     public void behavior() {
-        setEngines(2,4);
-      //  System.out.println(distanceToArenaBoundsInVision());
+        stayGroupedWithAllRobots(15,8);
+        if(isArenaBoundsInVision()) signal = true;
+        else signal = false;
     }
 
     @Override

@@ -53,7 +53,7 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
         boolean returnValue = false;
         for (PhysicalEntity physicalEntity : collidingWith()) {
             returnValue = true;
-                collision(physicalEntity);
+            collision(physicalEntity);
         }
         if (!inArenaBounds() && !arena.isTorus) {
             setInArenaBounds();
@@ -72,38 +72,25 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
      *                       https://www.physik.tu-darmstadt.de/media/fachbereich_physik/phys_studium/phys_studium_bachelor/phys_studium_bsc_praktika/phys_studium_bsc_praktika_gp/phys_studium_bsc_praktika_gp_mechanik/m4/m4bilder/m4_neuSS15.pdf
      */
     public void collision(PhysicalEntity physicalEntity) {
-        double angleToPhysicalEntity = pose.getAngleForPosition(physicalEntity.getPose());
-        double angleToCurrent = physicalEntity.getPose().getAngleForPosition(pose);
+        double u2Angle = pose.getAngleForPosition(physicalEntity.getPose());
+        double u1Angle = physicalEntity.getPose().getAngleForPosition(pose);
 
-       double epsilon =1;
-        double u2 = ((1+epsilon)*getWeight())
-                /(getWeight()+physicalEntity.getWeight())
-                *trajectorySpeed()*Math.cos(angleToPhysicalEntity);
-        physicalEntity.getPose().set(physicalEntity.getPose().getPoseInDirection(u2,angleToPhysicalEntity));
-    }
+        double u2 = (2 * getWeight())
+                / (getWeight() + physicalEntity.getWeight())
+                * trajectorySpeed() * Math.cos(u2Angle);
 
+        // if squared entity use other position to calculate the pushing angle
+        if (Wall.class.isAssignableFrom(physicalEntity.getClass()) || Box.class.isAssignableFrom(physicalEntity.getClass()))
+            u2Angle = pose.getAngleForPosition(physicalEntity.getClosestPositionInEntity(pose));
+        else if (Wall.class.isAssignableFrom(getClass()) || Box.class.isAssignableFrom(getClass()))
+            u1Angle = physicalEntity.getPose().getAngleForPosition(getClosestPositionInEntity(physicalEntity.getPose()));
 
-    /**
-     * Sets the colliding entity next to the Body
-     *
-     * @param notMovable PhysicalEntity
-     * @param other      PhysicalEntity
-     */
-    private void notMovableCollision(PhysicalEntity notMovable, PhysicalEntity other) {
-        double notMovableX = notMovable.getPose().getX(), notMovableY = notMovable.getPose().getY(),
-                movableX = other.getPose().getX(), movableY = other.getPose().getY();
-        double notMovableWidth = notMovable.getWidth(), notMovableHeight = notMovable.getHeight(),
-                movableWidth = other.getWidth(), movableHeight = other.getHeight();
-        boolean leftOrRight = (movableX > notMovableX + notMovableWidth / 2 || movableX < notMovableX - notMovableWidth / 2);
-        boolean aboveOrBelow = (movableY > notMovableY + notMovableHeight / 2 || movableY < notMovableY - notMovableHeight / 2);
-        if (notMovableX <= movableX && !aboveOrBelow)
-            other.getPose().setX(notMovableX + notMovableWidth / 2 + movableWidth / 2);
-        else if (notMovableX > movableX && !aboveOrBelow)
-            other.getPose().setX(notMovableX - notMovableWidth / 2 - movableWidth / 2);
-        if (notMovableY <= movableY && !leftOrRight)
-            other.getPose().setY(notMovableY + notMovableHeight / 2 + movableHeight / 2);
-        else if (notMovableY > movableY && !leftOrRight)
-            other.getPose().setY(notMovableY - notMovableHeight / 2 - movableHeight / 2);
+        if (physicalEntity.isMovable()) {
+            physicalEntity.getPose().set(physicalEntity.getPose().getPoseInDirection(u2, u2Angle));
+        }
+        if (isMovable()) {
+            pose.set(pose.getPoseInDirection(trajectorySpeed() * getWeight() - u2, u1Angle));
+        }
     }
 
     /**
@@ -212,7 +199,6 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
     public double getWeight() {
         return getArea();
     }
-
 
 }
 
