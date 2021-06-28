@@ -134,6 +134,22 @@
         "y": 50.0,
         "rotation": 0.0
       }
+    },{
+      "width": 100.0,
+      "height": 3.0,
+      "position": {
+        "x": 50.0,
+        "y": 0.0,
+        "rotation": 0.0
+      }
+    },{
+      "width": 100.0,
+      "height": 3.0,
+      "position": {
+        "x": 50.0,
+        "y": 100.0,
+        "rotation": 0.0
+      }
     }
   ],
   "areas": [
@@ -143,6 +159,30 @@
       "position": {
         "x": 90.0,
         "y": 90.0,
+        "rotation": 0.0
+      }
+    } ,{
+      "diameters": 15.0,
+      "noticeableDistance": 0.0,
+      "position": {
+        "x": 10.0,
+        "y": 10.0,
+        "rotation": 0.0
+      }
+    },{
+      "diameters": 15.0,
+      "noticeableDistance": 0.0,
+      "position": {
+        "x": 10.0,
+        "y": 90.0,
+        "rotation": 0.0
+      }
+    },{
+      "diameters": 15.0,
+      "noticeableDistance": 0.0,
+      "position": {
+        "x": 90.0,
+        "y": 10.0,
         "rotation": 0.0
       }
     }

@@ -20,14 +20,14 @@ public class Position {
     }
 
     /**
-     * Returns the PolarAngle for an given position
+     * Returns the angle to the given position
      * [-pi,pi]
      *
      * @param position Position
      * @return double
      */
     public double getAngleForPosition(Position position) {
-        return position.creatPositionByDecreasing(this).getPolarAngle();
+        return Math.atan2(position.getY() - yCoordinate,position.getX()-xCoordinate);
     }
 
     /**

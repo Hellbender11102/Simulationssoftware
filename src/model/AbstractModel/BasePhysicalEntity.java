@@ -78,21 +78,27 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
         double u2Angle = pose.getAngleForPosition(physicalEntity.getPose());
         double u1Angle = physicalEntity.getPose().getAngleForPosition(pose);
 
-        double u2 = (2 * getWeight())
+
+
+        // if squared entity use other position to calculate the pushing angle
+        if (Wall.class.isAssignableFrom(physicalEntity.getClass()) || Box.class.isAssignableFrom(physicalEntity.getClass())) {
+            u2Angle = pose.getAngleForPosition(physicalEntity.getClosestPositionInEntity(pose));
+        }
+        else if (Wall.class.isAssignableFrom(getClass()) || Box.class.isAssignableFrom(getClass())) {
+            u1Angle = physicalEntity.getPose().getAngleForPosition(getClosestPositionInEntity(physicalEntity.getPose()));
+            u2Angle = pose.getAngleForPosition(physicalEntity.getClosestPositionInEntity(pose));
+        }
+
+        double u2 = (2 * physicalEntity.getWeight())
                 / (getWeight() + physicalEntity.getWeight())
                 * trajectorySpeed() * Math.cos(u2Angle);
 
-        // if squared entity use other position to calculate the pushing angle
-        if (Wall.class.isAssignableFrom(physicalEntity.getClass()) || Box.class.isAssignableFrom(physicalEntity.getClass()))
-            u2Angle = pose.getAngleForPosition(physicalEntity.getClosestPositionInEntity(pose));
-        else if (Wall.class.isAssignableFrom(getClass()) || Box.class.isAssignableFrom(getClass()))
-            u1Angle = physicalEntity.getPose().getAngleForPosition(getClosestPositionInEntity(physicalEntity.getPose()));
-
+        System.out.println(trajectorySpeed() * getWeight() - u2);
         if (physicalEntity.isMovable()) {
             physicalEntity.getPose().set(physicalEntity.getPose().getPoseInDirection(u2, u2Angle));
         }
         if (isMovable()) {
-            pose.set(pose.getPoseInDirection(trajectorySpeed() * getWeight() - u2, u1Angle));
+            pose.set(pose.getPoseInDirection(trajectorySpeed() * getWeight() - u2, u2Angle-Math.PI));
         }
     }
 
