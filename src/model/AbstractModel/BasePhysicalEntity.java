@@ -54,6 +54,9 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
         for (PhysicalEntity physicalEntity : collidingWith()) {
             returnValue = true;
             collision(physicalEntity);
+            if (isPositionInEntity(physicalEntity.getClosestPositionInEntity(pose)) && !equals(physicalEntity)) {
+                //todo still overlapping
+            }
         }
         if (!inArenaBounds() && !arena.isTorus) {
             setInArenaBounds();
