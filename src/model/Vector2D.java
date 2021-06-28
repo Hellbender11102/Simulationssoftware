@@ -4,9 +4,9 @@ public class Vector2D {
 
     double x, y;
 
-    public Vector2D(Position destination) {
-        x = destination.getX() - getX();
-        y = destination.getY() - getY();
+    public Vector2D(Position position) {
+        x = position.getX();
+        y = position.getY();
     }
 
     public Vector2D(double x, double y) {

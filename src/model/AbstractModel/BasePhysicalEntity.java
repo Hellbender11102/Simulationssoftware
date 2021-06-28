@@ -45,6 +45,7 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
      * Determines with which entity a collision takes place
      * Calculates the collision and the resulting position
      * Returns if any collision happens
+     *
      * @return boolean
      */
     @Override
@@ -52,11 +53,6 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
         boolean returnValue = false;
         for (PhysicalEntity physicalEntity : collidingWith()) {
             returnValue = true;
-            if (!physicalEntity.isMovable() && isMovable())
-                notMovableCollision(physicalEntity, this);
-            else if (physicalEntity.isMovable() && !isMovable())
-                notMovableCollision(this, physicalEntity);
-            else if (physicalEntity.isMovable() && isMovable())
                 collision(physicalEntity);
         }
         if (!inArenaBounds() && !arena.isTorus) {
@@ -70,34 +66,28 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
 
     /**
      * Calculates the collision with an elastic shock
+     *
      * @param physicalEntity PhysicalEntity
+     *                       source =
+     *                       https://www.physik.tu-darmstadt.de/media/fachbereich_physik/phys_studium/phys_studium_bachelor/phys_studium_bsc_praktika/phys_studium_bsc_praktika_gp/phys_studium_bsc_praktika_gp_mechanik/m4/m4bilder/m4_neuSS15.pdf
      */
     public void collision(PhysicalEntity physicalEntity) {
-        Vector2D normalized = new Vector2D(getPose().creatPositionByDecreasing(physicalEntity.getPose())).normalize();
-        double speedPushing = trajectorySpeed();
-        double speedPEntity = physicalEntity.trajectorySpeed();
+        double angleToPhysicalEntity = pose.getAngleForPosition(physicalEntity.getPose());
+        double angleToCurrent = physicalEntity.getPose().getAngleForPosition(pose);
 
-        Vector2D velocityPushing = new Vector2D(getPose().creatPositionByDecreasing(getPose().getPositionInDirection(speedPushing)));
-        Vector2D velocityPEntity = new Vector2D(physicalEntity.getPose().creatPositionByDecreasing(physicalEntity.getPose().getPositionInDirection(speedPEntity)));
-
-        Vector2D v1o = velocityPushing.subtract(normalized.multiplication(normalized.scalarProduct(velocityPushing)));
-        Vector2D v2p = normalized.multiplication(normalized.scalarProduct(velocityPEntity));
-
-        Vector2D result = v1o.add(v2p);
-
-        if (!result.containsNaN()) {
-            System.out.println(getWeight() /2 + physicalEntity.getWeight()/2);
-           result= result.multiplication(getWeight() /2 + physicalEntity.getWeight()/2);
-            System.out.println(result);
-            pose.addToPosition(result);
-        }
+       double epsilon =1;
+        double u2 = ((1+epsilon)*getWeight())
+                /(getWeight()+physicalEntity.getWeight())
+                *trajectorySpeed()*Math.cos(angleToPhysicalEntity);
+        physicalEntity.getPose().set(physicalEntity.getPose().getPoseInDirection(u2,angleToPhysicalEntity));
     }
 
 
     /**
      * Sets the colliding entity next to the Body
+     *
      * @param notMovable PhysicalEntity
-     * @param other PhysicalEntity
+     * @param other      PhysicalEntity
      */
     private void notMovableCollision(PhysicalEntity notMovable, PhysicalEntity other) {
         double notMovableX = notMovable.getPose().getX(), notMovableY = notMovable.getPose().getY(),
@@ -118,6 +108,7 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
 
     /**
      * Returns all entities where an collision is occurring
+     *
      * @return LinkedList<PhysicalEntity>
      */
     public LinkedList<PhysicalEntity> collidingWith() {
@@ -131,8 +122,10 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
     }
 
     //TODO FOR TORUS
+
     /**
      * Returns the center of a group
+     *
      * @param group List<Entity>
      * @return Position
      */
@@ -151,6 +144,7 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
 
     /**
      * Returns the center of a group composed of all entities which are assignable from any given class
+     *
      * @param classList List<Class>
      * @return Position
      */
@@ -161,6 +155,7 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
 
     /**
      * Returns a list of all entities which are assignable from any given class
+     *
      * @param classList List<Class>
      * @return LinkedList<Entity>
      */
@@ -213,7 +208,7 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
         return height;
     }
 
-        @Override
+    @Override
     public double getWeight() {
         return getArea();
     }

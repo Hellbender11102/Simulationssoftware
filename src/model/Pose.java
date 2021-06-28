@@ -51,6 +51,15 @@ public class Pose extends Position {
     public Pose getPoseInDirection(double distance) {
         return new Pose(getPositionInDirection(distance, rotation, xCoordinate, yCoordinate), rotation);
     }
+    public Vector2D getVectorInDirection(double distance) {
+        return new Vector2D(getPositionInDirection(distance, rotation, xCoordinate, yCoordinate));
+    }
+    public Vector2D getNormalizedVectorInDirection() {
+        return new Vector2D(getPositionInDirection(1, rotation, xCoordinate, yCoordinate));
+    }
+    public Vector2D getNormalizedVectorInDirection(double rotation) {
+        return new Vector2D(getPositionInDirection(1, rotation, xCoordinate, yCoordinate));
+    }
 
     public Pose getPoseInDirection(Vector2D vector2D) {
         return new Pose(xCoordinate + vector2D.getX(), yCoordinate + vector2D.getY(), rotation);
