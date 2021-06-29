@@ -19,16 +19,13 @@ public class Robot4 extends LightConeRobot {
 
     @Override
     public void behavior() {
-        moveRandom(5, 8, 90);
+        setEngines(4,4);
         List<Entity> entities = listOfEntityInVision();
-
         List<Area> areas = entities.stream().filter(x -> Area.class.isAssignableFrom(x.getClass())).map(x -> (Area) x).collect(Collectors.toList());
-        if (areas.size() > 0)
-            if (isAreaVisionRangeInSight(areas.get(0))) {
-                signal = true;
-            } else signal = false;
+        if (areas.size() > 0) {
+            signal = isAreaVisionRangeInSight(areas.get(0));
+        }
     }
-
     @Override
     public Color getClassColor() {
         return Color.BLUE;

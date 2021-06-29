@@ -1,12 +1,8 @@
 package model;
 
 import model.AbstractModel.BaseEntity;
-import model.AbstractModel.Entity;
-import model.RobotTypes.LightConeRobot;
 
 import java.awt.*;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.*;
 import java.util.Random;
 
 /**
@@ -16,11 +12,11 @@ import java.util.Random;
 //TODO
 public class Area extends BaseEntity {
 
-    double noticeableDistance;
+    double noticeableDistanceDiameters;
 
-    public Area(Arena arena, Random random, double diameters, double noticeableDistance, Pose pose) {
+    public Area(Arena arena, Random random, double diameters, double noticeableDistanceDiameters, Pose pose) {
         super(arena, random, diameters, diameters, pose);
-        this.noticeableDistance = noticeableDistance;
+        this.noticeableDistanceDiameters = noticeableDistanceDiameters;
     }
 
     public void decreaseArea(double number) {
@@ -29,7 +25,7 @@ public class Area extends BaseEntity {
     }
 
     public void decreaseAreaOfSight(double number) {
-        noticeableDistance -= number;
+        noticeableDistanceDiameters -= number;
     }
 
     public void increaseArea(double number) {
@@ -38,7 +34,7 @@ public class Area extends BaseEntity {
     }
 
     public void increaseAreaOfSight(double number) {
-        noticeableDistance += number;
+        noticeableDistanceDiameters += number;
     }
 
     /**
@@ -66,8 +62,17 @@ public class Area extends BaseEntity {
      *
      * @return double
      */
-    public double getNoticeableDistance() {
-        return noticeableDistance;
+    public double getNoticeableDistanceDiameter() {
+        return noticeableDistanceDiameters;
+    }
+
+    /**
+     * Returns the noticeable distance of the Area which can be smaller than the area itself
+     *
+     * @return double
+     */
+    public double getNoticeableDistanceRadius() {
+        return noticeableDistanceDiameters /2;
     }
 
     public Position getClosestPositionInEntity(Position position) {
@@ -83,5 +88,14 @@ public class Area extends BaseEntity {
     public double getArea() {
         return getAreaCircle();
     }
+
+    public double getDiameters() {
+        return width;
+    }
+
+    public double getRadius() {
+        return width / 2;
+    }
+
 
 }

@@ -5,6 +5,8 @@ import model.AbstractModel.RobotInterface;
 import model.Area;
 import model.Position;
 import model.RobotBuilder;
+
+import java.awt.geom.Ellipse2D;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -76,17 +78,25 @@ public abstract class LightConeRobot extends BaseRobot {
             position = arena.getClosestPositionInTorus(pose, position);
         }
         if (pose.getEuclideanDistance(position) <= visionRange) {
-            double angleOfEntity = pose.getAngleForPosition(position) < 0 ? pose.getAngleForPosition(position) + 2 * Math.PI : pose.getAngleForPosition(position);
-            double upperAngle = pose.getRotation() + visionAngle / 2;
-            double lowerAngle = pose.getRotation() - visionAngle / 2;
-            if (angleOfEntity <= upperAngle && angleOfEntity >= lowerAngle)
+            return isInBetween(position);
+        }
+        return false;
+    }
+
+    private boolean isInBetween(Position position) {
+        double angleOfEntity = pose.getAngleForPosition(position) < 0 ?pose.getAngleForPosition(position) +2*Math.PI :pose.getAngleForPosition(position) ;
+        double upperAngle = pose.getRotation() + visionAngle / 2;
+        double lowerAngle = pose.getRotation() - visionAngle / 2;
+        System.out.println("Entity " + angleOfEntity);
+        System.out.println("up " + upperAngle);
+        System.out.println("low " + lowerAngle);
+        if (angleOfEntity <= upperAngle && angleOfEntity >= lowerAngle)
+            return true;
+        else if (upperAngle > 2 * Math.PI || lowerAngle < 0) {
+            if (upperAngle > 2 * Math.PI && angleOfEntity < upperAngle % (2 * Math.PI)) {
                 return true;
-            else if (upperAngle > 2 * Math.PI || lowerAngle < 0) {
-                if (upperAngle > 2 * Math.PI && angleOfEntity < upperAngle % (2 * Math.PI)) {
-                    return true;
-                } else if (lowerAngle < 0 && angleOfEntity > lowerAngle + 2 * Math.PI) {
-                    return true;
-                }
+            } else if (lowerAngle < 0 && angleOfEntity > lowerAngle + 2 * Math.PI) {
+                return true;
             }
         }
         return false;
@@ -100,7 +110,12 @@ public abstract class LightConeRobot extends BaseRobot {
      * @return boolean
      */
     public boolean isAreaVisionRangeInSight(Area area) {
-        return isCircleInSight(area.getPose(),area.getNoticeableDistance());
+        java.awt.geom.Area robot =  new java.awt.geom.Area(new Ellipse2D.Double(pose.getX()-getRadius(),pose.getY()-getRadius(),width,height));
+        java.awt.geom.Area visionCone = new java.awt.geom.Area(new Ellipse2D.Double(pose.getX()-getRadius(),pose.getY()-getRadius(),visionRange,visionRange));
+        java.awt.geom.Area areaVision = new java.awt.geom.Area(new Ellipse2D.Double(area.getPose().getX()-getRadius(),
+                area.getPose().getY()-getRadius(),area.getNoticeableDistanceDiameter(),area.getNoticeableDistanceDiameter()));
+        return isCircleInSight(area.getPose(), area.getNoticeableDistanceRadius() + visionRange)
+                || pose.getEuclideanDistance(area.getPose()) <= area.getNoticeableDistanceRadius();
     }
 
     /**
@@ -111,7 +126,8 @@ public abstract class LightConeRobot extends BaseRobot {
      * @return boolean
      */
     public boolean isAreaInSight(Area area) {
-       return isCircleInSight(area.getPose(),area.getWidth());
+        return isCircleInSight(area.getPose(), area.getRadius() + visionRange)
+                || pose.getEuclideanDistance(area.getPose()) <= area.getRadius();
     }
 
     /**
@@ -123,10 +139,7 @@ public abstract class LightConeRobot extends BaseRobot {
      * @return boolean
      */
     public boolean isCircleInSight(Position center, double distance) {
-        double angleToRobot = getPose().getAngleForPosition(center);
-        if (angleToRobot >= getVisionAngle() / 2 && angleToRobot <= getVisionAngle() / 2)
-            return pose.getEuclideanDistance(center) < distance + visionRange;
-        return pose.getEuclideanDistance(center) < distance + getRadius() / 2;
+        return isInBetween(center) && pose.getEuclideanDistance(center) <= distance;
     }
 
 

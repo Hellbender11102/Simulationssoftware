@@ -29,7 +29,7 @@ public class View extends JFrame {
     private TextView log;
     private TextView help;
     private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-    JFileChooser fileChooserUI = new JFileChooser();
+    JFileChooser fileChooserUI;
     FileFilter filter = new FileNameExtensionFilter("txt, JSON", "txt", "JSON", "Json");
 
     public View(Arena arena) {
@@ -63,6 +63,17 @@ public class View extends JFrame {
         getContentPane().add(bar, BorderLayout.NORTH);
         getContentPane().add(simView, BorderLayout.CENTER);
         setMenuLogic();
+
+        fileChooserUI = new JFileChooser(){
+            @Override
+            public void approveSelection(){
+                File f = getSelectedFile();
+                if(f == null ||!f.exists() ){
+                    JOptionPane.showMessageDialog(null, "Error");
+                    cancelSelection();
+                }
+            }
+        };
         setVisible(true);
     }
 
@@ -122,9 +133,9 @@ public class View extends JFrame {
 
     public String getPathOfSelectedFile() {
         fileChooserUI.setFileFilter(filter);
-        int i = fileChooserUI.showOpenDialog(null);
-        System.out.println(i);
-        if (i == 0 && fileChooserUI.getSelectedFile() != null && fileChooserUI.getSelectedFile().exists())
+        int returnVal = fileChooserUI.showOpenDialog(null);
+
+        if (returnVal == JFileChooser.APPROVE_OPTION && fileChooserUI.getSelectedFile() != null && fileChooserUI.getSelectedFile().exists())
             return fileChooserUI.getSelectedFile().getAbsolutePath();
         return null;
     }

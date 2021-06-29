@@ -8,6 +8,8 @@ import model.AbstractModel.RobotInterface;
 import model.RobotTypes.LightConeRobot;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Ellipse2D;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -77,7 +79,7 @@ public class SimulationView extends JPanel {
         if (arena.getRobots() != null) {
             int x = convertZoom(arena.getWidth() - offsetX + fontSize) + 35, y = -convertZoom(offsetY) - fontSize * 5, n = 0;
             for (RobotInterface robot : arena.getRobots()) {
-                drawRobot(robot, g);
+                drawRobot(robot, g2d);
                 if (!infosLeft) {
                     x = convertZoom(robot.getPose().getX() - offsetX - robot.getRadius());
                     y = convertZoom(arena.getHeight() - (robot.getPose().getY() + offsetY) + robot.getRadius());
@@ -103,15 +105,18 @@ public class SimulationView extends JPanel {
     private void drawAreas(Graphics2D g2d) {
         for (Area area : arena.getAreaList()) {
             g2d.setColor(new Color(area.getColor().getRed(), area.getColor().getGreen(), area.getColor().getBlue(), 200));
-            g2d.fillOval(convertZoom((area.getPose().getX() - offsetX - (area.getNoticeableDistance()) / 2)),
-                    convertZoom(arena.getHeight() - (area.getPose().getY() + offsetY + (area.getNoticeableDistance()) / 2)),
-                    convertZoom((area.getNoticeableDistance())),
-                    convertZoom((area.getNoticeableDistance())));
+            g2d.fillOval(convertZoom((area.getPose().getX() - offsetX - (area.getNoticeableDistanceDiameter()) / 2)),
+                    convertZoom(arena.getHeight() - (area.getPose().getY() + offsetY + (area.getNoticeableDistanceDiameter()) / 2)),
+                    convertZoom((area.getNoticeableDistanceDiameter())),
+                    convertZoom((area.getNoticeableDistanceDiameter())));
             g2d.setColor(area.getClassColor());
             g2d.drawOval(convertZoom((area.getPose().getX() - offsetX - area.getWidth() / 2)),
                     convertZoom(arena.getHeight() - (area.getPose().getY() + offsetY + (area.getHeight() / 2))),
                     convertZoom(area.getWidth()),
                     convertZoom(area.getHeight()));
+            java.awt.geom.Area areaVision = new java.awt.geom.Area(new Ellipse2D.Double(convertZoom(area.getPose().getX()+area.getRadius() -offsetX),
+                    convertZoom(area.getPose().getX()+area.getRadius()-offsetY),convertZoom(area.getDiameters()),convertZoom(area.getDiameters())));
+            g2d.draw(areaVision.getBounds2D());
         }
     }
 
@@ -136,7 +141,7 @@ public class SimulationView extends JPanel {
      * @param robot RobotInterface
      * @param g2d   Graphics
      */
-    private void drawRobot(RobotInterface robot, Graphics g2d) {
+    private void drawRobot(RobotInterface robot, Graphics2D g2d) {
         double x = robot.getPose().getX() - offsetX - robot.getRadius();
         double y = arena.getHeight() - robot.getPose().getY() - offsetY - robot.getRadius();
         if (LightConeRobot.class.isAssignableFrom(robot.getClass()) && drawRobotCone) {
@@ -163,6 +168,9 @@ public class SimulationView extends JPanel {
             g2d.fillOval(convertZoom(positionSignal.getX() - offsetX - radiusOffset/2),convertZoom(arena.getHeight() - positionSignal.getY() - offsetY - radiusOffset/2),
                     convertZoom(radiusOffset),convertZoom(radiusOffset));
         }
+        java.awt.geom.Area areaVision = new java.awt.geom.Area(new Ellipse2D.Double(convertZoom(robot.getPose().getX()+robot.getRadius() -offsetX),
+               convertZoom(robot.getPose().getX()+robot.getRadius()-offsetY),convertZoom(robot.getDiameters()),convertZoom(robot.getDiameters())));
+        g2d.draw(areaVision);
     }
 
     /**

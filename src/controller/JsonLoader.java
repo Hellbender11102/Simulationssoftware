@@ -203,8 +203,8 @@ class JsonLoader {
         JSONArray areas = (JSONArray) variables.get("areas");
         for (Object area : areas) {
             JSONObject jsonArea = (JSONObject) area;
-            if (jsonArea.containsKey("diameters") && jsonArea.containsKey("noticeableDistance") && loadPose(jsonArea) != null)
-                areaList.add(new Area(arena, new Random(random.nextInt()), (double) jsonArea.get("diameters"), (double) jsonArea.get("noticeableDistance"), loadPose(jsonArea)));
+            if (jsonArea.containsKey("diameters") && jsonArea.containsKey("noticeableDistanceDiameters") && loadPose(jsonArea) != null)
+                areaList.add(new Area(arena, new Random(random.nextInt()), (double) jsonArea.get("diameters"), (double) jsonArea.get("noticeableDistanceDiameters"), loadPose(jsonArea)));
             else
                 System.err.println("Could not load area " + (areaList.size() + missing++) + " correctly. Entry diameters, noticeableDistance or position missing.");
         }
