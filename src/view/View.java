@@ -2,6 +2,7 @@ package view;
 
 import model.Arena;
 
+import javax.naming.spi.DirectoryManager;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -9,24 +10,27 @@ import javax.swing.plaf.FileChooserUI;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.net.URL;
+import java.nio.file.Paths;
 
 public class View extends JFrame {
     private final SimulationView simView;
-    private final JMenuItem itemHelp = new JMenuItem("Hilfe",1);
-    private final JMenuItem itemLog = new JMenuItem("Log erstellen",2);
-    private final JMenuItem itemLogEditor = new JMenuItem("Log einsehen",3);
-    private final JMenuItem itemVariablesEditor = new JMenuItem("Einstellung",4);
-    private final JMenuItem itemSettingsEditor = new JMenuItem("Simulationsvariablen",6);
-    private final JMenuItem itemLoadVariables = new JMenuItem("Simulationsvariablen laden von",5);
-    private final JMenuItem itemRestart = new JMenuItem("Versuch neu starten",7);
-    private final JMenuItem itemFullRestart= new JMenuItem("Neu laden und neu Starten",8);
+    private final JMenuItem itemHelp = new JMenuItem("Hilfe", 1);
+    private final JMenuItem itemLog = new JMenuItem("Log erstellen", 2);
+    private final JMenuItem itemLogEditor = new JMenuItem("Log einsehen", 3);
+    private final JMenuItem itemVariablesEditor = new JMenuItem("Einstellung", 4);
+    private final JMenuItem itemSettingsEditor = new JMenuItem("Simulationsvariablen", 6);
+    private final JMenuItem itemLoadVariables = new JMenuItem("Simulationsvariablen laden von", 5);
+    private final JMenuItem itemRestart = new JMenuItem("Versuch neu starten", 7);
+    private final JMenuItem itemFullRestart = new JMenuItem("Neu laden und neu Starten", 8);
     private TextView settings;
     private TextView variabls;
     private TextView log;
     private TextView help;
     private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     JFileChooser fileChooserUI = new JFileChooser();
-    FileFilter filter = new FileNameExtensionFilter("txt, JSON","txt","JSON","Json");
+    FileFilter filter = new FileNameExtensionFilter("txt, JSON", "txt", "JSON", "Json");
 
     public View(Arena arena) {
 
@@ -41,7 +45,11 @@ public class View extends JFrame {
         setTitle("Vibrobot Simulation");
         JMenuBar bar = new JMenuBar();
         JMenu menu = new JMenu("Optionen");
-
+        URL iconURL =  getClass().getClassLoader().getResource("icon.PNG");
+        if (null != iconURL) {
+            ImageIcon icon = new ImageIcon(iconURL);
+            setIconImage(icon.getImage());
+        }
         menu.add(itemHelp);
         menu.add(itemRestart);
         menu.add(itemFullRestart);
@@ -51,7 +59,6 @@ public class View extends JFrame {
         menu.add(itemSettingsEditor);
         menu.add(itemLoadVariables);
         bar.add(menu);
-
         simView = new SimulationView(arena);
         getContentPane().add(bar, BorderLayout.NORTH);
         getContentPane().add(simView, BorderLayout.CENTER);
@@ -65,32 +72,32 @@ public class View extends JFrame {
 
     private void setMenuLogic() {
         ActionListener helpAction = e -> {
-            if(help==null)
-           help = new TextView("Hilfe","README.md", 0, false);
+            if (help == null)
+                help = new TextView("Hilfe", "README.md", 0, false);
             else help.setVisible(true);
         };
         itemHelp.addActionListener(helpAction);
 
         ActionListener settingsAction = e -> {
-                 if(variabls==null)
-          variabls=  new TextView("variables.json","resources/variables.json",
-                    (int) (screenSize.width * 0.75), true);
+            if (variabls == null)
+                variabls = new TextView("variables.json", "resources/variables.json",
+                        (int) (screenSize.width * 0.75), true);
             else variabls.setVisible(true);
         };
         itemSettingsEditor.addActionListener(settingsAction);
 
         ActionListener variablesAction = e -> {
-                 if(settings==null)
-           settings= new TextView("settings.json","resources/settings.json",
-                    (int) (screenSize.width * 0.75), true);
+            if (settings == null)
+                settings = new TextView("settings.json", "resources/settings.json",
+                        (int) (screenSize.width * 0.75), true);
             else settings.setVisible(true);
         };
         itemVariablesEditor.addActionListener(variablesAction);
 
         ActionListener logAction = e -> {
-                 if(log==null)
-          log =  new TextView("log.csv","out/log.csv",
-                    (int) (screenSize.width * 0.75), true);
+            if (log == null)
+                log = new TextView("log.csv", "out/log.csv",
+                        (int) (screenSize.width * 0.75), true);
             else log.setVisible(true);
         };
         itemLogEditor.addActionListener(logAction);
@@ -108,14 +115,18 @@ public class View extends JFrame {
     public JMenuItem getFullRestart() {
         return itemFullRestart;
     }
+
     public JMenuItem getItemLoadVariables() {
         return itemLoadVariables;
     }
 
     public String getPathOfSelectedFile() {
         fileChooserUI.setFileFilter(filter);
-        fileChooserUI.showOpenDialog(this);
-        return fileChooserUI.getSelectedFile().getAbsolutePath();
+        int i = fileChooserUI.showOpenDialog(null);
+        System.out.println(i);
+        if (i == 0 && fileChooserUI.getSelectedFile() != null && fileChooserUI.getSelectedFile().exists())
+            return fileChooserUI.getSelectedFile().getAbsolutePath();
+        return null;
     }
 
 }

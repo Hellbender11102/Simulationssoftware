@@ -169,6 +169,9 @@ public class Arena {
     synchronized public List<Entity> getNonPhysicalEntityList() {
         return singleton.entityList.stream().filter(x -> !x.isCollidable()).map(x -> (Entity) x).collect(Collectors.toList());
     }
+    synchronized public void clearEntityList() {
+         singleton.entityList.clear();
+    }
 
     synchronized public List<Area> getAreaList() {
         return singleton.entityList.stream().filter(x -> Area.class.isAssignableFrom(x.getClass())).map(x -> (Area) x).collect(Collectors.toList());

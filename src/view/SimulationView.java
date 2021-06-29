@@ -6,8 +6,6 @@ import model.Arena;
 import model.Position;
 import model.AbstractModel.RobotInterface;
 import model.RobotTypes.LightConeRobot;
-import model.Vector2D;
-
 import javax.swing.*;
 import java.awt.*;
 import java.util.LinkedList;
@@ -93,12 +91,6 @@ public class SimulationView extends JPanel {
                 }
                 n++;
                 drawInfo(g, robot, x, y);
-            }
-        }
-        for (PhysicalEntity ph: arena.getPhysicalEntitiesWithoutRobots()) {
-            g.setColor(Color.green);
-            for (PhysicalEntity ph2: arena.getPhysicalEntityList()) {
-              //  drawLine(ph.getClosestPositionInEntity(ph2.getPose()),ph2.getPose(),g);
             }
         }
     }

@@ -1,8 +1,12 @@
 package model;
 
 import model.AbstractModel.BaseEntity;
+import model.AbstractModel.Entity;
+import model.RobotTypes.LightConeRobot;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.*;
 import java.util.Random;
 
 /**
@@ -27,6 +31,7 @@ public class Area extends BaseEntity {
     public void decreaseAreaOfSight(double number) {
         noticeableDistance -= number;
     }
+
     public void increaseArea(double number) {
         height += number / 2;
         width += number / 2;
@@ -58,6 +63,7 @@ public class Area extends BaseEntity {
 
     /**
      * Returns the noticeable distance of the Area which can be smaller than the area itself
+     *
      * @return double
      */
     public double getNoticeableDistance() {

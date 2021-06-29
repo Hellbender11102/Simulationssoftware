@@ -19,13 +19,11 @@ public class Controller {
     private final Timer repaintTimer = new Timer();
     private final Timer loggerTimer = new Timer();
     private final Logger logger = new Logger();
-    private int ticsPerSimulatedSecond;
 
 
     public Controller() {
         long startTime = System.currentTimeMillis();
         arena = jsonLoader.initArena();
-        ticsPerSimulatedSecond = jsonLoader.loadTicsPerSimulatedSecond();
         if (jsonLoader.loadDisplayView()) {
             init();
             view = new View(arena);
@@ -122,7 +120,7 @@ public class Controller {
             public void keyPressed(KeyEvent e) {
                 switch (e.getKeyCode()) {
                     case KeyEvent.VK_SPACE:
-                        for (PhysicalEntity entity : arena.getPhysicalEntityList()) {
+                        for (PhysicalEntity entity : arena.getRobots()) {
                             if (stopped) {
                                 entity.setToLatestPose();
                                 entity.togglePause();
@@ -250,9 +248,11 @@ public class Controller {
 
         view.getItemLoadVariables().addActionListener(actionListener -> {
             try {
-                jsonLoader.setVariables(JsonLoader.loadJSON(view.getPathOfSelectedFile()));
+                String path = view.getPathOfSelectedFile();
+                if (path != null)
+                    jsonLoader.setVariables(JsonLoader.loadJSON(path));
             } catch (IOException ioException) {
-                ioException.printStackTrace();
+                System.err.println("Keine Datei wurde ausgeweahlt.\n" + ioException.getMessage());
             }
             init();
         });
@@ -260,12 +260,12 @@ public class Controller {
         //Can lead to different behavior without random seed
         view.getFullRestart().addActionListener(actionListener -> {
             for (RobotInterface robot : arena.getRobots()) {
-                if (!stopped) {
+                if (!robot.getPaused()) {
                     robot.togglePause();
                 }
             }
             stopped = true;
-            jsonLoader = new JsonLoader();
+            arena.clearEntityList();
             arena = jsonLoader.reloadArena();
             repaintTimer(jsonLoader.loadFps());
             init();

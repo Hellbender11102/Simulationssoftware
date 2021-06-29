@@ -1,6 +1,8 @@
 package model;
 
-public class Position {
+import java.awt.geom.Point2D;
+
+public class Position extends Point2D {
     double xCoordinate, yCoordinate;
 
     public Position(Position position) {
@@ -16,7 +18,7 @@ public class Position {
     public double getPolarAngle() {
         if (getPolarDistance() != 0.0)
             return Math.atan2(yCoordinate, xCoordinate);
-        else return Double.NaN;
+        else return java.lang.Double.NaN;
     }
 
     /**
@@ -137,6 +139,12 @@ public class Position {
 
     public double getY() {
         return yCoordinate;
+    }
+
+    @Override
+    public void setLocation(double x, double y) {
+        xCoordinate = x;
+        yCoordinate = y;
     }
 
     synchronized

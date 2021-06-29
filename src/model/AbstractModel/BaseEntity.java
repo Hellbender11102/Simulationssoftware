@@ -6,6 +6,7 @@ import model.Pose;
 import model.Position;
 
 import java.awt.*;
+import java.awt.geom.RectangularShape;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -168,6 +169,8 @@ abstract public class BaseEntity extends Thread implements Entity {
         position = arena.setPositionInBoundsTorus(position);
         return pose.getEuclideanDistance(position) <= width / 2;
     }
+
+
     //setter & getter
 
     @Override

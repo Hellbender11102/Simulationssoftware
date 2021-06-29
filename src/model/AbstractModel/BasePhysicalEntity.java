@@ -76,7 +76,6 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
      */
     public void collision(PhysicalEntity physicalEntity) {
         double u2Angle = pose.getAngleForPosition(physicalEntity.getPose());
-        double u1Angle = physicalEntity.getPose().getAngleForPosition(pose);
 
 
 
@@ -85,7 +84,6 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
             u2Angle = pose.getAngleForPosition(physicalEntity.getClosestPositionInEntity(pose));
         }
         else if (Wall.class.isAssignableFrom(getClass()) || Box.class.isAssignableFrom(getClass())) {
-            u1Angle = physicalEntity.getPose().getAngleForPosition(getClosestPositionInEntity(physicalEntity.getPose()));
             u2Angle = pose.getAngleForPosition(physicalEntity.getClosestPositionInEntity(pose));
         }
 
@@ -93,7 +91,6 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
                 / (getWeight() + physicalEntity.getWeight())
                 * trajectorySpeed() * Math.cos(u2Angle);
 
-        System.out.println(trajectorySpeed() * getWeight() - u2);
         if (physicalEntity.isMovable()) {
             physicalEntity.getPose().set(physicalEntity.getPose().getPoseInDirection(u2, u2Angle));
         }
