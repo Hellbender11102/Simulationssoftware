@@ -64,16 +64,7 @@ public class View extends JFrame {
         getContentPane().add(simView, BorderLayout.CENTER);
         setMenuLogic();
 
-        fileChooserUI = new JFileChooser(){
-            @Override
-            public void approveSelection(){
-                File f = getSelectedFile();
-                if(f == null ||!f.exists() ){
-                    JOptionPane.showMessageDialog(null, "Error");
-                    cancelSelection();
-                }
-            }
-        };
+        fileChooserUI = new JFileChooser();
         setVisible(true);
     }
 
@@ -137,7 +128,7 @@ public class View extends JFrame {
 
         if (returnVal == JFileChooser.APPROVE_OPTION && fileChooserUI.getSelectedFile() != null && fileChooserUI.getSelectedFile().exists())
             return fileChooserUI.getSelectedFile().getAbsolutePath();
-        return null;
+    return null;
     }
 
 }
