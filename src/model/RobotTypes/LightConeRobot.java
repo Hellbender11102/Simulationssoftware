@@ -146,6 +146,11 @@ public abstract class LightConeRobot extends BaseRobot {
         return false;
     }
 
+    /**
+     * Returns true if the position is located in the cone of the vision
+     * @param position Position
+     * @return boolean
+     */
     private boolean isInBetween(Position position) {
         double angleOfEntity = pose.getAngleForPosition(position) < 0 ? pose.getAngleForPosition(position) + 2 * Math.PI : pose.getAngleForPosition(position);
         double upperAngle = pose.getRotation() + visionAngle / 2;
