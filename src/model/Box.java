@@ -13,7 +13,7 @@ public class Box extends BasePhysicalEntity {
     }
 
     @Override
-    public double trajectorySpeed() {
+    public double getTrajectoryMagnitude() {
         return 0;
     }
 

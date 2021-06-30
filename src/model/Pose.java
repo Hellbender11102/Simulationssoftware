@@ -37,7 +37,7 @@ public class Pose extends Position {
     }
 
     public boolean equals(Pose position) {
-        return super.equals(this) && rotation == position.rotation;
+        return super.equals(position) && rotation == position.rotation;
     }
 
     public Position getPositionInDirection(double distance) {

@@ -12,7 +12,7 @@ public interface PhysicalEntity extends Entity, Runnable {
 
     abstract Position centerOfGroupWithClasses(List<Class> classList);
 
-    abstract public double trajectorySpeed();
+    abstract public double getTrajectoryMagnitude();
 
     abstract public boolean inArenaBounds();
 

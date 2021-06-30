@@ -14,7 +14,7 @@ public class Wall extends BasePhysicalEntity {
     }
 
     @Override
-    public double trajectorySpeed() {
+    public double getTrajectoryMagnitude() {
         return 0;
     }
 

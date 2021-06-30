@@ -9,9 +9,6 @@ import model.RobotTypes.LightConeRobot;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.util.LinkedList;
 import java.util.List;
@@ -223,7 +220,7 @@ public class SimulationView extends JPanel {
             y += fontSize;
             g2d.drawString("R:" + String.format("%,.2f", robot.getEngineR()) +
                             " L:" + String.format("%,.2f", robot.getEngineL()) +
-                            " V:" + String.format("%,.2f", robot.trajectorySpeed())
+                            " V:" + String.format("%,.2f", robot.getTrajectoryMagnitude())
                     , x - 28 - fontSize, y);
         }
         if (drawRobotRotation) {

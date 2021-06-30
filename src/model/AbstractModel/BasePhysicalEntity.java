@@ -89,13 +89,13 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
 
         double u2 = (2 * physicalEntity.getWeight())
                 / (getWeight() + physicalEntity.getWeight())
-                * trajectorySpeed() * Math.cos(u2Angle);
+                * getTrajectoryMagnitude() * Math.cos(u2Angle);
 
         if (physicalEntity.isMovable()) {
             physicalEntity.getPose().set(physicalEntity.getPose().getPoseInDirection(u2, u2Angle));
         }
         if (isMovable()) {
-            pose.set(pose.getPoseInDirection(trajectorySpeed() * getWeight() - u2, u2Angle-Math.PI));
+            pose.set(pose.getPoseInDirection(getTrajectoryMagnitude() * getWeight() - u2, u2Angle-Math.PI));
         }
     }
 

@@ -71,8 +71,8 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     public BaseRobot(RobotBuilder builder) {
         super(builder.getArena(), builder.getRandom(), builder.getDiameters(), builder.getDiameters(), builder.getPose());
         poseRingMemory[poseRingMemoryHead] = builder.getPose();
-        engineL = builder.getEngineL();
-        engineR = builder.getEngineR();
+        setEngineL(builder.getEngineL());
+        setEngineR(builder.getEngineR());
         distanceE = builder.getDistanceE();
         diameters = builder.getDiameters();
         powerTransmission = builder.getPowerTransmission();
@@ -91,7 +91,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      *
      * @return double
      */
-    public double trajectorySpeed() {
+    public double getTrajectoryMagnitude() {
         return ((engineR + engineL) / 2) / ticsPerSimulatedSecond;
     }
 
@@ -113,8 +113,8 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * Calculates and sets the next position
      */
     public void setNextPosition() {
+        pose = pose.getPoseInDirection(getTrajectoryMagnitude(), pose.getRotation());
         pose.incRotation(angularVelocity());
-        pose = pose.getPoseInDirection(trajectorySpeed(), pose.getRotation());
     }
 
     /**
@@ -158,7 +158,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * @param precisionInDegree double
      * @param speed             double
      */
-    void driveToPosition(Position position, double precisionInDegree, double speed) {
+    public void driveToPosition(Position position, double precisionInDegree, double speed) {
         if (arena.isTorus) position = arena.getClosestPositionInTorus(pose, position);
         if (rotateToAngle(pose.getAngleForPosition(position), Math.toRadians(precisionInDegree), speed, 0)) {
             setEngines(speed / 2, speed / 2);
@@ -172,6 +172,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * Returns true if facing in the correct direction
      * If rotatingEngine <= secondEngine it sets the second engine to 90% original power
      * If rotatingEngine && secondEngine > maxspeed / 2 it wont turn
+     *
      * @param angleInRadian  double
      * @param rotatingEngine double
      * @param secondEngine   double
@@ -248,7 +249,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     }
 
     /**
-     * @param classList     List<Class>
+     * @param classList List<Class>
      * @return LinkedList<RobotInterface>
      */
     public LinkedList<RobotInterface> robotGroupByClasses(List<Class> classList) {
@@ -315,12 +316,16 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * @param turnRadiusInDegree int
      */
     public void moveRandom(double pathLength, double speed, int turnRadiusInDegree) {
-        double steps = pathLength / trajectorySpeed();
-        ExponentialGenerator exponentialGenerator = new ExponentialGenerator(1 / steps, random);
+        double steps = 0;
+        ExponentialGenerator exponentialGenerator = new ExponentialGenerator(0, random);
+        if (getTrajectoryMagnitude() != 0) {
+            steps = pathLength / getTrajectoryMagnitude();
+            exponentialGenerator = new ExponentialGenerator(1 / steps, random);
+        }
         GaussianGenerator gaussianGenerator = new GaussianGenerator(0, Math.toRadians(turnRadiusInDegree), random);
         double nextDE = exponentialGenerator.nextValue();
         if (isInTurn) {
-            if (rotateToAngle(rotation, Math.toRadians(2), speed, 0)) {
+            if (rotateToAngle(rotation, Math.toRadians(1), speed, 0)) {
                 isInTurn = false;
                 afterTurn = pose;
             }
@@ -338,18 +343,20 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * Increases the speed for booth engines with speed / 2
      * Returns the resulting trajectory speed
      * Useful in an state based agent
+     *
      * @param speed double
      * @return double
      */
-    double increaseSpeed(double speed) {
+    public double increaseSpeed(double speed) {
         setEngines(engineR + speed / 2, engineL + speed / 2);
-        return trajectorySpeed();
+        return getTrajectoryMagnitude();
     }
 
     /**
      * Turns to an given angle
      * Returns true if facing in the correct direction
      * Useful in an state based agent
+     *
      * @param degree double
      * @return boolean
      */
@@ -358,13 +365,15 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     }
 
     //Todo
+
     /**
      * Turns to an given angle
      * Returns true if
      * Useful in an state based agent
-     * @param degree    double
-     * @param engine1   double
-     * @param engine2   double
+     *
+     * @param degree  double
+     * @param engine1 double
+     * @param engine2 double
      * @return boolean
      */
     boolean turn(double degree, double engine1, double engine2) {
@@ -385,6 +394,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * resets internal flags when done
      * Returns true if distance is moved
      * Useful in an state based agent
+     *
      * @param pathLength double
      * @param speed      double
      * @return boolean
@@ -401,6 +411,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     /**
      * Moves a given distance and stops with internal flags
      * Useful in an state based agent
+     *
      * @param pathLength double
      * @param speed      double
      */
@@ -437,6 +448,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     /**
      * Sets the left engine
      * Cuts at maxSpeed / 2 and minSpeed
+     *
      * @param leftEngine double
      */
     public void setEngineL(double leftEngine) {
@@ -452,6 +464,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     /**
      * Sets the right engine
      * Cuts at maxSpeed / 2 and minSpeed
+     *
      * @param rightEngine double
      */
     public void setEngineR(double rightEngine) {
@@ -460,14 +473,15 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         } else if (!isEngineLowerOrMaxSpeed(rightEngine)) {
             engineR = maxSpeed / 2;
         } else {
-            engineR = minSpeed;
+            engineR = minSpeed / 2;
         }
     }
 
     /**
      * Sets both engines
-     * @param rightEngine   double
-     * @param leftEngine    double
+     *
+     * @param rightEngine double
+     * @param leftEngine  double
      */
     public void setEngines(double rightEngine, double leftEngine) {
         setEngineR(rightEngine);
@@ -479,7 +493,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     }
 
     private boolean isEngineGreaterOrMinSpeed(double engine) {
-        return minSpeed <= engine;
+        return minSpeed / 2 <= engine;
     }
 
     /**
