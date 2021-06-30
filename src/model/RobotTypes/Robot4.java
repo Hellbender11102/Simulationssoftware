@@ -1,25 +1,21 @@
 package model.RobotTypes;
 
 import model.*;
-import model.AbstractModel.Entity;
-import model.AbstractModel.PhysicalEntity;
 
 import java.awt.*;
-import java.util.List;
-import java.util.stream.Collectors;
 
-public class Robot4 extends LightConeRobot {
+public class Robot4 extends VisionConeRobot {
 
     public Robot4(RobotBuilder builder) {
         super(builder, 30, 45);
     }
-
-    Position position = new Position(60, 10);
-
+Position position = new Position(1,1);
     @Override
     public void behavior() {
-        setEngines(4,4);
-        signal = listOfWallsInSight().size() > 0;
+        setEngines(10,10);
+        if(isArenaBoundsInVision()){
+            signal=true;
+        }
     }
     @Override
     public Color getClassColor() {

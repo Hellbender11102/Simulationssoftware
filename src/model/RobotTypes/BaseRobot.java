@@ -60,7 +60,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * Can be used for distinct logging via Random number
      */
     int identifier = 0;
-    boolean signal = false;
+    protected boolean signal = false;
 
 
     /**
@@ -152,7 +152,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     /**
      * Rotates to Position
      * While sets turning engine to speed and other engine to 0
-     * Facing correct sets both to speed / 2
+     * Facing correct sets both to speed
      *
      * @param position          Position
      * @param precisionInDegree double
@@ -160,8 +160,8 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      */
     public void driveToPosition(Position position, double precisionInDegree, double speed) {
         if (arena.isTorus) position = arena.getClosestPositionInTorus(pose, position);
-        if (rotateToAngle(pose.getAngleForPosition(position), Math.toRadians(precisionInDegree), speed, 0)) {
-            setEngines(speed / 2, speed / 2);
+        if (rotateToAngle(pose.getAngleToPosition(position), Math.toRadians(precisionInDegree), speed, 0)) {
+            setEngines(speed, speed );
         }
     }
 
@@ -171,7 +171,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * If facing to the given angle sets the engines both to rotatingEngine
      * Returns true if facing in the correct direction
      * If rotatingEngine <= secondEngine it sets the second engine to 90% original power
-     * If rotatingEngine && secondEngine > maxspeed / 2 it wont turn
+     * If rotatingEngine && secondEngine > maxspeed it wont turn
      *
      * @param angleInRadian  double
      * @param rotatingEngine double
@@ -179,7 +179,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * @return boolean
      */
     boolean rotateToAngle(double angleInRadian, double precisionInRadian, double rotatingEngine, double secondEngine) {
-        if (rotatingEngine <= secondEngine) secondEngine *= 0.9;
+        if (rotatingEngine <= secondEngine) secondEngine =rotatingEngine* 0.9;
         double angleDiff = pose.getAngleDiff(angleInRadian);
         if (angleDiff <= precisionInRadian / 2 || 2 * Math.PI - angleDiff <= precisionInRadian / 2) {
             setEngines(rotatingEngine, rotatingEngine);
@@ -235,7 +235,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
             if (!equals(robot) && distance <= distanceToKeep + getRadius() + robot.getRadius()) {
                 isEnoughDistance = false;
                 double length = distanceToKeep + getRadius() + robot.getRadius() - distance;
-                double direction = pose.getAngleForPosition(robotPose);
+                double direction = pose.getAngleFromPosition(robotPose);
                 dummyPose.incRotation(dummyPose.getRotation() + direction);
                 dummyPose.addToPosition(dummyPose.creatPositionByDecreasing(dummyPose.getPositionInDirection(length)));
             }
@@ -334,13 +334,13 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
             rotation = (pose.getRotation() + gaussianGenerator.nextValue()) % 2 * Math.PI;
             straight = (int) nextDE;
         } else {
-            setEngines(speed / 2, speed / 2);
+            setEngines(speed, speed);
         }
         straight--;
     }
 
     /**
-     * Increases the speed for booth engines with speed / 2
+     * Increases the speed for booth engines with speed
      * Returns the resulting trajectory speed
      * Useful in an state based agent
      *
@@ -348,7 +348,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * @return double
      */
     public double increaseSpeed(double speed) {
-        setEngines(engineR + speed / 2, engineL + speed / 2);
+        setEngines(engineR + speed, engineL + speed);
         return getTrajectoryMagnitude();
     }
 
@@ -356,6 +356,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * Turns to an given angle
      * Returns true if facing in the correct direction
      * Useful in an state based agent
+     * If engineR = engineL || engineR = engineL = 0 it won't turn
      *
      * @param degree double
      * @return boolean
@@ -368,7 +369,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
 
     /**
      * Turns to an given angle
-     * Returns true if
+     * Returns true if turning is complete
      * Useful in an state based agent
      *
      * @param degree  double
@@ -376,12 +377,12 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * @param engine2 double
      * @return boolean
      */
-    boolean turn(double degree, double engine1, double engine2) {
+    public boolean turn(double degree, double engine1, double engine2) {
         if (!isInTurn) {
-            turnsTo = pose.getRotation() + Math.toRadians(degree) % 2 * Math.PI;
+            turnsTo = pose.getRotation() + Math.toRadians(degree) < 0 ? pose.getRotation() + Math.toRadians(degree) + 2*Math.PI : pose.getRotation() + Math.toRadians(degree) % 2 * Math.PI;
             isInTurn = true;
         } else {
-            if (rotateToAngle(turnsTo, Math.toRadians(2), engine1, engine2)) {
+            if (rotateToAngle(turnsTo, Math.toRadians(2), Math.max(engine1,engine2),  Math.min(engine1,engine2))) {
                 turnsTo = Double.NaN;
                 isInTurn = false;
             }
@@ -418,7 +419,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     void moveAndStop(double pathLength, double speed) {
         if (!isInTurn) {
             if (straightMoves == -1 && straightMovesRest == 0) {
-                setEngines(speed / 2, speed / 2);
+                setEngines(speed, speed);
                 int moves = (int) Math.round(pathLength / (speed / ticsPerSimulatedSecond));
                 straightMoves = moves;
                 straightMovesRest = moves - (pathLength / (speed / ticsPerSimulatedSecond));
@@ -447,7 +448,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
 
     /**
      * Sets the left engine
-     * Cuts at maxSpeed / 2 and minSpeed
+     * Cuts at maxSpeed and minSpeed
      *
      * @param leftEngine double
      */
@@ -455,7 +456,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         if (isEngineLowerOrMaxSpeed(leftEngine) && isEngineGreaterOrMinSpeed(leftEngine)) {
             engineL = leftEngine;
         } else if (!isEngineLowerOrMaxSpeed(leftEngine)) {
-            engineL = maxSpeed / 2;
+            engineL = maxSpeed;
         } else {
             engineL = minSpeed;
         }
@@ -463,7 +464,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
 
     /**
      * Sets the right engine
-     * Cuts at maxSpeed / 2 and minSpeed
+     * Cuts at maxSpeed and minSpeed
      *
      * @param rightEngine double
      */
@@ -471,9 +472,9 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         if (isEngineLowerOrMaxSpeed(rightEngine) && isEngineGreaterOrMinSpeed(rightEngine)) {
             engineR = rightEngine;
         } else if (!isEngineLowerOrMaxSpeed(rightEngine)) {
-            engineR = maxSpeed / 2;
+            engineR = maxSpeed;
         } else {
-            engineR = minSpeed / 2;
+            engineR = minSpeed;
         }
     }
 
@@ -483,17 +484,17 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * @param rightEngine double
      * @param leftEngine  double
      */
-    public void setEngines(double rightEngine, double leftEngine) {
+    public void setEngines(double leftEngine, double rightEngine) {
         setEngineR(rightEngine);
         setEngineL(leftEngine);
     }
 
     private boolean isEngineLowerOrMaxSpeed(double engine) {
-        return engine <= maxSpeed / 2;
+        return engine <= maxSpeed;
     }
 
     private boolean isEngineGreaterOrMinSpeed(double engine) {
-        return minSpeed / 2 <= engine;
+        return minSpeed <= engine;
     }
 
     /**

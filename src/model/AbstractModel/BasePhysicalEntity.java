@@ -54,9 +54,6 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
         for (PhysicalEntity physicalEntity : collidingWith()) {
             returnValue = true;
             collision(physicalEntity);
-            if (isPositionInEntity(physicalEntity.getClosestPositionInEntity(pose)) && !equals(physicalEntity)) {
-                //todo still overlapping
-            }
         }
         if (!inArenaBounds() && !arena.isTorus) {
             setInArenaBounds();
@@ -75,16 +72,13 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
      *                       https://www.physik.tu-darmstadt.de/media/fachbereich_physik/phys_studium/phys_studium_bachelor/phys_studium_bsc_praktika/phys_studium_bsc_praktika_gp/phys_studium_bsc_praktika_gp_mechanik/m4/m4bilder/m4_neuSS15.pdf
      */
     public void collision(PhysicalEntity physicalEntity) {
-        double u2Angle = pose.getAngleForPosition(physicalEntity.getPose());
-
-
-
+        double u2Angle = physicalEntity.getPose().getAngleToPosition(pose);
         // if squared entity use other position to calculate the pushing angle
         if (Wall.class.isAssignableFrom(physicalEntity.getClass()) || Box.class.isAssignableFrom(physicalEntity.getClass())) {
-            u2Angle = pose.getAngleForPosition(physicalEntity.getClosestPositionInEntity(pose));
+            u2Angle = pose.getAngleToPosition(physicalEntity.getClosestPositionInEntity(pose));
         }
         else if (Wall.class.isAssignableFrom(getClass()) || Box.class.isAssignableFrom(getClass())) {
-            u2Angle = pose.getAngleForPosition(physicalEntity.getClosestPositionInEntity(pose));
+            u2Angle = pose.getAngleToPosition(physicalEntity.getClosestPositionInEntity(pose));
         }
 
         double u2 = (2 * physicalEntity.getWeight())
@@ -93,9 +87,17 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
 
         if (physicalEntity.isMovable()) {
             physicalEntity.getPose().set(physicalEntity.getPose().getPoseInDirection(u2, u2Angle));
+        } else{
+            if(getTrajectoryMagnitude()==0)
+                System.out.println("box " + pose);
+            pose.set(pose.getPoseInDirection(u2, u2Angle));
         }
         if (isMovable()) {
-            pose.set(pose.getPoseInDirection(getTrajectoryMagnitude() * getWeight() - u2, u2Angle-Math.PI));
+            pose.set(pose.getPoseInDirection(u2, u2Angle-Math.PI));
+        } else{
+            if(physicalEntity.getTrajectoryMagnitude()==0)
+            System.out.println("box " + physicalEntity.getPose());
+            physicalEntity.getPose().set(physicalEntity.getPose().getPoseInDirection(u2, u2Angle));
         }
     }
 

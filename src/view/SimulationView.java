@@ -5,7 +5,7 @@ import model.Area;
 import model.Arena;
 import model.Position;
 import model.AbstractModel.RobotInterface;
-import model.RobotTypes.LightConeRobot;
+import model.RobotTypes.VisionConeRobot;
 
 import javax.swing.*;
 import java.awt.*;
@@ -145,8 +145,8 @@ public class SimulationView extends JPanel {
     private void drawRobot(RobotInterface robot, Graphics2D g2d) {
         double x = robot.getPose().getX() - offsetX - robot.getRadius();
         double y = arena.getHeight() - robot.getPose().getY() - offsetY - robot.getRadius();
-        if (LightConeRobot.class.isAssignableFrom(robot.getClass()) && drawRobotCone) {
-            drawVisionCone((LightConeRobot) robot, g2d);
+        if (VisionConeRobot.class.isAssignableFrom(robot.getClass()) && drawRobotCone) {
+            drawVisionCone((VisionConeRobot) robot, g2d);
         }
         if (!drawInClassColor)
             g2d.setColor(robot.getColor());
@@ -177,7 +177,7 @@ public class SimulationView extends JPanel {
      * @param robot LightConeRobot
      * @param g2d   Graphics2D
      */
-    private void drawVisionCone(LightConeRobot robot, Graphics2D g2d) {
+    private void drawVisionCone(VisionConeRobot robot, Graphics2D g2d) {
         g2d.setColor(new Color(240, 160, 60, 170));
         double visionRange = robot.getVisionRange(), visionAngle = robot.getVisionAngle();
         Position edge1 = robot.getPose().getPositionInDirection(visionRange, robot.getPose().getRotation() + visionAngle / 2);

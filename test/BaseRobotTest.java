@@ -165,30 +165,66 @@ public class BaseRobotTest {
             Assert.assertTrue(clone.equals(baseRobot.getPose()));
     }
 
+    /**
+     * Tests the increase Speed
+     */
     @Test
     public void testIncreaseSpeed() {
         double engineL = baseRobot.getEngineL();
         double engineR = baseRobot.getEngineR();
         baseRobot.increaseSpeed(2);
         if (engineL <= min)
-            Assert.assertEquals( baseRobot.getEngineL(),min / 2. + 1, 0.0);
+            Assert.assertEquals(baseRobot.getEngineL(), min / 2. + 1, 0.0);
         else if (engineL >= max)
-            Assert.assertEquals( baseRobot.getEngineL(),max / 2., 0.0);
+            Assert.assertEquals(baseRobot.getEngineL(), max / 2., 0.0);
         if (engineR <= min) {
             System.out.println(baseRobot.getEngineR());
-            Assert.assertEquals( baseRobot.getEngineR(),min / 2. + 1,0.0);
+            Assert.assertEquals(baseRobot.getEngineR(), min / 2. + 1, 0.0);
         } else if (engineR >= max)
-            Assert.assertEquals( baseRobot.getEngineR(),max / 2.,0.0);
+            Assert.assertEquals(baseRobot.getEngineR(), max / 2., 0.0);
+    }
+    /**
+     * Tests the increase Speed
+     */
+    @Test
+    public void testDecreaseSpeed() {
+        double engineL = baseRobot.getEngineL();
+        double engineR = baseRobot.getEngineR();
+        baseRobot.setEngines(engineL,engineR);
+        baseRobot.increaseSpeed(-3);
+        if (engineL <= min)
+            Assert.assertEquals(baseRobot.getEngineL(), min / 2., 0.0);
+        else if (engineL >= max)
+            Assert.assertEquals(baseRobot.getEngineL(), max / 2. -1.5, 0.0);
+        if (engineR <= min) {
+            Assert.assertEquals(baseRobot.getEngineR(), min / 2., 0.0);
+        } else if (engineR >= max)
+            Assert.assertEquals(baseRobot.getEngineR(), max / 2. -1.5, 0.0);
     }
 
     @Test
     public void testTurn() {
-
+     double currentOrientation =   baseRobot.getPose().getRotation();
+        while(!baseRobot.turn(currentOrientation+Math.PI,4,0)){
+            baseRobot.setNextPosition();
+        }
+        Assert.assertEquals(currentOrientation+Math.PI,baseRobot.getPose().getRotation(),1/360.);
     }
 
     @Test
     public void testSetEngines() {
-
+        double engineL = baseRobot.getEngineL();
+        double engineR = baseRobot.getEngineR();
+        baseRobot.setEngines(engineL,engineR);
+        if (engineL <= min)
+            Assert.assertEquals(baseRobot.getEngineL(), min / 2., 0.0);
+        else if (engineL >= max)
+            Assert.assertEquals(baseRobot.getEngineL(), max / 2. -1.5, 0.0);
+        if (engineR <= min) {
+            System.out.println(baseRobot.getEngineR());
+            Assert.assertEquals(baseRobot.getEngineR(), min / 2., 0.0);
+        } else if (engineR >= max)
+            Assert.assertEquals(baseRobot.getEngineR(), max / 2. -1.5, 0.0);
     }
 
 }

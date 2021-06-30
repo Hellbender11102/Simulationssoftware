@@ -23,13 +23,26 @@ public class Position extends Point2D {
 
     /**
      * Returns the angle to the given position
+     * With atan2(positiony - y, positionx -x)
      * [-pi,pi]
      *
      * @param position Position
      * @return double
      */
-    public double getAngleForPosition(Position position) {
-        return Math.atan2(position.getY() - yCoordinate,position.getX()-xCoordinate);
+    public double getAngleFromPosition(Position position) {
+        return Math.atan2(position.getY() - yCoordinate, position.getX() - xCoordinate);
+    }
+
+    /**
+     * Returns the angle to the given position
+     * With atan2(y-positionx,x- positionx)
+     * [-pi,pi]
+     *
+     * @param position Position
+     * @return double
+     */
+    public double getAngleToPosition(Position position) {
+        return Math.atan2(yCoordinate - position.getY(), xCoordinate - position.getX());
     }
 
     /**
@@ -89,7 +102,6 @@ public class Position extends Point2D {
     }
 
     /**
-     * 
      * @param vector Vector2D
      */
     synchronized

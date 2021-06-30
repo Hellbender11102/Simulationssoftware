@@ -120,7 +120,7 @@ public class Controller {
             public void keyPressed(KeyEvent e) {
                 switch (e.getKeyCode()) {
                     case KeyEvent.VK_SPACE:
-                        for (PhysicalEntity entity : arena.getRobots()) {
+                        for (PhysicalEntity entity : arena.getPhysicalEntityList()) {
                             if (stopped) {
                                 entity.setToLatestPose();
                                 entity.togglePause();

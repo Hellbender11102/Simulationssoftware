@@ -10,7 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public abstract class LightConeRobot extends BaseRobot {
+public abstract class VisionConeRobot extends BaseRobot {
 
     private final double visionRange, visionAngle;
 
@@ -21,7 +21,7 @@ public abstract class LightConeRobot extends BaseRobot {
      * @param visionRange double
      * @param visionAngle double
      */
-    public LightConeRobot(RobotBuilder builder, double visionRange, double visionAngle) {
+    public VisionConeRobot(RobotBuilder builder, double visionRange, double visionAngle) {
         super(builder);
         this.visionRange = visionRange;
         visionAngle = visionAngle > 360 ? 360 : visionAngle < 0 ? 0 : visionAngle;
@@ -152,7 +152,7 @@ public abstract class LightConeRobot extends BaseRobot {
      * @return boolean
      */
     private boolean isInBetween(Position position) {
-        double angleOfEntity = pose.getAngleForPosition(position) < 0 ? pose.getAngleForPosition(position) + 2 * Math.PI : pose.getAngleForPosition(position);
+        double angleOfEntity = pose.getAngleFromPosition(position) < 0 ? pose.getAngleFromPosition(position) + 2 * Math.PI : pose.getAngleFromPosition(position);
         double upperAngle = pose.getRotation() + visionAngle / 2;
         double lowerAngle = pose.getRotation() - visionAngle / 2;
         if (angleOfEntity <= upperAngle && angleOfEntity >= lowerAngle)

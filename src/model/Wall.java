@@ -5,12 +5,13 @@ import model.AbstractModel.BasePhysicalEntity;
 import java.awt.*;
 import java.util.Random;
 
-//TODO, passing through sometimes
-//TODO Arena
 public class Wall extends BasePhysicalEntity {
+    final Pose pose;
+
 
     public Wall(Arena arena, Random random, double width, double height, Pose pose) {
         super(arena, random, width, height, pose);
+        this.pose = pose;
     }
 
     @Override

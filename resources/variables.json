@@ -17,22 +17,9 @@
       "diameters": 4.0,
       "powerTransmission": 0.0,
       "position": {
-        "x": 30.0,
-        "y": 40.0,
-        "rotation": 0.0
-      }
-    },
-    {
-      "type": "4",
-      "engineR": 2.0,
-      "engineL": 2.0,
-      "distance": 4.0,
-      "diameters": 4.0,
-      "powerTransmission": 0.0,
-      "position": {
-        "x": 30.0,
+        "x": 90.0,
         "y": 50.0,
-        "rotation": 0.0
+        "rotation": 180.0
       }
     },
     {
@@ -43,21 +30,82 @@
       "diameters": 4.0,
       "powerTransmission": 0.0,
       "position": {
-        "x": 30.0,
-        "y": 60.0,
+        "x": 10.0,
+        "y": 50.0,
+        "rotation":  0.0
+      }
+    },
+    {
+      "type": "4",
+      "engineR": 2.0,
+      "engineL": 2.0,
+      "distance": 4.0,
+      "diameters": 4.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 50.0,
+        "y": 10.0,
+        "rotation": 90.0
+      }
+    },
+    {
+      "type": "4",
+      "engineR": 2.0,
+      "engineL": 2.0,
+      "distance": 4.0,
+      "diameters": 4.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 50.0,
+        "y": 90.0,
+        "rotation": 270.0
+      }
+    },
+    {
+      "type": "4",
+      "engineR": 2.0,
+      "engineL": 2.0,
+      "distance": 4.0,
+      "diameters": 4.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 20.0,
+        "y": 10.0,
+        "rotation": 180.0
+      }
+    },
+    {
+      "type": "4",
+      "engineR": 2.0,
+      "engineL": 2.0,
+      "distance": 4.0,
+      "diameters": 4.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 10.0,
+        "y": 10.0,
         "rotation": 0.0
       }
     }
   ],
   "boxes": [
+  {
+      "width": 5.0,
+      "height": 10.0,
+      "position": {
+        "x": 47.5,
+        "y": 50.0,
+        "rotation": 0.0
+      }
+    }
   ],
   "walls": [
-    {
-      "width": 2.0,
-      "height": 50.0,
+  {
+      "width": 5.0,
+      "height": 10.0,
       "position": {
-        "x": 90.0,
-        "y": 70.0,
+        "x": 52.5,
+        "y": 50.0,
         "rotation": 0.0
       }
     }
