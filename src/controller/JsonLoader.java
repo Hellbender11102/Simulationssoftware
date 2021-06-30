@@ -16,7 +16,7 @@ class JsonLoader {
 
     private Arena arena;
     private boolean displayView = false;
-    private String pathSettings = "resources/settings.json";
+    private final String pathSettings = "resources/settings.json";
     private String pathVariables = "resources/variables.json";
 
     /**
@@ -34,6 +34,10 @@ class JsonLoader {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void setPathVariables(String pathVariables) {
+        this.pathVariables = pathVariables;
     }
 
     /**
@@ -337,5 +341,14 @@ class JsonLoader {
 
     void setVariables(JSONObject variables) {
         this.variables = variables;
+    }
+
+    void reload() {
+        try {
+            settings = loadJSON(pathSettings);
+            variables = loadJSON(pathVariables);
+        } catch (IOException e) {
+            System.err.println("Die JSON Datein konnten nicht neu eingelesen werden.");
+        }
     }
 }

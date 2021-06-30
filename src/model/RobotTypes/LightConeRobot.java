@@ -1,12 +1,11 @@
 package model.RobotTypes;
 
+import model.*;
 import model.AbstractModel.Entity;
 import model.AbstractModel.RobotInterface;
-import model.Area;
-import model.Position;
-import model.RobotBuilder;
 
-import java.awt.geom.Ellipse2D;
+import java.awt.geom.Line2D;
+import java.awt.geom.Rectangle2D;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -52,20 +51,84 @@ public abstract class LightConeRobot extends BaseRobot {
      */
     List<Entity> listOfEntityInVision() {
         List<Entity> entityList = new LinkedList<>();
-        for (Entity entity : arena.getEntityList()) {
-            if (!equals(entity)) {
-                Position closest = entity.getClosestPositionInEntity(pose);
-                if (Area.class.isAssignableFrom(entity.getClass())) {
-                    if (isAreaVisionRangeInSight((Area) entity)) {
-                        entityList.add(entity);
-                    }
-                } else if (isPositionInVisionCone(closest)) {
-                    entityList.add(entity);
-                }
+        entityList.addAll(listOfBoxesInSight());
+        entityList.addAll(listOfWallsInSight());
+        entityList.addAll(listOfAreasInSight());
+        entityList.addAll(listOfRobotsInSight());
+        return entityList;
+    }
+
+    /**
+     * Returns all Areas in the current vision
+     * @return List<Area>
+     */
+    List<Area> listOfAreasInSight() {
+        List<Area> entityList = new LinkedList<>();
+        for (Area area : arena.getAreaList()) {
+            if (isAreaInSight(area)) {
+                entityList.add(area);
             }
         }
         return entityList;
     }
+
+    /**
+     * Returns all Areas in the current vision
+     * Checks for areas noticeable distance
+     * @return List<Area>
+     */
+    List<Area> listOfAreasInSightByAreaNoticeableDistance() {
+        List<Area> entityList = new LinkedList<>();
+        for (Area area : arena.getAreaList()) {
+            if (isAreaVisionRangeInSight(area)) {
+                entityList.add(area);
+            }
+        }
+        return entityList;
+    }
+
+    /**
+     * Returns all Robots in the current vision
+     * @return List<RobotInterface>
+     */
+    List<RobotInterface> listOfRobotsInSight() {
+        List<RobotInterface> entityList = new LinkedList<>();
+        for (RobotInterface robotInterface : arena.getRobots()) {
+            if (isCircleInSight(robotInterface.getPose(),robotInterface.getRadius())) {
+                entityList.add(robotInterface);
+            }
+        }
+        return entityList;
+    }
+
+    /**
+     * Returns all Boxes in the current vision
+     * @return List<Entity>
+     */
+    List<Box> listOfBoxesInSight() {
+        List<Box> entityList = new LinkedList<>();
+        for (Box box : arena.getBoxList()) {
+            if (isSquareInSight(box.getPose(), box.getWidth(),box.getHeight())) {
+                entityList.add(box)  ;
+            }
+        }
+        return entityList;
+    }
+
+    /**
+     * Returns all Walls in the current vision
+     * @return List<Entity>
+     */
+    List<Wall> listOfWallsInSight() {
+        List<Wall> entityList = new LinkedList<>();
+        for (Wall wall : arena.getWallList()) {
+            if (isSquareInSight(wall.getPose(), wall.getWidth(),wall.getHeight())) {
+                entityList.add(wall) ;
+            }
+        }
+        return entityList;
+    }
+
 
     /**
      * Returns true if the given position is in sight
@@ -84,12 +147,9 @@ public abstract class LightConeRobot extends BaseRobot {
     }
 
     private boolean isInBetween(Position position) {
-        double angleOfEntity = pose.getAngleForPosition(position) < 0 ?pose.getAngleForPosition(position) +2*Math.PI :pose.getAngleForPosition(position) ;
+        double angleOfEntity = pose.getAngleForPosition(position) < 0 ? pose.getAngleForPosition(position) + 2 * Math.PI : pose.getAngleForPosition(position);
         double upperAngle = pose.getRotation() + visionAngle / 2;
         double lowerAngle = pose.getRotation() - visionAngle / 2;
-        System.out.println("Entity " + angleOfEntity);
-        System.out.println("up " + upperAngle);
-        System.out.println("low " + lowerAngle);
         if (angleOfEntity <= upperAngle && angleOfEntity >= lowerAngle)
             return true;
         else if (upperAngle > 2 * Math.PI || lowerAngle < 0) {
@@ -110,12 +170,7 @@ public abstract class LightConeRobot extends BaseRobot {
      * @return boolean
      */
     public boolean isAreaVisionRangeInSight(Area area) {
-        java.awt.geom.Area robot =  new java.awt.geom.Area(new Ellipse2D.Double(pose.getX()-getRadius(),pose.getY()-getRadius(),width,height));
-        java.awt.geom.Area visionCone = new java.awt.geom.Area(new Ellipse2D.Double(pose.getX()-getRadius(),pose.getY()-getRadius(),visionRange,visionRange));
-        java.awt.geom.Area areaVision = new java.awt.geom.Area(new Ellipse2D.Double(area.getPose().getX()-getRadius(),
-                area.getPose().getY()-getRadius(),area.getNoticeableDistanceDiameter(),area.getNoticeableDistanceDiameter()));
-        return isCircleInSight(area.getPose(), area.getNoticeableDistanceRadius() + visionRange)
-                || pose.getEuclideanDistance(area.getPose()) <= area.getNoticeableDistanceRadius();
+        return isCircleInSight(area.getPose(), area.getNoticeableDistanceRadius());
     }
 
     /**
@@ -126,8 +181,7 @@ public abstract class LightConeRobot extends BaseRobot {
      * @return boolean
      */
     public boolean isAreaInSight(Area area) {
-        return isCircleInSight(area.getPose(), area.getRadius() + visionRange)
-                || pose.getEuclideanDistance(area.getPose()) <= area.getRadius();
+        return isCircleInSight(area.getPose(), area.getRadius());
     }
 
     /**
@@ -139,19 +193,56 @@ public abstract class LightConeRobot extends BaseRobot {
      * @return boolean
      */
     public boolean isCircleInSight(Position center, double distance) {
-        return isInBetween(center) && pose.getEuclideanDistance(center) <= distance;
+        double rotation = pose.getRotation();
+        // if body is in noticeable distance
+        if (pose.getEuclideanDistance(center) <= distance + getRadius()) return true;
+        // one side of the vision cone is in sight
+        Line2D firstConeLine = new Line2D.Double(pose, pose.getPositionInDirection(visionRange, rotation - visionAngle / 2));
+        Line2D secondConeLine = new Line2D.Double(pose, pose.getPositionInDirection(visionRange, rotation + visionAngle / 2));
+        if (firstConeLine.ptSegDist(center) <= distance || secondConeLine.ptSegDist(center) <= distance) return true;
+        // a point on the vision cone is in distance
+        // with points taken every degree
+        for (double i = rotation - visionAngle / 2; i <= rotation + visionAngle / 2; i += Math.toRadians(1)) {
+            Position position = pose.getPositionInDirection(visionRange, i);
+            if (position.getEuclideanDistance(center) <= distance) return true;
+        }
+        return false;
     }
-
 
     /**
-     * @return List<RobotInterface>
+     * Returns true if either the robot is inside Square
+     * Or the Vision range reaches the Square
+     *
+     * @param center Position
+     * @param width  Position
+     * @param height Position
+     * @return boolean
      */
-    List<RobotInterface> listOfRobotsInVision() {
-        return listOfEntityInVision().stream()
-                .filter(x -> RobotInterface.class.isAssignableFrom(x.getClass()))
-                .map(x -> (RobotInterface) x)
-                .collect(Collectors.toList());
+    public boolean isSquareInSight(Position center, double width, double height) {
+        double rotation = pose.getRotation();
+        Rectangle2D rectangle2D = new Rectangle2D.Double(center.getX(), center.getY() - height / 2, width, height);
+        System.out.println("center x" + rectangle2D.getCenterX()+" y" + rectangle2D.getCenterY());
+        System.out.println("top left x" + (rectangle2D.getCenterX() - height / 2) +" y" + (rectangle2D.getCenterY() +width /2));
+        System.out.println("top right x" +( rectangle2D.getCenterX() + height / 2)+" y" + (rectangle2D.getCenterY()+width /2));
+        System.out.println("bottom left x" +( rectangle2D.getCenterX()- height / 2)+" y" + (rectangle2D.getCenterY()-width /2));
+        System.out.println("bottom right x" +( rectangle2D.getCenterX()+ height / 2)+" y" + (rectangle2D.getCenterY()-width /2));
+        System.out.println();
+        // if body is square
+        if (rectangle2D.contains(getClosestPositionInEntity(center))) return true;
+        // one side of the vision cone is inside box
+        Line2D firstConeLine = new Line2D.Double(pose, pose.getPositionInDirection(visionRange, rotation - visionAngle / 2));
+        Line2D secondConeLine = new Line2D.Double(pose, pose.getPositionInDirection(visionRange, rotation + visionAngle / 2));
+     //   System.out.println((firstConeLine.intersects(rectangle2D) || secondConeLine.intersects(rectangle2D)));
+        if (firstConeLine.intersects(rectangle2D) || secondConeLine.intersects(rectangle2D)) return true;
+        // a point on the vision cone is inside the wall
+        // with points taken every degree
+        for (double i = rotation - visionAngle / 2; i <= rotation + visionAngle / 2; i += Math.toRadians(1)) {
+            Position position = pose.getPositionInDirection(visionRange, i);
+            if (rectangle2D.contains(position)) return true;
+        }
+        return false;
     }
+
 
     /**
      * Creates a list of entities with given class
@@ -160,7 +251,7 @@ public abstract class LightConeRobot extends BaseRobot {
      * @return List<Object>
      */
     List<Object> listOfRobotsInVisionByCLass(Class c) {
-        return listOfEntityInVision().stream()
+        return listOfRobotsInSight().stream()
                 .filter(x -> c.getClass().isAssignableFrom(x.getClass()))
                 .map(x -> (c.cast(x)))
                 .collect(Collectors.toList());

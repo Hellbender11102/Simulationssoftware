@@ -176,6 +176,12 @@ public class Arena {
     synchronized public List<Area> getAreaList() {
         return singleton.entityList.stream().filter(x -> Area.class.isAssignableFrom(x.getClass())).map(x -> (Area) x).collect(Collectors.toList());
     }
+    synchronized public List<Box> getBoxList() {
+        return singleton.entityList.stream().filter(x -> Box.class.isAssignableFrom(x.getClass())).map(x -> (Box) x).collect(Collectors.toList());
+    }
+    synchronized public List<Wall> getWallList() {
+        return singleton.entityList.stream().filter(x -> Wall.class.isAssignableFrom(x.getClass())).map(x -> (Wall) x).collect(Collectors.toList());
+    }
 
     synchronized public List<Entity> getEntityList() {
         return singleton.entityList;
@@ -188,4 +194,5 @@ public class Arena {
     public int getWidth() {
         return singleton.width;
     }
+
 }

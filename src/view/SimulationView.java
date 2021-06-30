@@ -6,10 +6,13 @@ import model.Arena;
 import model.Position;
 import model.AbstractModel.RobotInterface;
 import model.RobotTypes.LightConeRobot;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Line2D;
+import java.awt.geom.Rectangle2D;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -114,9 +117,6 @@ public class SimulationView extends JPanel {
                     convertZoom(arena.getHeight() - (area.getPose().getY() + offsetY + (area.getHeight() / 2))),
                     convertZoom(area.getWidth()),
                     convertZoom(area.getHeight()));
-            java.awt.geom.Area areaVision = new java.awt.geom.Area(new Ellipse2D.Double(convertZoom(area.getPose().getX()+area.getRadius() -offsetX),
-                    convertZoom(area.getPose().getX()+area.getRadius()-offsetY),convertZoom(area.getDiameters()),convertZoom(area.getDiameters())));
-            g2d.draw(areaVision.getBounds2D());
         }
     }
 
@@ -131,6 +131,10 @@ public class SimulationView extends JPanel {
             g2d.fillRect(convertZoom((entity.getPose().getX() - entity.getWidth() / 2) - offsetX),
                     convertZoom(arena.getHeight() - (entity.getPose().getY() + entity.getHeight() / 2) - offsetY),
                     convertZoom(entity.getWidth()), convertZoom(entity.getHeight()));
+
+            Rectangle2D rectangle2D = new Rectangle2D.Double(convertZoom(entity.getPose().getX()-entity.getWidth()/2- offsetX),
+                    convertZoom(arena.getHeight() -entity.getPose().getY()-entity.getHeight()/2- offsetY), convertZoom(entity.getWidth()), convertZoom(entity.getHeight()));
+            g2d.fill(rectangle2D);
         }
     }
 
@@ -139,7 +143,7 @@ public class SimulationView extends JPanel {
      * Draws the robot and adds an extra information
      *
      * @param robot RobotInterface
-     * @param g2d   Graphics
+     * @param g2d   Graphics2D
      */
     private void drawRobot(RobotInterface robot, Graphics2D g2d) {
         double x = robot.getPose().getX() - offsetX - robot.getRadius();
@@ -162,34 +166,31 @@ public class SimulationView extends JPanel {
         if (drawRobotSignal) {
             if (robot.getSignal())
                 g2d.setColor(Color.red);
-            else  g2d.setColor(Color.gray);
-            Position positionSignal = robot.getPose().getPositionInDirection(robot.getRadius()/2,robot.getPose().getRotation()-Math.PI);
-            double radiusOffset = robot.getRadius()*0.6;
-            g2d.fillOval(convertZoom(positionSignal.getX() - offsetX - radiusOffset/2),convertZoom(arena.getHeight() - positionSignal.getY() - offsetY - radiusOffset/2),
-                    convertZoom(radiusOffset),convertZoom(radiusOffset));
+            else g2d.setColor(Color.gray);
+            Position positionSignal = robot.getPose().getPositionInDirection(robot.getRadius() / 2, robot.getPose().getRotation() - Math.PI);
+            double radiusOffset = robot.getRadius() * 0.6;
+            g2d.fillOval(convertZoom(positionSignal.getX() - offsetX - radiusOffset / 2), convertZoom(arena.getHeight() - positionSignal.getY() - offsetY - radiusOffset / 2),
+                    convertZoom(radiusOffset), convertZoom(radiusOffset));
         }
-        java.awt.geom.Area areaVision = new java.awt.geom.Area(new Ellipse2D.Double(convertZoom(robot.getPose().getX()+robot.getRadius() -offsetX),
-               convertZoom(robot.getPose().getX()+robot.getRadius()-offsetY),convertZoom(robot.getDiameters()),convertZoom(robot.getDiameters())));
-        g2d.draw(areaVision);
     }
 
     /**
      * Draws the vision area of the lightCone robot
      *
      * @param robot LightConeRobot
-     * @param g     Graphics
+     * @param g2d   Graphics2D
      */
-    private void drawVisionCone(LightConeRobot robot, Graphics g) {
-        g.setColor(new Color(240, 160, 60, 170));
+    private void drawVisionCone(LightConeRobot robot, Graphics2D g2d) {
+        g2d.setColor(new Color(240, 160, 60, 170));
         double visionRange = robot.getVisionRange(), visionAngle = robot.getVisionAngle();
         Position edge1 = robot.getPose().getPositionInDirection(visionRange, robot.getPose().getRotation() + visionAngle / 2);
         Position edge2 = robot.getPose().getPositionInDirection(visionRange, robot.getPose().getRotation() - visionAngle / 2);
-        drawLine(robot.getPose(), edge1, g);
-        drawLine(robot.getPose(), edge2, g);
-        for (double i = robot.getPose().getRotation() - visionAngle / 2; i < robot.getPose().getRotation() + visionAngle / 2; i += Math.toRadians(2)) {
+        drawLine(robot.getPose(), edge1, g2d);
+        drawLine(robot.getPose(), edge2, g2d);
+        for (double i = robot.getPose().getRotation() - visionAngle / 2; i < robot.getPose().getRotation() + visionAngle / 2; i += Math.toRadians(3)) {
             Position pos1 = robot.getPose().getPositionInDirection(visionRange, i);
             Position pos2 = robot.getPose().getPositionInDirection(visionRange, i + Math.toRadians(1));
-            drawLine(pos1, pos2, g);
+            drawLine(pos1, pos2, g2d);
         }
     }
 

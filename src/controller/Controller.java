@@ -247,13 +247,10 @@ public class Controller {
         });
 
         view.getItemLoadVariables().addActionListener(actionListener -> {
-            try {
-                String path = view.getPathOfSelectedFile();
-                if (path != null)
-                    jsonLoader.setVariables(JsonLoader.loadJSON(path));
-            } catch (IOException ioException) {
-                System.err.println("Keine Datei wurde ausgeweahlt.\n" + ioException.getMessage());
-            }
+            String path = view.getPathOfSelectedFile();
+            if (path != null)
+                jsonLoader.setPathVariables(path);
+            jsonLoader.reload();
             init();
         });
         //Restarts the simulation after initializing all resources again
@@ -266,6 +263,7 @@ public class Controller {
             }
             stopped = true;
             arena.clearEntityList();
+            jsonLoader.reload();
             arena = jsonLoader.reloadArena();
             repaintTimer(jsonLoader.loadFps());
             init();
