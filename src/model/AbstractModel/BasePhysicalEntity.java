@@ -8,6 +8,8 @@ import java.util.Random;
 
 abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalEntity {
 
+    protected Vector2D movingVec = Vector2D.zeroVector();
+
     protected BasePhysicalEntity(Arena arena, Random random, double width, double height, Pose pose) {
         super(arena, random, width, height, pose);
     }

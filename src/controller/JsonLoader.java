@@ -13,11 +13,12 @@ import java.util.*;
 class JsonLoader {
     private JSONObject settings;
     private JSONObject variables;
-
+    private Logger errorLogger = new Logger();
     private Arena arena;
     private boolean displayView = false;
     private final String pathSettings = "resources/settings.json";
     private String pathVariables = "resources/variables.json";
+    String error;
 
     /**
      * Constructor
@@ -26,12 +27,13 @@ class JsonLoader {
     JsonLoader() {
         {
             try {
-                settings = loadJSON(pathSettings);
-                variables = loadJSON(pathVariables);
+                settings = loadJSON(pathSettings, errorLogger);
+                variables = loadJSON(pathVariables, errorLogger);
                 initArena();
             } catch (IOException e) {
-                System.err.println("Could not load settings.json and variables.json.");
-                e.printStackTrace();
+                error = "Could not load settings.json and variables.json.";
+                errorLogger.dumpError(error);
+                errorLogger.dumpError(e.getMessage());
             }
         }
     }
@@ -50,7 +52,9 @@ class JsonLoader {
             JSONObject arenaObj = (JSONObject) variables.get("arena");
             arena = Arena.getInstance((int) (long) arenaObj.get("width"), (int) (long) arenaObj.get("height"), (boolean) arenaObj.get("torus"));
         } else {
-            System.err.println("Could not read arena from variables.json.");
+            error = "Could not read arena from variables.json.";
+           
+            errorLogger.dumpError(error);
             arena = Arena.getInstance(0, 0, false);
         }
         return arena;
@@ -66,7 +70,9 @@ class JsonLoader {
             JSONObject arenaObj = (JSONObject) variables.get("arena");
             arena = Arena.overWriteInstance((int) (long) arenaObj.get("width"), (int) (long) arenaObj.get("height"), (boolean) arenaObj.get("torus"));
         } else {
-            System.err.println("Could not read arena from variables.json.");
+            error = "Could not read arena from variables.json.";
+           
+            errorLogger.dumpError(error);
         }
         return arena;
     }
@@ -84,7 +90,9 @@ class JsonLoader {
         if (variables != null && variables.containsKey("maxSpeed"))
             return (double) variables.get("maxSpeed");
         else {
-            System.err.println("Could not read maxSpeed from variables.json.");
+            error = "Could not read maxSpeed from variables.json.";
+           
+            errorLogger.dumpError(error);
             return 8.;
         }
     }
@@ -93,7 +101,9 @@ class JsonLoader {
         if (variables != null && variables.containsKey("minSpeed"))
             return (double) variables.get("minSpeed");
         else {
-            System.err.println("Could not read minSpeed from variables.json.");
+            error = "Could not read minSpeed from variables.json.";
+           
+            errorLogger.dumpError(error);
             return 0.;
         }
     }
@@ -102,7 +112,9 @@ class JsonLoader {
         if (settings != null && settings.containsKey("fps"))
             return (int) (long) settings.get("fps");
         else {
-            System.err.println("Could not read fps from settings.json.");
+            error = "Could not read fps from settings.json.";
+           
+            errorLogger.dumpError(error);
             return 10;
         }
     }
@@ -111,7 +123,9 @@ class JsonLoader {
         if (settings != null && settings.containsKey("simulate-seconds")) {
             return (int) (long) settings.get("simulate-seconds");
         } else {
-            System.err.println("Could not read simulated-seconds from settings.json.");
+            error = "Could not read simulated-seconds from settings.json.";
+           
+            errorLogger.dumpError(error);
             return 0;
         }
     }
@@ -121,7 +135,9 @@ class JsonLoader {
             displayView = (boolean) settings.get("display-view");
             return displayView;
         } else {
-            System.err.println("Could not read display-view from settings.json.");
+            error = "Could not read display-view from settings.json.";
+           
+            errorLogger.dumpError(error);
             return true;
         }
     }
@@ -130,7 +146,9 @@ class JsonLoader {
         if (variables != null && variables.containsKey("ticsPerSimulatedSecond"))
             return (int) (long) variables.get("ticsPerSimulatedSecond");
         else {
-            System.err.println("Could not read variables or entry ticsPerSimulatedSecond from variables.json.");
+            error = "Could not read variables or entry ticsPerSimulatedSecond from variables.json.";
+           
+            errorLogger.dumpError(error);
         }
         return 1;
     }
@@ -145,7 +163,9 @@ class JsonLoader {
     List<Entity> loadBoxes(Random random) {
         LinkedList<Entity> boxList = new LinkedList();
         if (variables == null || !variables.containsKey("boxes")) {
-            System.err.println("No entry boxes found in the variables.json");
+            error = "No entry boxes found in the variables.json";
+           
+            errorLogger.dumpError(error);
             return boxList;
         }
         int missing = 0;
@@ -159,8 +179,11 @@ class JsonLoader {
                                 (double) jsonBox.get("width"),
                                 (double) jsonBox.get("height"),
                                 loadPose(jsonBox)));
-            else
-                System.err.println("Could not load box entry " + (boxList.size() + missing++) + " correctly. Entry width, height or position missing.");
+            else {
+                error = "Could not load box entry " + (boxList.size() + missing++) + " correctly. Entry width, height or position missing.";
+               
+                errorLogger.dumpError(error);
+            }
         }
         return boxList;
     }
@@ -175,7 +198,9 @@ class JsonLoader {
     List<Entity> loadWalls(Random random) {
         LinkedList<Entity> wallList = new LinkedList();
         if (variables == null || !variables.containsKey("walls")) {
-            System.err.println("No entry walls found in the variables.json");
+            error = "No entry walls found in the variables.json";
+           
+            errorLogger.dumpError(error);
             return wallList;
         }
         int missing = 0;
@@ -184,8 +209,11 @@ class JsonLoader {
             JSONObject jsonWall = (JSONObject) wall;
             if (jsonWall.containsKey("width") && jsonWall.containsKey("position") && jsonWall.containsKey("height") && loadPose(jsonWall) != null)
                 wallList.add(new Wall(arena, new Random(random.nextInt()), (double) jsonWall.get("width"), (double) jsonWall.get("height"), loadPose(jsonWall)));
-            else
-                System.err.println("Could not load wall " + (wallList.size() + missing++) + " correctly. Entry width, height or position missing.");
+            else {
+                error = "Could not load wall " + (wallList.size() + missing++) + " correctly. Entry width, height or position missing.";
+               
+                errorLogger.dumpError(error);
+            }
         }
         return wallList;
     }
@@ -200,7 +228,9 @@ class JsonLoader {
     List<Entity> loadAreas(Random random) {
         LinkedList<Entity> areaList = new LinkedList();
         if (variables == null || !variables.containsKey("areas")) {
-            System.err.println("No entry areas found in the variables.json");
+            error = "No entry areas found in the variables.json";
+           
+            errorLogger.dumpError(error);
             return areaList;
         }
         int missing = 0;
@@ -209,8 +239,11 @@ class JsonLoader {
             JSONObject jsonArea = (JSONObject) area;
             if (jsonArea.containsKey("diameters") && jsonArea.containsKey("noticeableDistanceDiameters") && loadPose(jsonArea) != null)
                 areaList.add(new Area(arena, new Random(random.nextInt()), (double) jsonArea.get("diameters"), (double) jsonArea.get("noticeableDistanceDiameters"), loadPose(jsonArea)));
-            else
-                System.err.println("Could not load area " + (areaList.size() + missing++) + " correctly. Entry diameters, noticeableDistance or position missing.");
+            else {
+                error = "Could not load area " + (areaList.size() + missing++) + " correctly. Entry diameters, noticeableDistance or position missing.";
+               
+                errorLogger.dumpError(error);
+            }
         }
         return areaList;
     }
@@ -222,7 +255,7 @@ class JsonLoader {
      * @param filePath String
      * @return JSONObject
      */
-    public static JSONObject loadJSON(String filePath) throws IOException {
+    public static JSONObject loadJSON(String filePath, Logger errorLogger) throws IOException {
         JSONObject object = null;
         try {
             FileReader inputFile = new FileReader(filePath);
@@ -233,7 +266,10 @@ class JsonLoader {
                 stringBuilder.append(line);
             object = (JSONObject) JSONValue.parse(stringBuilder.toString());
         } catch (IOException e) {
-            System.err.println("Could not read file from " + filePath + " Please check correct path.");
+            String error = "Could not read file from " + filePath + " Please check correct path.";
+           
+            errorLogger.dumpError(error);
+            errorLogger.dumpError(e.getMessage());
         }
         return object;
     }
@@ -250,7 +286,10 @@ class JsonLoader {
 
         if (variables != null && variables.containsKey("robots")) {
             JSONArray robots = (JSONArray) variables.get("robots");
-            if (robots.size() == 0) System.err.println("Zero robots in variables.json.");
+            if (robots.size() == 0) {
+                error ="Zero robots in variables.json.";
+                errorLogger.dumpError(error);
+            }
             List<Entity> robotList = new LinkedList<>();
             robots.forEach(entry -> loadRobot(
                     (JSONObject) entry,
@@ -261,7 +300,8 @@ class JsonLoader {
                     , loadSimulatedTime()));
             return robotList;
         }
-        System.err.println("No entry robots found in the variables.json");
+        error = "Es wurde kein eintrag für robots gefunden";
+        errorLogger.dumpError(error);
         return new LinkedList<>();
     }
 
@@ -314,25 +354,29 @@ class JsonLoader {
                     robot = builder.buildDefault();
             }
             robotList.add(robot);
-        } else
-            System.err.println("Could not load robot " + robotList.size() + " correctly." +
-                    "Entry engineR, engineL, distance, powerTransmission, diameters, type or position is missing.");
+        } else {
+            error = "Could not load robot " + robotList.size() + " correctly." +
+                    "Entry engineR, engineL, distance, powerTransmission, diameters, type or position is missing.";
+            errorLogger.dumpError(error);
+        }
     }
 
     /**
-     * Loads the Pose of an given
+     * Loads the Pose of an given JSONObject
      *
      * @param object JSONObject
      * @return Pose
      */
     private Pose loadPose(JSONObject object) {
         if (!object.containsKey("position")) {
-            System.err.println("Could not load position for " + object);
+            error = "Could not load position for " + object;
+            errorLogger.dumpError(error);
             return null;
         }
         JSONObject positionObject = (JSONObject) object.get("position");
         if (!positionObject.containsKey("x") || !positionObject.containsKey("y") || !positionObject.containsKey("rotation")) {
-            System.err.println("Could not load x, y or rotation for " + object);
+            error = "Could not load x, y or rotation for " + object;
+            errorLogger.dumpError(error);
             return null;
         }
         return new Pose((Double) positionObject.get("x"), (Double) positionObject.get("y"),
@@ -343,12 +387,16 @@ class JsonLoader {
         this.variables = variables;
     }
 
+    /**
+     * Reloads the JSObjects from the current file paths
+     */
     void reload() {
         try {
-            settings = loadJSON(pathSettings);
-            variables = loadJSON(pathVariables);
+            settings = loadJSON(pathSettings, errorLogger);
+            variables = loadJSON(pathVariables, errorLogger);
         } catch (IOException e) {
-            System.err.println("Die JSON Datein konnten nicht neu eingelesen werden.");
+            error = "The JSON files couldn't be read.";
+            errorLogger.dumpError(error);
         }
     }
 }

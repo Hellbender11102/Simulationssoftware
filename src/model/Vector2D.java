@@ -4,6 +4,14 @@ public class Vector2D {
 
     double x, y;
 
+    public static Vector2D zeroVector() {
+        return new Vector2D(0, 0);
+    }
+
+    public void setToZeroVector() {
+        set(0, 0);
+    }
+
     public Vector2D(Position position) {
         x = position.getX();
         y = position.getY();
@@ -16,6 +24,7 @@ public class Vector2D {
 
     /**
      * Sets this vector with values of given vector
+     *
      * @param vector Vector2D
      */
     public void set(Vector2D vector) {
@@ -25,6 +34,7 @@ public class Vector2D {
 
     /**
      * Sets this vector with given x and y
+     *
      * @param x double
      * @param y double
      */
@@ -35,6 +45,7 @@ public class Vector2D {
 
     /**
      * Returns a new vector as this gets multiplied with an scalar
+     *
      * @param scalar double
      * @return Vector2D
      */
@@ -44,6 +55,7 @@ public class Vector2D {
 
     /**
      * Returns a new vector as this gets subtracted with given vector
+     *
      * @param vector Vector2d
      * @return Vector2D
      */
@@ -53,6 +65,7 @@ public class Vector2D {
 
     /**
      * Returns a new vector as this gets added with given vector
+     *
      * @param vector Vector2D
      * @return Vector2D
      */
@@ -62,6 +75,7 @@ public class Vector2D {
 
     /**
      * Returns the scalar product of this and the given vector
+     *
      * @param vector Vector2D
      * @return Vector2D
      */
@@ -71,6 +85,7 @@ public class Vector2D {
 
     /**
      * Calculates the cross product
+     *
      * @param vector Vector2D
      * @return double
      */
@@ -80,6 +95,7 @@ public class Vector2D {
 
     /**
      * Calculates the dot product
+     *
      * @param vector Vector2D
      * @return double
      */
@@ -89,6 +105,7 @@ public class Vector2D {
 
     /**
      * Calculates the projection of this and a given vector
+     *
      * @param vector Vector2D
      * @return double
      */
@@ -98,6 +115,7 @@ public class Vector2D {
 
     /**
      * Returns a new vector as this gets normalized
+     *
      * @return Vector2D
      */
     public Vector2D normalize() {
@@ -106,6 +124,7 @@ public class Vector2D {
 
     /**
      * Returns a new vector as this gets divided by scalar
+     *
      * @param scalar double
      * @return Vector2D
      */
@@ -115,6 +134,7 @@ public class Vector2D {
 
     /**
      * Returns a new vector as this gets rotated by this angle
+     *
      * @param angle double
      * @return Vector2D
      */
@@ -128,6 +148,7 @@ public class Vector2D {
      * Returns a new vector as this gets converted to cartesian form
      * x = length * Math.cos(angle)
      * y = length * Math.sin(angle)
+     *
      * @param length double
      * @param angle  double
      * @return Vector2D
@@ -138,6 +159,7 @@ public class Vector2D {
 
     /**
      * Returns a new vector as this gets rotated by this angle
+     *
      * @param angle double
      * @return Vector2D
      */
@@ -148,6 +170,7 @@ public class Vector2D {
     /**
      * Returns euclidean distance between Point(0,0) and Vector(x,y)
      * sqrt((x - vector.x)² + (y - vector.y)²)
+     *
      * @param vector Vector2D
      * @return double
      */
@@ -157,6 +180,7 @@ public class Vector2D {
 
     /**
      * Returns the euclidean distance between Point(0,0) and Vector(x,y)
+     *
      * @return double
      */
     public double getLength() {
@@ -167,6 +191,7 @@ public class Vector2D {
      * Returns a new vector as this gets reversed
      * x = -x
      * y = -y
+     *
      * @return Vector2D
      */
     public Vector2D reverse() {

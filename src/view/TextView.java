@@ -1,5 +1,7 @@
 package view;
 
+import controller.Logger;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -8,6 +10,7 @@ import java.io.*;
 
 public class TextView extends JFrame {
     JTextPane jTextPane;
+    Logger errorLogger = new Logger();
     private JMenuItem itemSave = new JMenuItem("Datei speichern",1);
     private JMenuItem itemReload = new JMenuItem("Datei neu laden",2);
 
@@ -15,7 +18,8 @@ public class TextView extends JFrame {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
-            ex.printStackTrace();
+            errorLogger.dumpError("LookAndFeel konnte nicht gesetzt werden.");
+            errorLogger.dumpError(ex.getMessage());
         }
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         setSize((int) (screenSize.width * 0.25), (int) (screenSize.height * 0.90));
@@ -58,10 +62,16 @@ public class TextView extends JFrame {
             bufferedReader.close();
             return text.toString();
         } catch (IOException e) {
-            return e.toString();
+            errorLogger.dumpError("Datei wurde nicht gefunden \nEs wurde probiert "+filePath+" zu laden.");
+            errorLogger.dumpError(e.getMessage());
+            return "Datei wurde nicht gefunden";
         }
     }
 
+    /**
+     * Saves file
+     * @param filePath String
+     */
     private void saveFile(String filePath) {
         try {
             File file = new File(filePath);
@@ -69,7 +79,9 @@ public class TextView extends JFrame {
             bufferedWriter.write(jTextPane.getText());
             bufferedWriter.flush();
             bufferedWriter.close();
-        } catch (IOException ignored) {
+        } catch (IOException ioException) {
+            errorLogger.dumpError("Datei konnte nicht gespeichert werden von "+this.getClass());
+            errorLogger.dumpError(ioException.getMessage());
         }
     }
 }

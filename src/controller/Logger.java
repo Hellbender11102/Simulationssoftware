@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Logger {
     private File outputFile;
+    private File errFile;
     DecimalFormat df;
     Thread saveThread;
     private boolean headWritten = false;
@@ -19,14 +20,18 @@ public class Logger {
      */
     public Logger() {
         outputFile = new File("out/Log.csv");
+        errFile = new File("out/Log.csv");
         int i = 0;
         while (outputFile.exists())
             outputFile = new File("out/Log" + i++ + ".csv");
+        while (errFile.exists())
+            errFile = new File("out/error" + i++ + ".csv");
     }
 
     /**
      * Inserts an entry to the logMap for given key
-     * @param key String
+     *
+     * @param key   String
      * @param value String
      */
     synchronized
@@ -44,8 +49,9 @@ public class Logger {
     /**
      * Inserts an entry to the logMap for given key
      * cuts of the double value at the given decimal place
-     * @param key String
-     * @param value String
+     *
+     * @param key           String
+     * @param value         String
      * @param decimalPlaces int
      */
     synchronized
@@ -60,6 +66,7 @@ public class Logger {
 
     /**
      * Saves the current log to an file
+     * If append is true inserts at the end of file
      * @param append boolean
      */
     synchronized
@@ -72,8 +79,9 @@ public class Logger {
     }
 
     /**
-     * Writing in the file
-     * @param append boolean
+     * Writing in the logging file
+     *
+     * @param append          boolean
      * @param longestListSize int
      */
     synchronized
@@ -108,8 +116,26 @@ public class Logger {
     }
 
     /**
+     * Writes an error directly to the error File
+     * @param errorMessage String
+     */
+    public void dumpError(String errorMessage) {
+        try {
+            System.err.println(errorMessage);
+            FileWriter fileWriter = new FileWriter(errFile, true);
+            fileWriter.write(errorMessage +"\n");
+            fileWriter.flush();
+            fileWriter.close();
+        } catch (IOException e) {
+            System.err.println("Fehler. Error konnte nicht geloggt werden!");
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * Starts an thread if any key has more entries as 5000
      * The thread will save to an file and reduce the entries
+     *
      * @param appendDataInFIle boolean
      */
     private void threadedSave(boolean appendDataInFIle) {

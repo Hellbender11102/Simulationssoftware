@@ -45,7 +45,7 @@ public class Controller {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException interruptedException) {
-                    interruptedException.printStackTrace();
+                    logger.dumpError(interruptedException.getMessage());
                 }
             }
             logger.saveFullLogToFile(true);
@@ -278,7 +278,6 @@ public class Controller {
      */
     private void startThread(PhysicalEntity physicalEntity) {
         Thread t = new Thread(physicalEntity);
-        if (RobotInterface.class.isAssignableFrom(physicalEntity.getClass()))
             entityThreads.add(t);
         t.start();
     }
