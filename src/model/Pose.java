@@ -52,13 +52,10 @@ public class Pose extends Position {
         return new Pose(getPositionInDirection(distance, rotation, xCoordinate, yCoordinate), rotation);
     }
     public Vector2D getVectorInDirection(double distance) {
-        return new Vector2D(getPositionInDirection(distance, rotation, xCoordinate, yCoordinate));
+        return new Vector2D(getPositionInDirection(distance, rotation, 0, 0));
     }
-    public Vector2D getNormalizedVectorInDirection() {
-        return new Vector2D(getPositionInDirection(1, rotation, xCoordinate, yCoordinate));
-    }
-    public Vector2D getNormalizedVectorInDirection(double rotation) {
-        return new Vector2D(getPositionInDirection(1, rotation, xCoordinate, yCoordinate));
+    public Vector2D getVectorInDirection(double distance, double rotation) {
+        return new Vector2D(getPositionInDirection(distance, rotation, 0, 0));
     }
 
     public Pose getPoseInDirection(Vector2D vector2D) {

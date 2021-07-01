@@ -29,6 +29,32 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
     }
 
     /**
+     * Calculates and sets the next position
+     */
+    public void setNextPosition() {
+        pose.addToPosition(movingVec);
+        movingVec.setToZeroVector();
+    }
+
+    /**
+     * The code will be run by threaded physical entities
+     */
+    @Override
+    public void run() {
+        while (!isPaused) {
+            movingVec = pose.getVectorInDirection(getTrajectoryMagnitude(), pose.getRotation());
+            collisionDetection();
+            setNextPosition();
+            updatePositionMemory();
+            try {
+                sleep(5);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
      * Checks if robots are in the arena bounds
      */
     @Override
@@ -74,33 +100,44 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
      *                       https://www.physik.tu-darmstadt.de/media/fachbereich_physik/phys_studium/phys_studium_bachelor/phys_studium_bsc_praktika/phys_studium_bsc_praktika_gp/phys_studium_bsc_praktika_gp_mechanik/m4/m4bilder/m4_neuSS15.pdf
      */
     public void collision(PhysicalEntity physicalEntity) {
-        double u2Angle = physicalEntity.getPose().getAngleToPosition(pose);
-        // if squared entity use other position to calculate the pushing angle
-        if (Wall.class.isAssignableFrom(physicalEntity.getClass()) || Box.class.isAssignableFrom(physicalEntity.getClass())) {
-            u2Angle = pose.getAngleToPosition(physicalEntity.getClosestPositionInEntity(pose));
+        double weight = getWeight(), weightPe = physicalEntity.getWeight();
+        double velocity = getTrajectoryMagnitude(), velocityPe = physicalEntity.getTrajectoryMagnitude();
+
+        Position closesToThis = physicalEntity.getClosestPositionInEntity(pose).creatPositionByDecreasing(physicalEntity.getPose());
+        Position closesToPe = getClosestPositionInEntity(physicalEntity.getPose()).creatPositionByDecreasing(pose);
+
+        Vector2D normalizedPe = new Vector2D(closesToThis).normalize();
+        Vector2D normalized = new Vector2D(closesToPe).normalize();
+
+        Vector2D velocityPushing = movingVec;
+
+        Vector2D velocityPEntity = physicalEntity.getMovingVec();
+
+        //orthogonal
+        Vector2D v1o = velocityPushing.subtract(normalizedPe.multiplication(normalizedPe.scalarProduct(velocityPushing)));
+        Vector2D v2o = velocityPEntity.subtract(normalized.multiplication(normalized.scalarProduct(velocityPEntity)));
+
+        Vector2D v1p = normalized.multiplication(normalized.scalarProduct(velocityPushing));
+        Vector2D v2p = normalizedPe.multiplication(normalizedPe.scalarProduct(velocityPEntity));
+
+
+        //resulting vector from adding the
+        Vector2D result = v2o.add(v1p);
+
+        Vector2D resultPe = v1o.add(v2p);
+        resultPe = resultPe.normalize().multiplication((2 * weightPe + (weight - weightPe)
+                * movingVec.getLength()) / (weight + weightPe));
+        result = result.normalize().multiplication((2 * weight + (weightPe - weight)
+                * velocityPushing.getLength() / (weightPe + weight)));
+
+        if (!resultPe.containsNaN() && physicalEntity.isMovable()) {
+            physicalEntity.getMovingVec().set(physicalEntity.getMovingVec().add(resultPe));
         }
-        else if (Wall.class.isAssignableFrom(getClass()) || Box.class.isAssignableFrom(getClass())) {
-            u2Angle = pose.getAngleToPosition(physicalEntity.getClosestPositionInEntity(pose));
+        if (!resultPe.containsNaN() && isMovable()) {
+            movingVec.set(resultPe.reverse());
         }
 
-        double u2 = (2 * physicalEntity.getWeight())
-                / (getWeight() + physicalEntity.getWeight())
-                * getTrajectoryMagnitude() * Math.cos(u2Angle);
 
-        if (physicalEntity.isMovable()) {
-            physicalEntity.getPose().set(physicalEntity.getPose().getPoseInDirection(u2, u2Angle));
-        } else{
-            if(getTrajectoryMagnitude()==0)
-                System.out.println("box " + pose);
-            pose.set(pose.getPoseInDirection(u2, u2Angle));
-        }
-        if (isMovable()) {
-            pose.set(pose.getPoseInDirection(u2, u2Angle-Math.PI));
-        } else{
-            if(physicalEntity.getTrajectoryMagnitude()==0)
-            System.out.println("box " + physicalEntity.getPose());
-            physicalEntity.getPose().set(physicalEntity.getPose().getPoseInDirection(u2, u2Angle));
-        }
     }
 
     /**
@@ -168,21 +205,6 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
         return entityInGroup;
     }
 
-    /**
-     * The code will be run by threaded physical entities
-     */
-    @Override
-    public void run() {
-        while (!isPaused) {
-            collisionDetection();
-            updatePositionMemory();
-            try {
-                sleep(5);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
     @Override
     public boolean isCollidable() {
@@ -208,6 +230,11 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
     @Override
     public double getWeight() {
         return getArea();
+    }
+
+    @Override
+    public Vector2D getMovingVec() {
+        return movingVec;
     }
 
 }

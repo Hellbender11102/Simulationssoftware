@@ -12,7 +12,7 @@ public class Robot4 extends VisionConeRobot {
 Position position = new Position(1,1);
     @Override
     public void behavior() {
-        setEngines(10,10);
+        setEngines(5,5);
         if(isArenaBoundsInVision()){
             signal=true;
         }

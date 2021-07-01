@@ -6,16 +6,14 @@ import model.AbstractModel.RobotInterface;
 import view.View;
 
 import java.awt.event.*;
-import java.io.IOException;
 import java.util.*;
 
 public class Controller {
     private boolean stopped = true;
     private View view;
     private Arena arena;
-    private List<Thread> entityThreads = new LinkedList<>();
-    private Random random;
-    private JsonLoader jsonLoader = new JsonLoader();
+    private final List<Thread> robotThreads = new LinkedList<>();
+    private final JsonLoader jsonLoader = new JsonLoader();
     private final Timer repaintTimer = new Timer();
     private final Timer loggerTimer = new Timer();
     private final Logger logger = new Logger();
@@ -35,7 +33,7 @@ public class Controller {
             startLoggerTimer(1000);
             arena.getPhysicalEntityList().forEach(this::startThread);
             Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
-            while (entityThreads.stream().anyMatch(Thread::isAlive)) {
+            while (robotThreads.stream().anyMatch(Thread::isAlive)) {
                 int finalTimeToSimulate = timeToSimulate;
                 Optional<Long> percantageUntilDone = arena.getRobots().stream()
                         .map(robot -> Math.round((1 - ((double) robot.getTimeToSimulate() / (double) finalTimeToSimulate)) * 100))
@@ -49,7 +47,7 @@ public class Controller {
                 }
             }
             logger.saveFullLogToFile(true);
-            if (entityThreads.stream().noneMatch(Thread::isAlive)
+            if (robotThreads.stream().noneMatch(Thread::isAlive)
                     && (logger.saveThread == null || !logger.saveThread.isAlive())) {
                 timeToSimulate = jsonLoader.loadSimulatedTime();
                 long endTime = System.currentTimeMillis();
@@ -79,7 +77,7 @@ public class Controller {
      * loads all entities from the JSON file and adds them to the arena
      */
     void init() {
-        random = jsonLoader.loadRandom();
+        Random random = jsonLoader.loadRandom();
         arena.getEntityList().clear();
         arena.addEntities(jsonLoader.loadRobots(random, logger));
         arena.addEntities(jsonLoader.loadBoxes(random));
@@ -278,7 +276,8 @@ public class Controller {
      */
     private void startThread(PhysicalEntity physicalEntity) {
         Thread t = new Thread(physicalEntity);
-            entityThreads.add(t);
+        if (RobotInterface.class.isAssignableFrom(physicalEntity.getClass()))
+            robotThreads.add(t);
         t.start();
     }
 }

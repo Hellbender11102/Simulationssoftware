@@ -2,6 +2,7 @@ package model.AbstractModel;
 
 import model.Pose;
 import model.Position;
+import model.Vector2D;
 
 import java.awt.*;
 import java.util.LinkedList;
@@ -27,4 +28,6 @@ public interface PhysicalEntity extends Entity, Runnable {
     abstract public boolean isMovable();
 
     abstract public double getWeight();
+
+    abstract public Vector2D getMovingVec();
 }

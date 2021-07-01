@@ -1,5 +1,10 @@
 package model;
 
+/**
+ * Related to Gunvir Ranu
+ * https://gist.github.com/gunvirranu/6816d65c0231981787ebefd3bdb61f98
+ */
+
 public class Vector2D {
 
     double x, y;
@@ -10,6 +15,10 @@ public class Vector2D {
 
     public void setToZeroVector() {
         set(0, 0);
+    }
+
+    public Vector2D(){
+
     }
 
     public Vector2D(Position position) {
@@ -208,6 +217,10 @@ public class Vector2D {
 
     public boolean containsNaN() {
         return Double.isNaN(x) && Double.isNaN(y);
+    }
+
+    public Vector2D clone() {
+        return new Vector2D(x,y);
     }
 
     public String toString() {

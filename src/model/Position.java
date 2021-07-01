@@ -164,4 +164,7 @@ public class Position extends Point2D {
         this.yCoordinate = yCoordinate;
     }
 
+    public Vector2D toVector() {
+        return new Vector2D(xCoordinate,yCoordinate);
+    }
 }

@@ -6,6 +6,7 @@ import model.Pose;
 import model.Position;
 import model.RobotBuilder;
 import model.AbstractModel.RobotInterface;
+import model.Vector2D;
 import org.uncommons.maths.random.ExponentialGenerator;
 import org.uncommons.maths.random.GaussianGenerator;
 
@@ -112,8 +113,10 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     /**
      * Calculates and sets the next position
      */
+    @Override
     public void setNextPosition() {
-        pose = pose.getPoseInDirection(getTrajectoryMagnitude(), pose.getRotation());
+        pose.addToPosition(movingVec);
+        movingVec.setToZeroVector();
         pose.incRotation(angularVelocity());
     }
 
@@ -125,8 +128,9 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     public void run() {
         while (!isPaused || (timeToSimulate > 0 && !simulateWithView)) {
             behavior();
-            if (!collisionDetection())
-                setNextPosition();
+            movingVec = pose.getVectorInDirection(getTrajectoryMagnitude(), pose.getRotation());
+            collisionDetection();
+            setNextPosition();
             updatePositionMemory();
             if (timeToSimulate <= 0 || simulateWithView) {
                 try {
@@ -161,7 +165,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     public void driveToPosition(Position position, double precisionInDegree, double speed) {
         if (arena.isTorus) position = arena.getClosestPositionInTorus(pose, position);
         if (rotateToAngle(pose.getAngleToPosition(position), Math.toRadians(precisionInDegree), speed, 0)) {
-            setEngines(speed, speed );
+            setEngines(speed, speed);
         }
     }
 
@@ -179,7 +183,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * @return boolean
      */
     boolean rotateToAngle(double angleInRadian, double precisionInRadian, double rotatingEngine, double secondEngine) {
-        if (rotatingEngine <= secondEngine) secondEngine =rotatingEngine* 0.9;
+        if (rotatingEngine <= secondEngine) secondEngine = rotatingEngine * 0.9;
         double angleDiff = pose.getAngleDiff(angleInRadian);
         if (angleDiff <= precisionInRadian / 2 || 2 * Math.PI - angleDiff <= precisionInRadian / 2) {
             setEngines(rotatingEngine, rotatingEngine);
@@ -379,10 +383,10 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      */
     public boolean turn(double degree, double engine1, double engine2) {
         if (!isInTurn) {
-            turnsTo = pose.getRotation() + Math.toRadians(degree) < 0 ? pose.getRotation() + Math.toRadians(degree) + 2*Math.PI : pose.getRotation() + Math.toRadians(degree) % 2 * Math.PI;
+            turnsTo = pose.getRotation() + Math.toRadians(degree) < 0 ? pose.getRotation() + Math.toRadians(degree) + 2 * Math.PI : pose.getRotation() + Math.toRadians(degree) % 2 * Math.PI;
             isInTurn = true;
         } else {
-            if (rotateToAngle(turnsTo, Math.toRadians(2), Math.max(engine1,engine2),  Math.min(engine1,engine2))) {
+            if (rotateToAngle(turnsTo, Math.toRadians(2), Math.max(engine1, engine2), Math.min(engine1, engine2))) {
                 turnsTo = Double.NaN;
                 isInTurn = false;
             }
