@@ -3,6 +3,7 @@ import model.Arena;
 import model.Pose;
 import model.RobotBuilder;
 import model.RobotTypes.BaseRobot;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -33,7 +34,9 @@ public class AreaTest {
 
     @Test
     public void testArenaDecreaseArea() {
+        double areaRadius = area.getRadius();
         area.decreaseArea(1);
+        Assert.assertEquals( - 0.5,area.getRadius());
     }
 
     @Test

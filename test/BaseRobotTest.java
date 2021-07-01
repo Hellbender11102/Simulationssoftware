@@ -43,6 +43,7 @@ public class BaseRobotTest {
         this.rounds = rounds;
         baseRobot = creatTestBaseRobot(1000, 1000, engineRight,
                 engineLeft, 1, 5, 10, 10, 0);
+        if(baseRobot.getPaused()) baseRobot.togglePause();
     }
 
     @Parameterized.Parameters
@@ -112,7 +113,7 @@ public class BaseRobotTest {
         double degree = baseRobot.angularVelocity();
         Position position = baseRobot.getPose().clone();
         for (double i = 0; i < rounds * 2 * Math.PI && i > rounds * 2 * Math.PI; i += degree) {
-            baseRobot.setNextPosition();
+            baseRobot.run();
         }
         Assert.assertTrue(Math.round(baseRobot.getPose().getX()) == Math.round(position.getX()) &&
                 Math.round(baseRobot.getPose().getY()) == Math.round(position.getY()));
@@ -203,11 +204,11 @@ public class BaseRobotTest {
 
     @Test
     public void testTurn() {
-     double currentOrientation =   baseRobot.getPose().getRotation();
+     double currentOrientation = baseRobot.getPose().getRotation();
         while(!baseRobot.turn(currentOrientation+Math.PI,4,0)){
             baseRobot.setNextPosition();
         }
-        Assert.assertEquals(currentOrientation+Math.PI,baseRobot.getPose().getRotation(),1/360.);
+        Assert.assertEquals(currentOrientation+Math.PI,baseRobot.getPose().getRotation());
     }
 
     @Test

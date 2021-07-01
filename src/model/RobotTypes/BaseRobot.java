@@ -127,10 +127,10 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     @Override
     public void run() {
         while (!isPaused || (timeToSimulate > 0 && !simulateWithView)) {
-            behavior();
             movingVec = pose.getVectorInDirection(getTrajectoryMagnitude(), pose.getRotation());
-            collisionDetection();
+            behavior();
             setNextPosition();
+            collisionDetection();
             updatePositionMemory();
             if (timeToSimulate <= 0 || simulateWithView) {
                 try {
@@ -383,7 +383,9 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      */
     public boolean turn(double degree, double engine1, double engine2) {
         if (!isInTurn) {
-            turnsTo = pose.getRotation() + Math.toRadians(degree) < 0 ? pose.getRotation() + Math.toRadians(degree) + 2 * Math.PI : pose.getRotation() + Math.toRadians(degree) % 2 * Math.PI;
+            turnsTo = pose.getRotation() + Math.toRadians(degree) < 0 ?
+                    pose.getRotation() + Math.toRadians(degree) + 2 * Math.PI :
+                    pose.getRotation() + Math.toRadians(degree) % 2 * Math.PI;
             isInTurn = true;
         } else {
             if (rotateToAngle(turnsTo, Math.toRadians(2), Math.max(engine1, engine2), Math.min(engine1, engine2))) {
