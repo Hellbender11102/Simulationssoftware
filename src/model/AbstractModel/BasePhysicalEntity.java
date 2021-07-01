@@ -32,6 +32,7 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
      * Calculates and sets the next position
      */
     public void setNextPosition() {
+        movingVec=movingVec.add(Vector2D.creatCartesian(getTrajectoryMagnitude(), pose.getRotation()));
         pose.addToPosition(movingVec);
         movingVec.setToZeroVector();
     }
@@ -42,9 +43,8 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
     @Override
     public void run() {
         while (!isPaused) {
-            movingVec = pose.getVectorInDirection(getTrajectoryMagnitude(), pose.getRotation());
-            collisionDetection();
             setNextPosition();
+            collisionDetection();
             updatePositionMemory();
             try {
                 sleep(5);
@@ -96,9 +96,9 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
      * Calculates the collision with an elastic shock
      *
      * @param physicalEntity PhysicalEntity
-     *                       source =
-     *                       https://www.physik.tu-darmstadt.de/media/fachbereich_physik/phys_studium/phys_studium_bachelor/phys_studium_bsc_praktika/phys_studium_bsc_praktika_gp/phys_studium_bsc_praktika_gp_mechanik/m4/m4bilder/m4_neuSS15.pdf
-     *                       diffrent approach
+     * source =
+     * https://www.physik.tu-darmstadt.de/media/fachbereich_physik/phys_studium/phys_studium_bachelor/phys_studium_bsc_praktika/phys_studium_bsc_praktika_gp/phys_studium_bsc_praktika_gp_mechanik/m4/m4bilder/m4_neuSS15.pdf
+     *
      */
     public void collision(PhysicalEntity physicalEntity) {
         double u2Angle = pose.getAngleFromPosition(physicalEntity.getPose());
@@ -112,7 +112,7 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
 
         double u2 = (2 * physicalEntity.getWeight())
                 / (getWeight() + physicalEntity.getWeight())
-                * getTrajectoryMagnitude() * Math.cos(u2Angle);
+                * (getTrajectoryMagnitude() + movingVec.getLength()) * Math.cos(u2Angle);
 
         if (physicalEntity.isMovable()) {
             if(physicalEntity.getTrajectoryMagnitude() > 0)

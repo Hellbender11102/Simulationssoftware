@@ -113,7 +113,7 @@ public class BaseRobotTest {
         double degree = baseRobot.angularVelocity();
         Position position = baseRobot.getPose().clone();
         for (double i = 0; i < rounds * 2 * Math.PI && i > rounds * 2 * Math.PI; i += degree) {
-            baseRobot.run();
+            baseRobot.setNextPosition();
         }
         Assert.assertTrue(Math.round(baseRobot.getPose().getX()) == Math.round(position.getX()) &&
                 Math.round(baseRobot.getPose().getY()) == Math.round(position.getY()));

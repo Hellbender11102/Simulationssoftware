@@ -115,6 +115,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      */
     @Override
     public void setNextPosition() {
+        movingVec = pose.getVectorInDirection(getTrajectoryMagnitude(), pose.getRotation()).add(movingVec);
         pose.addToPosition(movingVec);
         movingVec.setToZeroVector();
         pose.incRotation(angularVelocity());
@@ -127,7 +128,6 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     @Override
     public void run() {
         while (!isPaused || (timeToSimulate > 0 && !simulateWithView)) {
-            movingVec = pose.getVectorInDirection(getTrajectoryMagnitude(), pose.getRotation());
             behavior();
             setNextPosition();
             collisionDetection();
