@@ -98,47 +98,31 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
      * @param physicalEntity PhysicalEntity
      *                       source =
      *                       https://www.physik.tu-darmstadt.de/media/fachbereich_physik/phys_studium/phys_studium_bachelor/phys_studium_bsc_praktika/phys_studium_bsc_praktika_gp/phys_studium_bsc_praktika_gp_mechanik/m4/m4bilder/m4_neuSS15.pdf
+     * diffrent approach
      */
     public void collision(PhysicalEntity physicalEntity) {
-        double weight = getWeight(), weightPe = physicalEntity.getWeight();
-        double velocity = getTrajectoryMagnitude(), velocityPe = physicalEntity.getTrajectoryMagnitude();
+        double u2Angle = pose.getAngleFromPosition(physicalEntity.getPose());
 
-        Position closesToThis = physicalEntity.getClosestPositionInEntity(pose).creatPositionByDecreasing(physicalEntity.getPose());
-        Position closesToPe = getClosestPositionInEntity(physicalEntity.getPose()).creatPositionByDecreasing(pose);
-
-        Vector2D normalizedPe = new Vector2D(closesToThis).normalize();
-        Vector2D normalized = new Vector2D(closesToPe).normalize();
-
-        Vector2D velocityPushing = movingVec;
-
-        Vector2D velocityPEntity = physicalEntity.getMovingVec();
-
-        //orthogonal
-        Vector2D v1o = velocityPushing.subtract(normalizedPe.multiplication(normalizedPe.scalarProduct(velocityPushing)));
-        Vector2D v2o = velocityPEntity.subtract(normalized.multiplication(normalized.scalarProduct(velocityPEntity)));
-
-        Vector2D v1p = normalized.multiplication(normalized.scalarProduct(velocityPushing));
-        Vector2D v2p = normalizedPe.multiplication(normalizedPe.scalarProduct(velocityPEntity));
-
-
-        //resulting vector from adding the
-        Vector2D result = v2o.add(v1p);
-
-        Vector2D resultPe = v1o.add(v2p);
-        resultPe = resultPe.normalize().multiplication((2 * weightPe + (weight - weightPe)
-                * movingVec.getLength()) / (weight + weightPe));
-        result = result.normalize().multiplication((2 * weight + (weightPe - weight)
-                * velocityPushing.getLength() / (weightPe + weight)));
-
-        if (!resultPe.containsNaN() && physicalEntity.isMovable()) {
-            physicalEntity.getMovingVec().set(physicalEntity.getMovingVec().add(resultPe));
+        // if squared entity use other position to calculate the pushing angle
+        if (Wall.class.isAssignableFrom(physicalEntity.getClass()) || Box.class.isAssignableFrom(physicalEntity.getClass())) {
+            u2Angle = pose.getAngleFromPosition(physicalEntity.getClosestPositionInEntity(pose));
         }
-        if (!resultPe.containsNaN() && isMovable()) {
-            movingVec.set(resultPe.reverse());
+        else if (Wall.class.isAssignableFrom(getClass()) || Box.class.isAssignableFrom(getClass())) {
+         u2Angle = pose.getAngleFromPosition(physicalEntity.getClosestPositionInEntity(pose));
         }
 
+        double u2 = (2 * physicalEntity.getWeight())
+                / (getWeight() + physicalEntity.getWeight())
+                * getTrajectoryMagnitude() * Math.cos(u2Angle);
 
-    }
+        System.out.println(getTrajectoryMagnitude() * getWeight() - u2);
+        if (physicalEntity.isMovable()) {
+            physicalEntity.getPose().set(physicalEntity.getPose().getPoseInDirection(u2, u2Angle));
+        }
+        if (isMovable()) {
+            pose.set(pose.getPoseInDirection(getTrajectoryMagnitude() * getWeight() - u2, u2Angle-Math.PI));
+        }
+        }
 
     /**
      * Returns all entities where an collision is occurring
