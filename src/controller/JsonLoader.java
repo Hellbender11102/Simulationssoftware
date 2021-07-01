@@ -336,6 +336,10 @@ class JsonLoader {
                     .diameters((Double) robotObject.get("diameters"))
                     .logger(logger)
                     .simulateWithView(displayView);
+            //if visionangle and visionrange exist
+            if( robotObject.containsKey("visionRange") && robotObject.containsKey("visionAngle")){
+                builder = builder.visionAngle((double)robotObject.get("visionAngle")).visionRange((Double) robotObject.get("visionRange"));
+            }
             RobotInterface robot;
             switch ((String) robotObject.get("type")) {
                 case "1":
@@ -347,8 +351,8 @@ class JsonLoader {
                 case "3":
                     robot = builder.buildRobot3();
                     break;
-                case "4":
-                    robot = builder.buildRobot4();
+                case "vision":
+                    robot = builder.visionCone();
                     break;
                 default:
                     robot = builder.buildDefault();

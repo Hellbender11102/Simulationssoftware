@@ -98,7 +98,7 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
      * @param physicalEntity PhysicalEntity
      *                       source =
      *                       https://www.physik.tu-darmstadt.de/media/fachbereich_physik/phys_studium/phys_studium_bachelor/phys_studium_bsc_praktika/phys_studium_bsc_praktika_gp/phys_studium_bsc_praktika_gp_mechanik/m4/m4bilder/m4_neuSS15.pdf
-     * diffrent approach
+     *                       diffrent approach
      */
     public void collision(PhysicalEntity physicalEntity) {
         double u2Angle = pose.getAngleFromPosition(physicalEntity.getPose());
@@ -106,23 +106,21 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
         // if squared entity use other position to calculate the pushing angle
         if (Wall.class.isAssignableFrom(physicalEntity.getClass()) || Box.class.isAssignableFrom(physicalEntity.getClass())) {
             u2Angle = pose.getAngleFromPosition(physicalEntity.getClosestPositionInEntity(pose));
-        }
-        else if (Wall.class.isAssignableFrom(getClass()) || Box.class.isAssignableFrom(getClass())) {
-         u2Angle = pose.getAngleFromPosition(physicalEntity.getClosestPositionInEntity(pose));
+        } else if (Wall.class.isAssignableFrom(getClass()) || Box.class.isAssignableFrom(getClass())) {
+            u2Angle = pose.getAngleFromPosition(physicalEntity.getClosestPositionInEntity(pose));
         }
 
         double u2 = (2 * physicalEntity.getWeight())
                 / (getWeight() + physicalEntity.getWeight())
                 * getTrajectoryMagnitude() * Math.cos(u2Angle);
 
-        System.out.println(getTrajectoryMagnitude() * getWeight() - u2);
         if (physicalEntity.isMovable()) {
             physicalEntity.getPose().set(physicalEntity.getPose().getPoseInDirection(u2, u2Angle));
         }
         if (isMovable()) {
-            pose.set(pose.getPoseInDirection(getTrajectoryMagnitude() * getWeight() - u2, u2Angle-Math.PI));
+            pose.set(pose.getPoseInDirection(getTrajectoryMagnitude() * getWeight() - u2, u2Angle - Math.PI));
         }
-        }
+    }
 
     /**
      * Returns all entities where an collision is occurring

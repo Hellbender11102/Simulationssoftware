@@ -17,6 +17,8 @@ public class BaseRobotTest {
 
     final int max = 10;
     final int min = -10;
+    private final int rounds;
+    private final BaseRobot baseRobot;
 
     public BaseRobot creatTestBaseRobot(int arenaWidth, int arenaHeight, double engineR, double engineL,
                                         double engineDistance, double diameters, double poseX, double poseY,
@@ -74,9 +76,6 @@ public class BaseRobotTest {
                 {-5, -5, 100},
         });
     }
-
-    private final int rounds;
-    private final BaseRobot baseRobot;
 
     /**
      * Tests if the robot will stand on the correct position with given distance after driving

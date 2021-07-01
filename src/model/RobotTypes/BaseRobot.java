@@ -72,14 +72,14 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     public BaseRobot(RobotBuilder builder) {
         super(builder.getArena(), builder.getRandom(), builder.getDiameters(), builder.getDiameters(), builder.getPose());
         poseRingMemory[poseRingMemoryHead] = builder.getPose();
+        maxSpeed = builder.getMaxSpeed();
+        minSpeed = builder.getMinSpeed();
         setEngineL(builder.getEngineL());
         setEngineR(builder.getEngineR());
         distanceE = builder.getDistanceE();
         diameters = builder.getDiameters();
         powerTransmission = builder.getPowerTransmission();
         logger = builder.getLogger();
-        maxSpeed = builder.getMaxSpeed();
-        minSpeed = builder.getMinSpeed();
         ticsPerSimulatedSecond = builder.getTicsPerSimulatedSecond();
         timeToSimulate = builder.getTimeToSimulate() * builder.getTicsPerSimulatedSecond();
         simulateWithView = builder.getSimulateWithView();

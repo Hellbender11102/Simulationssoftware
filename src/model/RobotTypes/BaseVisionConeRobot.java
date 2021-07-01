@@ -10,7 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public abstract class VisionConeRobot extends BaseRobot {
+public abstract class BaseVisionConeRobot extends BaseRobot {
 
     private final double visionRange, visionAngle;
 
@@ -21,9 +21,17 @@ public abstract class VisionConeRobot extends BaseRobot {
      * @param visionRange double
      * @param visionAngle double
      */
-    public VisionConeRobot(RobotBuilder builder, double visionRange, double visionAngle) {
+    public BaseVisionConeRobot(RobotBuilder builder, double visionRange, double visionAngle) {
         super(builder);
         this.visionRange = visionRange;
+        visionAngle = visionAngle > 360 ? 360 : visionAngle < 0 ? 0 : visionAngle;
+        this.visionAngle = Math.toRadians(visionAngle);
+    }
+
+    public BaseVisionConeRobot(RobotBuilder builder) {
+        super(builder);
+        this.visionRange = builder.getVisionRange();
+        double visionAngle = builder.getVisionAngle();
         visionAngle = visionAngle > 360 ? 360 : visionAngle < 0 ? 0 : visionAngle;
         this.visionAngle = Math.toRadians(visionAngle);
     }

@@ -4,7 +4,7 @@ import model.*;
 
 import java.awt.*;
 
-public class Robot4 extends VisionConeRobot {
+public class Robot4 extends BaseVisionConeRobot {
 
     public Robot4(RobotBuilder builder) {
         super(builder, 30, 45);

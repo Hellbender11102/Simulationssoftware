@@ -10,7 +10,9 @@
   },
   "robots": [
     {
-      "type": "4",
+      "type": "default",
+      "visionRange": 20.0,
+      "visionAngle": 30.0,
       "engineR": 2.0,
       "engineL": 2.0,
       "distance": 4.0,
@@ -23,7 +25,9 @@
       }
     },
     {
-      "type": "4",
+      "type": "default",
+      "visionRange": 20.0,
+      "visionAngle": 30.0,
       "engineR": 2.0,
       "engineL": 2.0,
       "distance": 4.0,
@@ -32,11 +36,13 @@
       "position": {
         "x": 10.0,
         "y": 50.0,
-        "rotation":  0.0
+        "rotation": 0.0
       }
     },
     {
-      "type": "4",
+      "type": "default",
+      "visionRange": 20.0,
+      "visionAngle": 30.0,
       "engineR": 2.0,
       "engineL": 2.0,
       "distance": 4.0,
@@ -49,7 +55,9 @@
       }
     },
     {
-      "type": "4",
+      "type": "default",
+      "visionRange": 20.0,
+      "visionAngle": 30.0,
       "engineR": 2.0,
       "engineL": 2.0,
       "distance": 4.0,
@@ -62,7 +70,9 @@
       }
     },
     {
-      "type": "4",
+      "type": "default",
+      "visionRange": 20.0,
+      "visionAngle": 30.0,
       "engineR": 2.0,
       "engineL": 2.0,
       "distance": 4.0,
@@ -75,7 +85,9 @@
       }
     },
     {
-      "type": "4",
+      "type": "default",
+      "visionRange": 20.0,
+      "visionAngle": 30.0,
       "engineR": 2.0,
       "engineL": 2.0,
       "distance": 4.0,
@@ -88,7 +100,9 @@
       }
     },
     {
-      "type": "4",
+      "type": "default",
+      "visionRange": 20.0,
+      "visionAngle": 30.0,
       "engineR": 2.0,
       "engineL": 2.0,
       "distance": 4.0,
@@ -101,7 +115,9 @@
       }
     },
     {
-      "type": "4",
+      "type": "default",
+      "visionRange": 20.0,
+      "visionAngle": 30.0,
       "engineR": 2.0,
       "engineL": 2.0,
       "distance": 4.0,
@@ -114,7 +130,9 @@
       }
     },
     {
-      "type": "4",
+      "type": "default",
+      "visionRange": 20.0,
+      "visionAngle": 30.0,
       "engineR": 2.0,
       "engineL": 2.0,
       "distance": 4.0,
@@ -127,7 +145,9 @@
       }
     },
     {
-      "type": "4",
+      "type": "default",
+      "visionRange": 20.0,
+      "visionAngle": 30.0,
       "engineR": 2.0,
       "engineL": 2.0,
       "distance": 4.0,
@@ -140,7 +160,9 @@
       }
     },
     {
-      "type": "4",
+      "type": "default",
+      "visionRange": 20.0,
+      "visionAngle": 30.0,
       "engineR": 2.0,
       "engineL": 2.0,
       "distance": 4.0,
@@ -153,7 +175,9 @@
       }
     },
     {
-      "type": "4",
+      "type": "default",
+      "visionRange": 20.0,
+      "visionAngle": 30.0,
       "engineR": 2.0,
       "engineL": 2.0,
       "distance": 4.0,
@@ -166,7 +190,9 @@
       }
     },
     {
-      "type": "4",
+      "type": "default",
+      "visionRange": 20.0,
+      "visionAngle": 30.0,
       "engineR": 2.0,
       "engineL": 2.0,
       "distance": 4.0,
@@ -179,7 +205,9 @@
       }
     },
     {
-      "type": "4",
+      "type": "default",
+      "visionRange": 20.0,
+      "visionAngle": 30.0,
       "engineR": 2.0,
       "engineL": 2.0,
       "distance": 4.0,
@@ -192,7 +220,9 @@
       }
     },
     {
-      "type": "4",
+      "type": "default",
+      "visionRange": 20.0,
+      "visionAngle": 30.0,
       "engineR": 2.0,
       "engineL": 2.0,
       "distance": 4.0,
@@ -205,7 +235,9 @@
       }
     },
     {
-      "type": "4",
+      "type": "default",
+      "visionRange": 20.0,
+      "visionAngle": 30.0,
       "engineR": 2.0,
       "engineL": 2.0,
       "distance": 4.0,
@@ -218,7 +250,9 @@
       }
     },
     {
-      "type": "4",
+      "type": "default",
+      "visionRange": 20.0,
+      "visionAngle": 30.0,
       "engineR": 2.0,
       "engineL": 2.0,
       "distance": 4.0,
@@ -231,7 +265,9 @@
       }
     },
     {
-      "type": "4",
+      "type": "default",
+      "visionRange": 20.0,
+      "visionAngle": 30.0,
       "engineR": 2.0,
       "engineL": 2.0,
       "distance": 4.0,
@@ -244,7 +280,9 @@
       }
     },
     {
-      "type": "4",
+      "type": "default",
+      "visionRange": 20.0,
+      "visionAngle": 30.0,
       "engineR": 2.0,
       "engineL": 2.0,
       "distance": 4.0,
@@ -257,7 +295,9 @@
       }
     },
     {
-      "type": "4",
+      "type": "default",
+      "visionRange": 20.0,
+      "visionAngle": 30.0,
       "engineR": 2.0,
       "engineL": 2.0,
       "distance": 4.0,
@@ -270,7 +310,9 @@
       }
     },
     {
-      "type": "4",
+      "type": "default",
+      "visionRange": 20.0,
+      "visionAngle": 30.0,
       "engineR": 2.0,
       "engineL": 2.0,
       "distance": 4.0,
@@ -283,7 +325,9 @@
       }
     },
     {
-      "type": "4",
+      "type": "default",
+      "visionRange": 20.0,
+      "visionAngle": 30.0,
       "engineR": 2.0,
       "engineL": 2.0,
       "distance": 4.0,
@@ -296,7 +340,9 @@
       }
     },
     {
-      "type": "4",
+      "type": "default",
+      "visionRange": 20.0,
+      "visionAngle": 30.0,
       "engineR": 2.0,
       "engineL": 2.0,
       "distance": 4.0,
@@ -309,7 +355,9 @@
       }
     },
     {
-      "type": "4",
+      "type": "default",
+      "visionRange": 20.0,
+      "visionAngle": 30.0,
       "engineR": 2.0,
       "engineL": 2.0,
       "distance": 4.0,
@@ -323,22 +371,22 @@
     }
   ],
   "boxes": [
-  {
+    {
       "width": 5.0,
       "height": 10.0,
       "position": {
-        "x": 47.5,
+        "x": 47.0,
         "y": 50.0,
         "rotation": 0.0
       }
     }
   ],
   "walls": [
-  {
+    {
       "width": 5.0,
       "height": 10.0,
       "position": {
-        "x": 52.5,
+        "x": 52.0,
         "y": 50.0,
         "rotation": 0.0
       }
