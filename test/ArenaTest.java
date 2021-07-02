@@ -1,31 +1,127 @@
-import model.Area;
+
 import model.Arena;
-import model.Pose;
+import model.Position;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Random;
 
 @RunWith(Parameterized.class)
 public class ArenaTest {
-    private final Area area;
+    private final Arena arena;
+    private Position position;
+    private final boolean result;
 
     @Parameterized.Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
-                {},
+                {0, 0, false, 0, 0, true},
+                {0, 0, false, 1, 1, false},
+                {0, 0, false, -1, -1, false},
+                {0, 0, false, -1, 0, false},
+                {0, 0, false, 0, -1, false},
+                {0, 0, false, 1, 0, false},
+                {0, 0, false, 0, 1, false},
+                {10, 10, false, 5, 5, true},
+                {10, 10, false, 1, 1, true},
+                {10, 10, false, -1, -1, false},
+                {10, 10, false, -1, 0, false},
+                {10, 10, false, 0, -1, false},
+                {10, 10, false, 10.1, 9, false},
+                {10, 10, false, 9, 10.1, false},
+                {10, 10, false, 0, -1, false},
+                {10, 10, false, 1, 0, true},
+                {10, 10, false, 0, 1, true},
+                {10, 10, false, 10, 0, true},
+                {10, 10, false, 0, 10, true},
+                {10, 10, false, 10, 10, true},
         });
     }
 
-    public ArenaTest(double diameters, double noticeableDistanceDiameters, double poseX,double poseY){
-        area = creatArea(diameters,noticeableDistanceDiameters,poseX,poseY);
+    public ArenaTest(int width, int height, boolean torus, double poseX, double poseY, boolean result) {
+        arena = Arena.overWriteInstance(width, height, torus);
+        position = new Position(poseX, poseY);
+        this.result = result;
     }
 
-    public Area creatArea( double diameters, double noticeableDistanceDiameters, double poseX,double poseY) {
-        return new Area(Arena.getInstance(1000,1000,false),new Random(),diameters,noticeableDistanceDiameters,new Pose(poseX,poseY,0));
+
+    @Test
+    public void testInArenaBounds() {
+        Assert.assertEquals(arena.inArenaBounds(position), result);
+    }
+
+    @Test
+    public void testSetPositionInBoundsTorus() {
+        Position changed = arena.setPositionInBoundsTorus(position);
+        Assert.assertTrue(arena.inArenaBounds(changed));
+        if (position.getY() > arena.getHeight() && 0 > arena.getHeight())
+            Assert.assertEquals(changed.getY(), position.getY() - arena.getWidth(), .01);
+        else if (position.getY() < 0 && 0 > arena.getHeight())
+            Assert.assertEquals(changed.getY(), arena.getWidth() - position.getY(), .01);
+        else if (0 > arena.getHeight())
+            Assert.assertEquals(position.getY(), changed.getY(), 0);
+        if (position.getX() > arena.getWidth() && 0 > arena.getWidth())
+            Assert.assertEquals(changed.getX(), position.getX() - arena.getWidth(), .01);
+        else if (position.getX() < 0 && 0 > arena.getHeight())
+            Assert.assertEquals(changed.getX(), arena.getWidth() - position.getX(), .01);
+        else if (0 > arena.getHeight())
+            Assert.assertEquals(position.getX(), changed.getX(), 0);
+        if (0 == arena.getWidth())
+            Assert.assertEquals(changed.getX(), 0, 0);
+        if (0 == arena.getHeight())
+            Assert.assertEquals(changed.getY(), 0, 0);
+    }
+
+    @Test
+    public void testSetPositionInBounds() {
+        Position changed = arena.setPositionInBounds(position);
+        Assert.assertTrue(arena.inArenaBounds(changed));
+        if (position.getY() > arena.getHeight())
+            Assert.assertEquals(changed.getY(), arena.getHeight(), 0);
+        else if (position.getY() < 0)
+            Assert.assertEquals(changed.getY(), 0, 0);
+        else
+            Assert.assertEquals(position.getY(), changed.getY(), 0);
+        if (position.getX() > arena.getWidth())
+            Assert.assertEquals(changed.getX(), arena.getWidth(), 0);
+        else if (position.getX() < 0)
+            Assert.assertEquals(changed.getX(), 0, 0);
+        else
+            Assert.assertEquals(position.getX(), changed.getX(), 0);
+    }
+
+    @Test
+    public void testGetClosestPositionInTorus() {
+        Position positionUpperLeft = new Position(0, arena.getHeight());
+        Position positionUpperRight = new Position(arena.getWidth(), arena.getHeight());
+        Position positionLowerLeft = new Position(0, 0);
+        Position positionLowerRight = new Position(arena.getWidth(), 0);
+        Position closest1 = arena.getClosestPositionInTorus(positionUpperLeft,positionUpperRight);
+        Position closest2 = arena.getClosestPositionInTorus(positionLowerLeft,positionLowerRight);
+
+        if (arena.getWidth() > 0 || arena.getHeight() > 0) {
+            Assert.assertTrue(positionUpperLeft.getEuclideanDistance(positionUpperRight)
+                    > positionUpperLeft.getEuclideanDistance(closest1));
+            Assert.assertTrue(positionLowerLeft.getEuclideanDistance(positionLowerRight)
+                    > positionLowerLeft.getEuclideanDistance(closest2));
+        }
+     }
+
+    @Test
+    public void testGetEuclideanDistanceToClosestPosition() {
+        Position positionUpperLeft = new Position(0, arena.getHeight());
+        Position positionUpperRight = new Position(arena.getWidth(), arena.getHeight());
+        Position positionLowerLeft = new Position(0, 0);
+        Position positionLowerRight = new Position(arena.getWidth(), 0);
+        if (arena.getWidth() > 0 || arena.getHeight() > 0) {
+            Assert.assertTrue(positionUpperLeft.getEuclideanDistance(positionUpperRight)
+                    > arena.getEuclideanDistanceToClosestPosition(positionUpperLeft,positionUpperRight));
+            Assert.assertTrue(positionLowerLeft.getEuclideanDistance(positionLowerRight)
+                    > arena.getEuclideanDistanceToClosestPosition(positionLowerLeft,positionLowerRight));
+        }
     }
 
 }

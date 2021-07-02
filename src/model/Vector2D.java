@@ -17,10 +17,6 @@ public class Vector2D {
         set(0, 0);
     }
 
-    public Vector2D(){
-
-    }
-
     public Vector2D(Position position) {
         x = position.getX();
         y = position.getY();
@@ -103,26 +99,6 @@ public class Vector2D {
     }
 
     /**
-     * Calculates the dot product
-     *
-     * @param vector Vector2D
-     * @return double
-     */
-    public double dot(Vector2D vector) {
-        return x * vector.x + y * vector.y;
-    }
-
-    /**
-     * Calculates the projection of this and a given vector
-     *
-     * @param vector Vector2D
-     * @return double
-     */
-    public double project(Vector2D vector) {
-        return dot(vector) / getLength();
-    }
-
-    /**
      * Returns a new vector as this gets normalized
      *
      * @return Vector2D
@@ -141,17 +117,6 @@ public class Vector2D {
         return new Vector2D(x / scalar, y / scalar);
     }
 
-    /**
-     * Returns a new vector as this gets rotated by this angle
-     *
-     * @param angle double
-     * @return Vector2D
-     */
-    public Vector2D getRotatedBy(double angle) {
-        double cos = Math.cos(angle);
-        double sin = Math.sin(angle);
-        return new Vector2D(x * cos - y * sin, x * sin + y * cos);
-    }
 
     /**
      * Returns a new vector as this gets converted to cartesian form
@@ -177,7 +142,7 @@ public class Vector2D {
     }
 
     /**
-     * Returns euclidean distance between Point(0,0) and Vector(x,y)
+     * Returns euclidean distance between the endpoints of each vector
      * sqrt((x - vector.x)² + (y - vector.y)²)
      *
      * @param vector Vector2D
@@ -185,6 +150,14 @@ public class Vector2D {
      */
     public double distance(Vector2D vector) {
         return Math.hypot(x - vector.x, y - vector.y);
+    }
+    /**
+     * Returns angle of the vector
+     *
+     * @return double
+     */
+    public double angle() {
+        return Math.atan2(y,x);
     }
 
     /**
@@ -220,10 +193,15 @@ public class Vector2D {
     }
 
     public Vector2D clone() {
-        return new Vector2D(x,y);
+        return new Vector2D(x, y);
     }
 
+    @Override
     public String toString() {
         return "Vector x:" + x + " y:" + y;
+    }
+
+    public boolean equals(Vector2D vector2D) {
+        return x == vector2D.getX() && y == vector2D.getY();
     }
 }

@@ -16,11 +16,12 @@ public class VisionConeRobotTest {
     private final int rounds;
     private final RobotInterface robot;
 
-    public RobotInterface creatTestBaseRobot(int arenaWidth, int arenaHeight, double engineR, double engineL,
+    public RobotInterface creatTestBaseRobot(int arenaWidth, int arenaHeight, boolean isTorus, double engineR, double engineL,
                                              double engineDistance, double diameters, double poseX, double poseY,
                                              double poseRotation) {
+        Arena arena = Arena.getInstance(arenaWidth, arenaHeight, isTorus);
         return new RobotBuilder()
-                .arena(Arena.getInstance(arenaWidth, arenaHeight, false))
+                .arena(arena)
                 .diameters(diameters)
                 .engineDistnace(engineDistance)
                 .powerTransmission(0)
@@ -35,9 +36,9 @@ public class VisionConeRobotTest {
                 .visionCone();
     }
 
-    public VisionConeRobotTest(double engineRight, double engineLeft, int rounds) {
+    public VisionConeRobotTest(boolean isTorus,double engineRight, double engineLeft, int rounds) {
         this.rounds = rounds;
-        robot = creatTestBaseRobot(1000, 1000, engineRight,
+        robot = creatTestBaseRobot(1000, 1000, isTorus,engineRight,
                 engineLeft, 1, 5, 10, 10, 0);
     }
 

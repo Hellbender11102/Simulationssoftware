@@ -352,7 +352,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * @return double
      */
     public double increaseSpeed(double speed) {
-        setEngines(engineR + speed, engineL + speed);
+        setEngines(engineL + speed, engineR + speed);
         return getTrajectoryMagnitude();
     }
 
@@ -536,6 +536,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
 
     @Override
     public Position getClosestPositionInEntity(Position position) {
+        if ( pose.getEuclideanDistance(position) < getRadius()) return position;
         return closestPositionInEntityForCircle(position, getRadius());
     }
 

@@ -20,11 +20,12 @@ public class BaseRobotTest {
     private final int rounds;
     private final BaseRobot baseRobot;
 
-    public BaseRobot creatTestBaseRobot(int arenaWidth, int arenaHeight, double engineR, double engineL,
+    public BaseRobot creatTestBaseRobot(int arenaWidth, int arenaHeight, boolean isTorus, double engineR, double engineL,
                                         double engineDistance, double diameters, double poseX, double poseY,
                                         double poseRotation) {
-        return new RobotBuilder()
-                .arena(Arena.getInstance(arenaWidth, arenaHeight, false))
+        Arena arena = Arena.getInstance(arenaWidth, arenaHeight, isTorus);
+        BaseRobot baseRobot = new RobotBuilder()
+                .arena(arena)
                 .diameters(diameters)
                 .engineDistnace(engineDistance)
                 .powerTransmission(0)
@@ -37,13 +38,15 @@ public class BaseRobotTest {
                 .ticsPerSimulatedSecond(10)
                 .pose(new Pose(poseX, poseY, poseRotation))
                 .buildDefault();
+        arena.addEntity(baseRobot);
+        return baseRobot;
     }
 
-    public BaseRobotTest(double engineRight, double engineLeft, int rounds) {
+    public BaseRobotTest(boolean isTours, double engineRight, double engineLeft, int rounds) {
         this.rounds = rounds;
-        baseRobot = creatTestBaseRobot(1000, 1000, engineRight,
+        baseRobot = creatTestBaseRobot(1000, 1000, isTours, engineRight,
                 engineLeft, 1, 5, 10, 10, 0);
-        if(baseRobot.getPaused()) baseRobot.togglePause();
+        if (baseRobot.getPaused()) baseRobot.togglePause();
     }
 
     @Parameterized.Parameters
@@ -58,13 +61,13 @@ public class BaseRobotTest {
                 {1, 0.9, 1},
                 {0.9, 1, 1},
                 {.1, 0, 1},
-                {.1, .1, 10000},
+                {.1, .1, 1000},
                 {0, .1, 1},
                 {.1, 0, 1000},
                 {0, .1, 1000},
                 {.5, 0, 1000},
                 {7, 4, 1000},
-                {2, 9, 10000},
+                {2, 9, 1000},
                 {0, .5, 1000},
                 {-1, -1, 1000},
                 {-11, -1, 100},
@@ -81,6 +84,8 @@ public class BaseRobotTest {
     /**
      * Tests if the robot will stand on the correct position with given distance after driving
      * Also checks if when driven backwards position is correct
+     * <p>
+     * Turns out it calculates an difference of 0.799999997902 with an path length of 10 000
      */
     @Test
     public void testDriveStraight() {
@@ -100,8 +105,8 @@ public class BaseRobotTest {
                     baseRobot.setNextPosition();
                 }
             }
-            Assert.assertTrue(Math.round(baseRobot.getPose().getX()) == Math.round(position.getX()) &&
-                    Math.round(baseRobot.getPose().getY()) == Math.round(position.getY()));
+            Assert.assertEquals(baseRobot.getPose().getX(), position.getX(), 1);
+            Assert.assertEquals(baseRobot.getPose().getY(), position.getY(), 1);
         }
     }
 
@@ -174,15 +179,17 @@ public class BaseRobotTest {
         double engineR = baseRobot.getEngineR();
         baseRobot.increaseSpeed(2);
         if (engineL <= min)
-            Assert.assertEquals(baseRobot.getEngineL(), min / 2. + 1, 0.0);
-        else if (engineL >= max)
-            Assert.assertEquals(baseRobot.getEngineL(), max / 2., 0.0);
+            Assert.assertEquals(baseRobot.getEngineL(), min + 2, 0.0);
+        else if (engineL >= max || engineL + 1 >= max)
+            Assert.assertEquals(baseRobot.getEngineL(), max, 0.0);
+        else Assert.assertEquals(baseRobot.getEngineL(), engineL + 2, 0.0);
         if (engineR <= min) {
-            System.out.println(baseRobot.getEngineR());
-            Assert.assertEquals(baseRobot.getEngineR(), min / 2. + 1, 0.0);
-        } else if (engineR >= max)
-            Assert.assertEquals(baseRobot.getEngineR(), max / 2., 0.0);
+            Assert.assertEquals(baseRobot.getEngineR(), min + 2, 0.0);
+        } else if (engineR >= max || engineR + 1 >= max)
+            Assert.assertEquals(baseRobot.getEngineR(), max, 0.0);
+        else Assert.assertEquals(baseRobot.getEngineR(), engineR + 2, 0.0);
     }
+
     /**
      * Tests the increase Speed
      */
@@ -190,41 +197,36 @@ public class BaseRobotTest {
     public void testDecreaseSpeed() {
         double engineL = baseRobot.getEngineL();
         double engineR = baseRobot.getEngineR();
-        baseRobot.setEngines(engineL,engineR);
+        baseRobot.setEngines(engineL, engineR);
         baseRobot.increaseSpeed(-3);
-        if (engineL <= min)
-            Assert.assertEquals(baseRobot.getEngineL(), min / 2., 0.0);
+        if (engineL <= min || engineL - 3 <= min)
+            Assert.assertEquals(baseRobot.getEngineL(), min, 0.0);
         else if (engineL >= max)
-            Assert.assertEquals(baseRobot.getEngineL(), max / 2. -1.5, 0.0);
-        if (engineR <= min) {
-            Assert.assertEquals(baseRobot.getEngineR(), min / 2., 0.0);
+            Assert.assertEquals(baseRobot.getEngineL(), max - 3, 0.0);
+        else Assert.assertEquals(baseRobot.getEngineL(), engineL - 3, 0.0);
+        if (engineR <= min || engineR - 3 <= min) {
+            Assert.assertEquals(baseRobot.getEngineR(), min, 0.0);
         } else if (engineR >= max)
-            Assert.assertEquals(baseRobot.getEngineR(), max / 2. -1.5, 0.0);
-    }
-
-    @Test
-    public void testTurn() {
-     double currentOrientation = baseRobot.getPose().getRotation();
-        while(!baseRobot.turn(currentOrientation+Math.PI,4,0)){
-            baseRobot.setNextPosition();
-        }
-        Assert.assertEquals(currentOrientation+Math.PI,baseRobot.getPose().getRotation());
+            Assert.assertEquals(baseRobot.getEngineR(), max - 3, 0.0);
+        else Assert.assertEquals(baseRobot.getEngineR(), engineR - 3, 0.0);
     }
 
     @Test
     public void testSetEngines() {
         double engineL = baseRobot.getEngineL();
         double engineR = baseRobot.getEngineR();
-        baseRobot.setEngines(engineL,engineR);
-        if (engineL <= min)
-            Assert.assertEquals(baseRobot.getEngineL(), min / 2., 0.0);
-        else if (engineL >= max)
-            Assert.assertEquals(baseRobot.getEngineL(), max / 2. -1.5, 0.0);
-        if (engineR <= min) {
+        baseRobot.setEngines(engineR, engineL);
+        if (engineR <= min)
+            Assert.assertEquals(baseRobot.getEngineL(), min, 0.0);
+        else if (engineR >= max)
+            Assert.assertEquals(baseRobot.getEngineL(), max, 0.0);
+        else Assert.assertEquals(baseRobot.getEngineL(), engineR, 0.0);
+        if (engineL <= min) {
             System.out.println(baseRobot.getEngineR());
-            Assert.assertEquals(baseRobot.getEngineR(), min / 2., 0.0);
-        } else if (engineR >= max)
-            Assert.assertEquals(baseRobot.getEngineR(), max / 2. -1.5, 0.0);
+            Assert.assertEquals(baseRobot.getEngineR(), min, 0.0);
+        } else if (engineL >= max)
+            Assert.assertEquals(baseRobot.getEngineR(), max, 0.0);
+        else Assert.assertEquals(baseRobot.getEngineR(), engineL, 0.0);
     }
 
 }

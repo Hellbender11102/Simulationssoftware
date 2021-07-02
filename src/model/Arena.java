@@ -17,9 +17,10 @@ public class Arena {
 
     /**
      * Constructor
-     * @param width     int
-     * @param height    int
-     * @param isTorus   boolean
+     *
+     * @param width   int
+     * @param height  int
+     * @param isTorus boolean
      */
     synchronized
     public static Arena getInstance(int width, int height, boolean isTorus) {
@@ -34,9 +35,10 @@ public class Arena {
      * Constructor
      * Overwrites the singleton
      * This is only to use for restart purposes
-     * @param width     int
-     * @param height    int
-     * @param isTorus   boolean
+     *
+     * @param width   int
+     * @param height  int
+     * @param isTorus boolean
      */
     synchronized
     public static Arena overWriteInstance(int width, int height, boolean isTorus) {
@@ -45,13 +47,14 @@ public class Arena {
     }
 
     private Arena(int width, int height, boolean isTorus) {
-        this.width = width;
-        this.height = height;
+        this.width = Math.max(width, 0);
+        this.height = Math.max(height, 0);
         this.isTorus = isTorus;
     }
 
     /**
      * Returns true if position is in arena bounds
+     *
      * @param position Position
      * @return boolean
      */
@@ -62,39 +65,50 @@ public class Arena {
             return false;
         if (position.getY() < 0)
             return false;
-        else return !(position.getY() > height);
+        else return position.getY() <= height;
     }
 
     /**
      * Returns the position in the arena as if the arena body is an torus
+     *
      * @param position Position
      * @return Position
      */
     public Position setPositionInBoundsTorus(Position position) {
-        Position buffPosition = new Position(position);
-        buffPosition.setX(position.getX() % width);
-        buffPosition.setY(position.getY() % height);
-        if (buffPosition.getX() < 0) buffPosition.addToPosition(width, 0);
-        if (buffPosition.getY() < 0) buffPosition.addToPosition(0, height);
+        Position buffPosition = position.clone();
+        if (width > 0) {
+            buffPosition.xCoordinate = position.getX() % width;
+            while (buffPosition.getX() < 0) buffPosition.addToPosition(width, 0);
+        } else {
+            buffPosition.xCoordinate = 0;
+        }
+        if (height > 0) {
+            buffPosition.yCoordinate = position.getY() % height;
+            while (buffPosition.getY() < 0) buffPosition.addToPosition(0, height);
+        } else {
+            buffPosition.yCoordinate = 0;
+        }
         return buffPosition;
     }
 
     /**
      * Sets the position inside the arena
+     *
      * @param position Position
      * @return Position
      */
     public Position setPositionInBounds(Position position) {
-            Position buffPosition = new Position(position);
-            if (buffPosition.getX() < 0) buffPosition.setX(0);
-            if (buffPosition.getY() < 0) buffPosition.setY(0);
-            if (buffPosition.getX() > width) buffPosition.setX(width);
-            if (buffPosition.getY() > height) buffPosition.setY(height);
-            return buffPosition;
+        Position buffPosition = position.clone();
+        if (buffPosition.getX() < 0) buffPosition.setX(0);
+        if (buffPosition.getY() < 0) buffPosition.setY(0);
+        if (buffPosition.getX() > width) buffPosition.setX(width);
+        if (buffPosition.getY() > height) buffPosition.setY(height);
+        return buffPosition;
     }
 
     /**
      * Sets the entity in the arena as if the arena body is an torus
+     *
      * @param entity Entity
      */
     public void setEntityInTorusArena(Entity entity) {
@@ -109,37 +123,37 @@ public class Arena {
      * @return position
      */
     public Position getClosestPositionInTorus(Position position1, Position position2) {
+       double x=position2.getX(),y = position2.getY();
         if (position2.getX() > width / 2. && position1.getX() < width / 2.)
-            position2 = position1.getEuclideanDistance(position2.creatPositionByDecreasing(width, 0))
-                    < position1.getEuclideanDistance(position2) ? position2.creatPositionByDecreasing(width, 0) :
-                    position2;
+            x = position1.getEuclideanDistance(position2.creatPositionByDecreasing(width, 0))
+                    < position1.getEuclideanDistance(position2) ? position2.creatPositionByDecreasing(width, 0).getX() :
+                    position2.getX();
         else if (position2.getX() < width / 2. && position1.getX() > width / 2.) {
-            position2 = position1.getEuclideanDistance(position2.creatPositionByDecreasing(-width, 0))
-                    < position1.getEuclideanDistance(position2) ? position2.creatPositionByDecreasing(-width, 0) :
-                    position2;
+            x = position1.getEuclideanDistance(position2.creatPositionByDecreasing(-width, 0))
+                    < position1.getEuclideanDistance(position2) ? position2.creatPositionByDecreasing(-width, 0).getX() :
+                    position2.getX();
         }
         if (position2.getY() > height / 2. && position1.getY() < height / 2.)
-            position2 = position1.getEuclideanDistance(position2.creatPositionByDecreasing(0, height))
-                    < position1.getEuclideanDistance(position2) ? position2.creatPositionByDecreasing(0, height) :
-                    position2;
+            y = position1.getEuclideanDistance(position2.creatPositionByDecreasing(0, height))
+                    < position1.getEuclideanDistance(position2) ? position2.creatPositionByDecreasing(0, height).getY() :
+                    position2.getY();
         else if (position2.getY() < height / 2. && position1.getY() > height / 2.) {
-            position2 = position1.getEuclideanDistance(position2.creatPositionByDecreasing(0, -height))
-                    < position1.getEuclideanDistance(position2) ? position2.creatPositionByDecreasing(0, -height) :
-                    position2;
+            y = position1.getEuclideanDistance(position2.creatPositionByDecreasing(0, -height))
+                    < position1.getEuclideanDistance(position2) ? position2.creatPositionByDecreasing(0, -height).getY() :
+                    position2.getY();
         }
-        return position2;
+        return new Position(x,y);
     }
 
     /**
      * Returns the distance between two positions in an torus arena
+     *
      * @param position1 Position
      * @param position2 Position
      * @return double
      */
     public double getEuclideanDistanceToClosestPosition(Position position1, Position position2) {
-        return isTorus ?
-                position1.getEuclideanDistance(getClosestPositionInTorus(position1, position2)) :
-                position1.getEuclideanDistance(position2);
+        return position1.getEuclideanDistance(getClosestPositionInTorus(position1, position2));
     }
 
     @Override
@@ -169,16 +183,19 @@ public class Arena {
     synchronized public List<Entity> getNonPhysicalEntityList() {
         return singleton.entityList.stream().filter(x -> !x.isCollidable()).map(x -> (Entity) x).collect(Collectors.toList());
     }
+
     synchronized public void clearEntityList() {
-         singleton.entityList.clear();
+        singleton.entityList.clear();
     }
 
     synchronized public List<Area> getAreaList() {
         return singleton.entityList.stream().filter(x -> Area.class.isAssignableFrom(x.getClass())).map(x -> (Area) x).collect(Collectors.toList());
     }
+
     synchronized public List<Box> getBoxList() {
         return singleton.entityList.stream().filter(x -> Box.class.isAssignableFrom(x.getClass())).map(x -> (Box) x).collect(Collectors.toList());
     }
+
     synchronized public List<Wall> getWallList() {
         return singleton.entityList.stream().filter(x -> Wall.class.isAssignableFrom(x.getClass())).map(x -> (Wall) x).collect(Collectors.toList());
     }
@@ -195,4 +212,9 @@ public class Arena {
         return singleton.width;
     }
 
+    public void addEntity(Entity entity) {
+        if (!singleton.entityList.contains(entity)) {
+            singleton.entityList.add(entity);
+        }
+    }
 }

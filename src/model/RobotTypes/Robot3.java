@@ -1,5 +1,6 @@
 package model.RobotTypes;
 
+import model.Position;
 import model.RobotBuilder;
 
 import java.awt.*;
@@ -12,9 +13,7 @@ public class Robot3 extends BaseRobot {
 int i =0;
     @Override
     public void behavior() {
-     // moveAndStop(100,8);
-       if (move(100,8))i++;
-       // System.out.println(i);
+     driveToPosition(new Position(1,1),1,10);
     }
 
     @Override

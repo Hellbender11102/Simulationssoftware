@@ -19,21 +19,50 @@ public class Area extends BaseEntity {
         this.noticeableDistanceDiameters = noticeableDistanceDiameters;
     }
 
-    public void decreaseArea(double number) {
-        height += number / 2;
-        width += number / 2;
+    /**
+     * Decreases the size of the area
+     *
+     * @param number double
+     */
+    public void decreaseAreaDiameters(double number) {
+        if (getDiameters() >= number) {
+            height -= number ;
+            width -= number;
+        } else {
+            height = 0;
+            width = 0;
+        }
     }
 
-    public void decreaseAreaOfSight(double number) {
-        noticeableDistanceDiameters -= number;
+    /**
+     * Decreases the size of the area
+     *
+     * @param number double
+     */
+    public void decreaseNoticeableDistanceDiameters(double number) {
+        if (noticeableDistanceDiameters >= number) {
+            noticeableDistanceDiameters -= number;
+        } else {
+            noticeableDistanceDiameters = 0;
+        }
     }
 
+    /**
+     * Increases the size of the area
+     *
+     * @param number double
+     */
     public void increaseArea(double number) {
-        height += number / 2;
-        width += number / 2;
+        height += number;
+        width += number;
     }
 
-    public void increaseAreaOfSight(double number) {
+    /**
+     * Increases the noticeable distance
+     *
+     * @param number double
+     */
+    public void increaseNoticeableDistanceDiameters(double number) {
         noticeableDistanceDiameters += number;
     }
 
@@ -72,11 +101,12 @@ public class Area extends BaseEntity {
      * @return double
      */
     public double getNoticeableDistanceRadius() {
-        return noticeableDistanceDiameters /2;
+        return noticeableDistanceDiameters / 2;
     }
 
     public Position getClosestPositionInEntity(Position position) {
-        return closestPositionInEntityForCircle(position, width / 2.);
+        if ( pose.getEuclideanDistance(position) < getRadius()) return position;
+        return closestPositionInEntityForCircle(position, getRadius());
     }
 
     @Override

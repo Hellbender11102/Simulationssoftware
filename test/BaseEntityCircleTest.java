@@ -1,5 +1,4 @@
 import model.AbstractModel.BaseEntity;
-import model.AbstractModel.BasePhysicalEntity;
 import model.Area;
 import model.Arena;
 import model.Pose;
@@ -14,7 +13,7 @@ import java.util.Collection;
 import java.util.Random;
 
 @RunWith(Parameterized.class)
-public class BasePhysicalEntityTest {
+public class BaseEntityCircleTest {
     private final BaseEntity entity;
 
     @Parameterized.Parameters
@@ -24,31 +23,36 @@ public class BasePhysicalEntityTest {
         });
     }
 
-    public BasePhysicalEntityTest(double width, double height, double poseX, double poseY,boolean isTorus){
-        Pose pose = new Pose(poseX,poseY,0);
+    public BaseEntityCircleTest(double width, double height, double poseX, double poseY, boolean isTorus) {
+        Pose pose = new Pose(poseX, poseY, 0);
         Arena arena = Arena.getInstance(100, 100, isTorus);
-        entity = new BasePhysicalEntity( Arena.getInstance(100,100,isTorus),new Random(),width,height,pose) {
-            @Override
-            public double getTrajectoryMagnitude() {
-                return 0;
-            }
+        entity = new BaseEntity(arena, new Random(), width, height, pose) {
             @Override
             public Color getClassColor() {
                 return null;
             }
+
+            @Override
+            public boolean isCollidable() {
+                return true;
+            }
+
             @Override
             public boolean isPositionInEntity(Position position) {
                 return false;
             }
+
             @Override
             public Position getClosestPositionInEntity(Position position) {
-                return null;
+                return closestPositionInEntityForCircle(pose, width / 2);
             }
+
             @Override
             public double getArea() {
-                return 0;
+                return getAreaCircle();
             }
         };
-
+        arena.addEntity(entity);
     }
+
 }

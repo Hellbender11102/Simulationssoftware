@@ -34,7 +34,6 @@ public class Box extends BasePhysicalEntity {
      */
     @Override
     public Position getClosestPositionInEntity(Position position) {
-
         return closestPositionInEntityForSquare(position);
     }
 
