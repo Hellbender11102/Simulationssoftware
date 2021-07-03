@@ -27,7 +27,7 @@ public class BasePhysicalEntityTest {
     public BasePhysicalEntityTest(double width, double height, double poseX, double poseY,boolean isTorus){
         Pose pose = new Pose(poseX,poseY,0);
         Arena arena = Arena.getInstance(100, 100, isTorus);
-        entity = new BasePhysicalEntity( Arena.getInstance(100,100,isTorus),new Random(),width,height,pose) {
+        entity = new BasePhysicalEntity( Arena.getInstance(100,100,isTorus),new Random(),width,height,pose,1) {
             @Override
             public double getTrajectoryMagnitude() {
                 return 0;

@@ -9,8 +9,8 @@ public class Wall extends BasePhysicalEntity {
     final Pose pose;
 
 
-    public Wall(Arena arena, Random random, double width, double height, Pose pose) {
-        super(arena, random, width, height, pose);
+    public Wall(Arena arena, Random random, double width, double height, Pose pose, int ticsPerSimulatedSecond) {
+        super(arena, random, width, height, pose, ticsPerSimulatedSecond);
         this.pose = pose;
     }
 
@@ -42,4 +42,10 @@ public class Wall extends BasePhysicalEntity {
     public double getArea() {
         return getAreaSquare();
     }
+
+    /**
+     * Calculates and sets the next position
+     */
+    public void setNextPosition() { }
+
 }

@@ -106,6 +106,7 @@ abstract public class BaseEntity extends Thread implements Entity {
      * @return Position
      */
     protected Position closestPositionInEntityForSquare(Position position) {
+        if (isPositionInEntitySquare(position)) return position;
         if (arena.isTorus) {
             position = arena.getClosestPositionInTorus(pose, position);
         }
@@ -113,18 +114,18 @@ abstract public class BaseEntity extends Thread implements Entity {
         if (position.getX() <= pose.getX() + width / 2 &&
                 position.getX() >= pose.getX() - width / 2) {
             closest.setX(position.getX());
-            if(position.getY() > pose.getY()){
-                closest.setY(closest.getY()+height/2);
-            } else{
-                closest.setY(closest.getY()-height/2);
+            if (position.getY() > pose.getY()) {
+                closest.setY(closest.getY() + height / 2);
+            } else {
+                closest.setY(closest.getY() - height / 2);
             }
         } else if (position.getY() <= pose.getY() + height / 2 &&
                 position.getY() >= pose.getY() - height / 2) {
             closest.setY(position.getY());
-            if(position.getX() > pose.getX()){
-                closest.setX(closest.getX()+width/2);
-            } else{
-                closest.setX(closest.getX()-width/2);
+            if (position.getX() > pose.getX()) {
+                closest.setX(closest.getX() + width / 2);
+            } else {
+                closest.setX(closest.getX() - width / 2);
             }
         }
         return closest;

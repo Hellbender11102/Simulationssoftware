@@ -21,17 +21,6 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      */
     private int timeToSimulate;
     /**
-     * Since all values implemented are working in seconds
-     * this ensures the atomic actions of the robot will be changed to the action result / ticsPerSimulatedSecond
-     * thus 1000 will mean a single robot run() call will simulate 1 ms of time.
-     * to simulate coarser time intervals reduce this number.
-     * 1000 = 1 ms
-     * 100 = 10ms
-     * 1 = 1 second
-     * the lowest time scale is 1 ms
-     */
-    final int ticsPerSimulatedSecond;
-    /**
      * in centimeters
      */
     private final double maxSpeed, minSpeed;
@@ -70,7 +59,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * @param builder RobotBuilder
      */
     public BaseRobot(RobotBuilder builder) {
-        super(builder.getArena(), builder.getRandom(), builder.getDiameters(), builder.getDiameters(), builder.getPose());
+        super(builder.getArena(), builder.getRandom(), builder.getDiameters(), builder.getDiameters(), builder.getPose(),builder.getTicsPerSimulatedSecond());
         poseRingMemory[poseRingMemoryHead] = builder.getPose();
         maxSpeed = builder.getMaxSpeed();
         minSpeed = builder.getMinSpeed();
@@ -80,7 +69,6 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         diameters = builder.getDiameters();
         powerTransmission = builder.getPowerTransmission();
         logger = builder.getLogger();
-        ticsPerSimulatedSecond = builder.getTicsPerSimulatedSecond();
         timeToSimulate = builder.getTimeToSimulate() * builder.getTicsPerSimulatedSecond();
         simulateWithView = builder.getSimulateWithView();
     }
@@ -115,9 +103,8 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      */
     @Override
     public void setNextPosition() {
-        movingVec = pose.getVectorInDirection(getTrajectoryMagnitude(), pose.getRotation()).add(movingVec);
-        pose.addToPosition(movingVec);
-        movingVec.setToZeroVector();
+        pose.addToPosition(movingVec.get());
+        movingVec.get().setToZeroVector();
         pose.incRotation(angularVelocity());
     }
 
@@ -129,8 +116,9 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     public void run() {
         while (!isPaused || (timeToSimulate > 0 && !simulateWithView)) {
             behavior();
-            setNextPosition();
+            movingVec.getAndSet(Vector2D.creatCartesian(getTrajectoryMagnitude(), pose.getRotation()));
             collisionDetection();
+            setNextPosition();
             updatePositionMemory();
             if (timeToSimulate <= 0 || simulateWithView) {
                 try {
