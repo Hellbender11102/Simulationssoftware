@@ -41,4 +41,5 @@ public class Box extends BasePhysicalEntity {
     public double getArea() {
         return getAreaSquare();
     }
+
 }

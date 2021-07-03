@@ -77,6 +77,7 @@ public class Vector2D {
         return new Vector2D(x + vector.getX(), y + vector.getX());
     }
 
+
     /**
      * Returns the scalar product of this and the given vector
      *

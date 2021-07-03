@@ -8,6 +8,7 @@ import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicReference;
 
 public interface PhysicalEntity extends Entity, Runnable {
 
@@ -29,5 +30,5 @@ public interface PhysicalEntity extends Entity, Runnable {
 
     abstract public double getWeight();
 
-    abstract public Vector2D getMovingVec();
+    abstract public AtomicReference<Vector2D> getMovingVec();
 }

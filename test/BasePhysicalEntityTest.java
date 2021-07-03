@@ -49,6 +49,6 @@ public class BasePhysicalEntityTest {
                 return 0;
             }
         };
-
+        arena.addEntity(entity);
     }
 }

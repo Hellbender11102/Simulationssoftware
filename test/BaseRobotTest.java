@@ -1,7 +1,4 @@
-import model.RobotBuilder;
-import model.Arena;
-import model.Pose;
-import model.Position;
+import model.*;
 import model.RobotTypes.BaseRobot;
 import org.junit.Assert;
 import org.junit.Test;
@@ -81,6 +78,11 @@ public class BaseRobotTest {
         });
     }
 
+    private void setNext(){
+        baseRobot.getMovingVec().set(Vector2D.creatCartesian(baseRobot.getTrajectoryMagnitude(), baseRobot.getPose().getRotation()));
+        baseRobot.setNextPosition();
+    }
+    
     /**
      * Tests if the robot will stand on the correct position with given distance after driving
      * Also checks if when driven backwards position is correct
@@ -97,12 +99,12 @@ public class BaseRobotTest {
             if (max > 0) {
                 position = baseRobot.getPose().getPositionInDirection(rounds);
                 for (int i = 0; i < rounds / speed; i++) {
-                    baseRobot.setNextPosition();
+                    setNext();
                 }
             } else {
                 position = baseRobot.getPose().getPositionInDirection(-rounds);
                 for (int i = 0; i > rounds / speed; i--) {
-                    baseRobot.setNextPosition();
+                    setNext();
                 }
             }
             Assert.assertEquals(baseRobot.getPose().getX(), position.getX(), 1);
@@ -118,7 +120,7 @@ public class BaseRobotTest {
         double degree = baseRobot.angularVelocity();
         Position position = baseRobot.getPose().clone();
         for (double i = 0; i < rounds * 2 * Math.PI && i > rounds * 2 * Math.PI; i += degree) {
-            baseRobot.setNextPosition();
+            setNext();
         }
         Assert.assertTrue(Math.round(baseRobot.getPose().getX()) == Math.round(position.getX()) &&
                 Math.round(baseRobot.getPose().getY()) == Math.round(position.getY()));
@@ -137,7 +139,7 @@ public class BaseRobotTest {
             double distance = position.getEuclideanDistance(baseRobot.getPose());
             for (int i = 0; i < rounds / speed; i++) {
                 baseRobot.driveToPosition(position, 1, max);
-                baseRobot.setNextPosition();
+                setNext();
             }
             if (max > 0)
                 Assert.assertTrue(distance > position.getEuclideanDistance(baseRobot.getPose()));
@@ -157,12 +159,12 @@ public class BaseRobotTest {
             if (rounds / speed > 0) {
                 for (int i = 0; i < rounds / speed; i++) {
                     baseRobot.moveRandom(10, speed, 45);
-                    baseRobot.setNextPosition();
+                    setNext();
                 }
             } else {
                 for (int i = 0; i > rounds / speed; i--) {
                     baseRobot.moveRandom(10, speed, 45);
-                    baseRobot.setNextPosition();
+                    setNext();
                 }
             }
             Assert.assertFalse(clone.equals(baseRobot.getPose()));

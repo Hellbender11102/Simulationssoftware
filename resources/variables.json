@@ -19,21 +19,6 @@
       "diameters": 4.0,
       "powerTransmission": 0.0,
       "position": {
-        "x": 20.0,
-        "y": 10.0,
-        "rotation": 180.0
-      }
-    },
-    {
-      "type": "a",
-      "visionRange": 20.0,
-      "visionAngle": 40.0,
-      "engineR": 10.0,
-      "engineL": 10.0,
-      "distance": 4.0,
-      "diameters": 4.0,
-      "powerTransmission": 0.0,
-      "position": {
         "x": 10.0,
         "y": 10.0,
         "rotation": 0.0
@@ -51,6 +36,21 @@
       "position": {
         "x": 10.0,
         "y": 20.0,
+        "rotation": 0.0
+      }
+    },
+    {
+      "type": "a",
+      "visionRange": 20.0,
+      "visionAngle": 40.0,
+      "engineR": 10.0,
+      "engineL": 10.0,
+      "distance": 4.0,
+      "diameters": 4.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 20.0,
+        "y": 50.0,
         "rotation": 0.0
       }
     }
@@ -69,16 +69,7 @@
       "width": 10.0,
       "height": 10.0,
       "position": {
-        "x": 45.0,
-        "y": 50.0,
-        "rotation": 0.0
-      }
-    },
-    {
-      "width": 10.0,
-      "height": 10.0,
-      "position": {
-        "x": 50.0,
+        "x": 35.0,
         "y": 50.0,
         "rotation": 0.0
       }
