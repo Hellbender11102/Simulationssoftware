@@ -31,13 +31,9 @@ public class Wall extends BasePhysicalEntity {
 
     @Override
     public Position getClosestPositionInEntity(Position position) {
-       return closestPositionInEntityForSquare(position);
+        return closestPositionInEntityForSquare(position);
     }
 
-    @Override
-    public boolean isMovable() {
-        return false;
-    }
     @Override
     public double getArea() {
         return getAreaSquare();
@@ -46,6 +42,7 @@ public class Wall extends BasePhysicalEntity {
     /**
      * Calculates and sets the next position
      */
-    public void setNextPosition() { }
+    public void setNextPosition() {
+    }
 
 }

@@ -59,7 +59,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * @param builder RobotBuilder
      */
     public BaseRobot(RobotBuilder builder) {
-        super(builder.getArena(), builder.getRandom(), builder.getDiameters(), builder.getDiameters(), builder.getPose(),builder.getTicsPerSimulatedSecond());
+        super(builder.getArena(), builder.getRandom(), builder.getDiameters(), builder.getDiameters(), builder.getPose(), builder.getTicsPerSimulatedSecond());
         poseRingMemory[poseRingMemoryHead] = builder.getPose();
         maxSpeed = builder.getMaxSpeed();
         minSpeed = builder.getMinSpeed();
@@ -98,13 +98,17 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
                 / distanceE) / ticsPerSimulatedSecond;
     }
 
+    @Override
+    public double cmPerSecond() {
+        return movingVec.get().getLength() * ticsPerSimulatedSecond;
+    }
+
     /**
      * Calculates and sets the next position
      */
     @Override
     public void setNextPosition() {
         pose.addToPosition(movingVec.get());
-        movingVec.get().setToZeroVector();
         pose.incRotation(angularVelocity());
     }
 
@@ -116,7 +120,13 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     public void run() {
         while (!isPaused || (timeToSimulate > 0 && !simulateWithView)) {
             behavior();
-            movingVec.getAndSet(Vector2D.creatCartesian(getTrajectoryMagnitude(), pose.getRotation()));
+            if (movingVec.get().getLength() < getTrajectoryMagnitude())
+                movingVec.set(movingVec.get()
+                        .add(Vector2D.creatCartesian(
+                                getTrajectoryMagnitude() * (0.1/ticsPerSimulatedSecond), pose.getRotation())));
+            else {
+                movingVec.set(movingVec.get().rotateTo(pose.getRotation()));
+            }
             collisionDetection();
             setNextPosition();
             updatePositionMemory();
@@ -524,7 +534,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
 
     @Override
     public Position getClosestPositionInEntity(Position position) {
-        if ( pose.getEuclideanDistance(position) < getRadius()) return position;
+        if (pose.getEuclideanDistance(position) < getRadius()) return position;
         return closestPositionInEntityForCircle(position, getRadius());
     }
 

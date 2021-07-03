@@ -24,6 +24,7 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
     protected final int ticsPerSimulatedSecond;
     protected AtomicReference<Vector2D> movingVec = new AtomicReference<Vector2D>();
 
+
     protected BasePhysicalEntity(Arena arena, Random random, double width, double height, Pose pose, int ticsPerSimulatedSecond) {
         super(arena, random, width, height, pose);
         movingVec.set(Vector2D.zeroVector());
@@ -49,7 +50,7 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
      */
     public void setNextPosition() {
         pose.addToPosition(movingVec.get());
-        movingVec.get().setToZeroVector();
+        movingVec.set(movingVec.get().divide(1.01));
     }
 
     /**
@@ -58,7 +59,6 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
     @Override
     public void run() {
         while (!isPaused) {
-            movingVec.getAndSet(Vector2D.zeroVector());
             collisionDetection();
             setNextPosition();
             updatePositionMemory();
@@ -107,14 +107,14 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
 
         // if squared entity use other position to calculate the pushing angle
         if (Wall.class.isAssignableFrom(physicalEntity.getClass()) || Box.class.isAssignableFrom(physicalEntity.getClass())) {
-             u2Angle = physicalEntity.getClosestPositionInEntity(pose).getAngleToPosition(pose);
-             u1Angle = pose.getAngleFromPosition(physicalEntity.getClosestPositionInEntity(pose));
+            u2Angle = physicalEntity.getClosestPositionInEntity(pose).getAngleToPosition(pose);
+            u1Angle = pose.getAngleFromPosition(physicalEntity.getClosestPositionInEntity(pose));
         }
         if (Wall.class.isAssignableFrom(getClass()) || Box.class.isAssignableFrom(getClass())) {
             u2Angle = physicalEntity.getPose().getAngleToPosition(getClosestPositionInEntity(physicalEntity.getPose()));
             u1Angle = getClosestPositionInEntity(physicalEntity.getPose()).getAngleFromPosition(physicalEntity.getPose());
         }
-        Vector2D moving1 = movingVec.getAcquire(), moving2 = physicalEntity.getMovingVec().getAcquire();
+        Vector2D moving1 = movingVec.get(), moving2 = physicalEntity.getMovingVec().get();
         double m1 = getWeight(), m2 = physicalEntity.getWeight();
         double v1 = moving1.getLength(),
                 v2 = moving2.getLength();
@@ -125,16 +125,13 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
                 aIncrease = Vector2D.creatCartesian(u1New, u1Angle);
 
         Vector2D resulting = aIncrease.subtract(moving1);
-         resulting = aIncrease;
+        resulting = aIncrease;
         Vector2D resultingPe = bIncrease.subtract(moving2);
-         resultingPe = bIncrease;
+        resultingPe = bIncrease;
 
-        if (isMovable()) {
-            movingVec.setRelease(resulting);
-        }
-        if (physicalEntity.isMovable()) {
-            physicalEntity.getMovingVec().setRelease(resultingPe);
-        }
+        movingVec.set(resulting);
+
+        physicalEntity.getMovingVec().set(resultingPe);
 
     }
 
@@ -221,11 +218,6 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
 
     @Override
     public boolean isCollidable() {
-        return true;
-    }
-
-    @Override
-    public boolean isMovable() {
         return true;
     }
 

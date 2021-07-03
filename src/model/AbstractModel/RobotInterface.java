@@ -4,20 +4,22 @@ import java.util.List;
 
 public interface RobotInterface extends PhysicalEntity {
 
-    abstract void behavior();
+    void behavior();
 
-    abstract public double getDiameters();
+    double getDiameters();
 
-    abstract public double getRadius();
+    double getRadius();
 
-    abstract public double getEngineL();
+    double getEngineL();
 
-    abstract public double getEngineR();
+    double getEngineR();
 
-    abstract public boolean getSignal();
+    boolean getSignal();
 
-    abstract public double distanceToClosestEntityOfClass(List<Class> classList);
+    double distanceToClosestEntityOfClass(List<Class> classList);
 
-    abstract public int getTimeToSimulate();
+    int getTimeToSimulate();
+
+    double cmPerSecond();
 
 }

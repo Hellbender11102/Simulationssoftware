@@ -26,8 +26,6 @@ public interface PhysicalEntity extends Entity, Runnable {
 
     abstract public void collision(PhysicalEntity physicalEntity);
 
-    abstract public boolean isMovable();
-
     abstract public double getWeight();
 
     abstract public AtomicReference<Vector2D> getMovingVec();

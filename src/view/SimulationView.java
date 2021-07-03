@@ -220,7 +220,7 @@ public class SimulationView extends JPanel {
             y += fontSize;
             g2d.drawString("R:" + String.format("%,.2f", robot.getEngineR()) +
                             " L:" + String.format("%,.2f", robot.getEngineL()) +
-                            " V:" + String.format("%,.2f", robot.getTrajectoryMagnitude())
+                            " V:" + String.format("%,.2f", robot.cmPerSecond())
                     , x - 28 - fontSize, y);
         }
         if (drawRobotRotation) {
