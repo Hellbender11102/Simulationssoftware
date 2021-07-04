@@ -26,7 +26,7 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
      * Describes how elastic the bump is
      * bumpParam = 1 for the elastic bump
      * bumpParam = 0 for the completely inelastic angle
-      */
+     */
     private final int bumpParam = 1;
     protected AtomicReference<Vector2D> movingVec = new AtomicReference<Vector2D>();
 
@@ -111,23 +111,27 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
      * Calculates the collision with an elastic shock
      *
      * @param physicalEntity PhysicalEntity
-     *
      */
     public void collision(PhysicalEntity physicalEntity) {
-        double u1Angle = pose.getAngleToPosition(physicalEntity.getPose());
-        double u2Angle = physicalEntity.getPose().getAngleToPosition(pose);
+        Position position = pose, positionPe = physicalEntity.getPose();
+        if (arena.isTorus) {
+             position = arena.getClosestPositionInTorus(physicalEntity.getPose(), pose);
+             positionPe = arena.getClosestPositionInTorus(pose, physicalEntity.getPose());
+        }
+
+        double u1Angle = position.getAngleToPosition(positionPe);
+        double u2Angle =positionPe.getAngleToPosition(position);
 
         // if squared entity use other position to calculate the pushing angle
         if (Wall.class.isAssignableFrom(physicalEntity.getClass()) || Box.class.isAssignableFrom(physicalEntity.getClass())) {
-            u2Angle = physicalEntity.getClosestPositionInEntity(pose).getAngleToPosition(pose);
-            u1Angle = pose.getAngleToPosition(physicalEntity.getClosestPositionInEntity(pose));
+            u2Angle = physicalEntity.getClosestPositionInEntity(position).getAngleToPosition(position);
+            u1Angle = position.getAngleToPosition(physicalEntity.getClosestPositionInEntity(position));
         }
 
         if (Wall.class.isAssignableFrom(getClass()) || Box.class.isAssignableFrom(getClass())) {
-            u2Angle = physicalEntity.getPose().getAngleToPosition(getClosestPositionInEntity(physicalEntity.getPose()));
-            u1Angle = getClosestPositionInEntity(physicalEntity.getPose()).getAngleToPosition(physicalEntity.getPose());
+            u2Angle = positionPe.getAngleToPosition(getClosestPositionInEntity(positionPe));
+            u1Angle = getClosestPositionInEntity(positionPe).getAngleToPosition(positionPe);
         }
-
 
         synchronized (this) {
             Vector2D moving1 = movingVec.getAcquire(), moving2 = physicalEntity.getMovingVec().getAcquire();
