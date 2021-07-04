@@ -2,7 +2,6 @@ package model.AbstractModel;
 
 import model.*;
 
-import java.awt.geom.Line2D;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -22,6 +21,13 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
      * the lowest time scale is 1 ms
      */
     protected final int ticsPerSimulatedSecond;
+    protected final double frictionInPercent = .50;
+    /**
+     * Describes how elastic the bump is
+     * bumpParam = 1 for the elastic bump
+     * bumpParam = 0 for the completely inelastic angle
+      */
+    private final int bumpParam = 1;
     protected AtomicReference<Vector2D> movingVec = new AtomicReference<Vector2D>();
 
 
@@ -49,8 +55,9 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
      * Calculates and sets the next position
      */
     public void setNextPosition() {
+        pose.setRotation(movingVec.get().angle());
         pose.addToPosition(movingVec.get());
-        movingVec.set(movingVec.get().divide(1.01));
+        movingVec.set(movingVec.get());
     }
 
     /**
@@ -59,6 +66,7 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
     @Override
     public void run() {
         while (!isPaused) {
+            alterMovingVector();
             collisionDetection();
             setNextPosition();
             updatePositionMemory();
@@ -68,6 +76,11 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public void alterMovingVector() {
+        movingVec.set(movingVec.get().multiplication(1 - frictionInPercent));
     }
 
 
@@ -98,41 +111,39 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
      * Calculates the collision with an elastic shock
      *
      * @param physicalEntity PhysicalEntity
-     *                       source =
-     *                       https://www.physik.tu-darmstadt.de/media/fachbereich_physik/phys_studium/phys_studium_bachelor/phys_studium_bsc_praktika/phys_studium_bsc_praktika_gp/phys_studium_bsc_praktika_gp_mechanik/m4/m4bilder/m4_neuSS15.pdf
+     *
      */
     public void collision(PhysicalEntity physicalEntity) {
-        double u1Angle = pose.getAngleFromPosition(physicalEntity.getPose());
+        double u1Angle = pose.getAngleToPosition(physicalEntity.getPose());
         double u2Angle = physicalEntity.getPose().getAngleToPosition(pose);
 
         // if squared entity use other position to calculate the pushing angle
         if (Wall.class.isAssignableFrom(physicalEntity.getClass()) || Box.class.isAssignableFrom(physicalEntity.getClass())) {
             u2Angle = physicalEntity.getClosestPositionInEntity(pose).getAngleToPosition(pose);
-            u1Angle = pose.getAngleFromPosition(physicalEntity.getClosestPositionInEntity(pose));
+            u1Angle = pose.getAngleToPosition(physicalEntity.getClosestPositionInEntity(pose));
         }
+
         if (Wall.class.isAssignableFrom(getClass()) || Box.class.isAssignableFrom(getClass())) {
             u2Angle = physicalEntity.getPose().getAngleToPosition(getClosestPositionInEntity(physicalEntity.getPose()));
-            u1Angle = getClosestPositionInEntity(physicalEntity.getPose()).getAngleFromPosition(physicalEntity.getPose());
+            u1Angle = getClosestPositionInEntity(physicalEntity.getPose()).getAngleToPosition(physicalEntity.getPose());
         }
-        Vector2D moving1 = movingVec.get(), moving2 = physicalEntity.getMovingVec().get();
-        double m1 = getWeight(), m2 = physicalEntity.getWeight();
-        double v1 = moving1.getLength(),
-                v2 = moving2.getLength();
-        double u2New = ((2 * m1) / (m1 + m2)) * v1 * Math.cos(u2Angle);
-        double u1New = ((2 * m2) / (m1 + m2)) * v2 * Math.cos(u1Angle);
 
-        Vector2D bIncrease = Vector2D.creatCartesian(u2New, u2Angle),
-                aIncrease = Vector2D.creatCartesian(u1New, u1Angle);
 
-        Vector2D resulting = aIncrease.subtract(moving1);
-        resulting = aIncrease;
-        Vector2D resultingPe = bIncrease.subtract(moving2);
-        resultingPe = bIncrease;
+        synchronized (this) {
+            Vector2D moving1 = movingVec.getAcquire(), moving2 = physicalEntity.getMovingVec().getAcquire();
 
-        movingVec.set(resulting);
+            double m1 = getWeight(), m2 = physicalEntity.getWeight();
+            double v1 = moving1.getLength(), v2 = moving2.getLength();
 
-        physicalEntity.getMovingVec().set(resultingPe);
+            double u2New = ((bumpParam * m1) / (m1 + m2)) * v1 * Math.cos(u2Angle);
+            double u1New = ((bumpParam * m2) / (m1 + m2)) * v2 * Math.cos(u1Angle);
 
+            Vector2D resultingPe = Vector2D.creatCartesian(u2New, u2Angle),
+                    resulting = Vector2D.creatCartesian(u1New, u1Angle);
+
+            movingVec.setRelease(moving1.add(resulting).rotateTo(u1Angle));
+            physicalEntity.getMovingVec().setRelease(moving2.add(resultingPe).rotateTo(u2Angle));
+        }
     }
 
 
@@ -156,14 +167,22 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
      */
     @Override
     public void setInArenaBounds() {
-        if (pose.getX() < width / 2)
+        Vector2D buff = movingVec.get();
+        if (pose.getX() < width / 2) {
             pose.setX(width / 2);
-        else if (pose.getX() > arena.getWidth() - width / 2)
+            buff.set(0, buff.getY());
+        } else if (pose.getX() > arena.getWidth() - width / 2) {
             pose.setX(arena.getWidth() - width / 2);
-        if (pose.getY() < height / 2)
+            buff.set(0, buff.getY());
+        }
+        if (pose.getY() < height / 2) {
             pose.setY(height / 2);
-        else if (pose.getY() > arena.getHeight() - height / 2)
+            buff.set(buff.getX(), 0);
+        } else if (pose.getY() > arena.getHeight() - height / 2) {
             pose.setY(arena.getHeight() - height / 2);
+            buff.set(buff.getX(), 0);
+        }
+        movingVec.set(buff);
     }
     //TODO FOR TORUS
 

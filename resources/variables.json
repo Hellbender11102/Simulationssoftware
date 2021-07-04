@@ -4,7 +4,7 @@
   "maxSpeed": 8.0,
   "minSpeed": 0.0,
   "arena": {
-    "torus": false,
+    "torus": true,
     "width": 100,
     "height": 100
   },
@@ -13,13 +13,28 @@
       "type": "a",
       "visionRange": 20.0,
       "visionAngle": 40.0,
-      "engineR": 10.0,
-      "engineL": 10.0,
+      "engineR": 1.0,
+      "engineL": 1.0,
       "distance": 4.0,
       "diameters": 4.0,
       "powerTransmission": 0.0,
       "position": {
         "x": 10.0,
+        "y": 10.0,
+        "rotation": 0.0
+      }
+    },
+    {
+      "type": "a",
+      "visionRange": 20.0,
+      "visionAngle": 40.0,
+      "engineR": 0.1,
+      "engineL": 0.1,
+      "distance": 4.0,
+      "diameters": 4.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 3.0,
         "y": 10.0,
         "rotation": 0.0
       }
@@ -43,13 +58,13 @@
       "type": "a",
       "visionRange": 20.0,
       "visionAngle": 40.0,
-      "engineR": 10.0,
-      "engineL": 10.0,
+      "engineR": 8.0,
+      "engineL": 7.999,
       "distance": 4.0,
       "diameters": 4.0,
       "powerTransmission": 0.0,
       "position": {
-        "x": 20.0,
+        "x": 10.0,
         "y": 50.0,
         "rotation": 0.0
       }

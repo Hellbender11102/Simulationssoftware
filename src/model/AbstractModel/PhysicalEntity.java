@@ -12,21 +12,23 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public interface PhysicalEntity extends Entity, Runnable {
 
-    abstract Position centerOfGroupWithClasses(List<Class> classList);
+    Position centerOfGroupWithClasses(List<Class> classList);
 
-    abstract public double getTrajectoryMagnitude();
+    double getTrajectoryMagnitude();
 
-    abstract public boolean inArenaBounds();
+    boolean inArenaBounds();
 
-    abstract public void setInArenaBounds();
+    void setInArenaBounds();
 
-    abstract public LinkedList<PhysicalEntity> collidingWith();
+    LinkedList<PhysicalEntity> collidingWith();
 
-    abstract public boolean collisionDetection();
+    boolean collisionDetection();
 
-    abstract public void collision(PhysicalEntity physicalEntity);
+    void collision(PhysicalEntity physicalEntity);
 
-    abstract public double getWeight();
+    double getWeight();
 
-    abstract public AtomicReference<Vector2D> getMovingVec();
+    AtomicReference<Vector2D> getMovingVec();
+
+    void alterMovingVector();
 }

@@ -39,9 +39,9 @@ public class BaseRobotTest {
         return baseRobot;
     }
 
-    public BaseRobotTest(boolean isTours, double engineRight, double engineLeft, int rounds) {
+    public BaseRobotTest( double engineRight, double engineLeft, int rounds) {
         this.rounds = rounds;
-        baseRobot = creatTestBaseRobot(1000, 1000, isTours, engineRight,
+        baseRobot = creatTestBaseRobot(1000, 1000, false, engineRight,
                 engineLeft, 1, 5, 10, 10, 0);
         if (baseRobot.getPaused()) baseRobot.togglePause();
     }
@@ -79,7 +79,7 @@ public class BaseRobotTest {
     }
 
     private void setNext(){
-        baseRobot.getMovingVec().set(Vector2D.creatCartesian(baseRobot.getTrajectoryMagnitude(), baseRobot.getPose().getRotation()));
+        baseRobot.alterMovingVector();
         baseRobot.setNextPosition();
     }
     
@@ -158,12 +158,11 @@ public class BaseRobotTest {
         if (speed != 0) {
             if (rounds / speed > 0) {
                 for (int i = 0; i < rounds / speed; i++) {
-                    baseRobot.moveRandom(10, speed, 45);
+
                     setNext();
                 }
             } else {
                 for (int i = 0; i > rounds / speed; i--) {
-                    baseRobot.moveRandom(10, speed, 45);
                     setNext();
                 }
             }

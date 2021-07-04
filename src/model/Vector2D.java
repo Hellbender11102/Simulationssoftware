@@ -151,13 +151,14 @@ public class Vector2D {
     public double distance(Vector2D vector) {
         return Math.hypot(x - vector.x, y - vector.y);
     }
+
     /**
      * Returns angle of the vector
      *
      * @return double
      */
     public double angle() {
-        return Math.atan2(y,x);
+        return Math.atan2(y, x);
     }
 
     /**

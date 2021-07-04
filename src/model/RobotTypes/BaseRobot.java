@@ -51,6 +51,8 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      */
     int identifier = 0;
     protected boolean signal = false;
+    protected double percentageOfMaxSpeedAsSpeedup = 0.1;
+    private double currentSpeed = 0;
 
 
     /**
@@ -98,9 +100,15 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
                 / distanceE) / ticsPerSimulatedSecond;
     }
 
+    /**
+     * Returns the (last speed + current speed) / 2
+     * @return double
+     */
     @Override
     public double cmPerSecond() {
-        return movingVec.get().getLength() * ticsPerSimulatedSecond;
+        currentSpeed += movingVec.get().getLength() * ticsPerSimulatedSecond;
+        currentSpeed /= 2;
+        return currentSpeed;
     }
 
     /**
@@ -119,14 +127,8 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     @Override
     public void run() {
         while (!isPaused || (timeToSimulate > 0 && !simulateWithView)) {
+            alterMovingVector();
             behavior();
-            if (movingVec.get().getLength() < getTrajectoryMagnitude())
-                movingVec.set(movingVec.get()
-                        .add(Vector2D.creatCartesian(
-                                getTrajectoryMagnitude() * (0.1/ticsPerSimulatedSecond), pose.getRotation())));
-            else {
-                movingVec.set(movingVec.get().rotateTo(pose.getRotation()));
-            }
             collisionDetection();
             setNextPosition();
             updatePositionMemory();
@@ -138,6 +140,24 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
                 }
             }
             if (!simulateWithView) timeToSimulate--;
+        }
+    }
+
+    /**
+     * Calculates and adds the acceleration vector to the moving vector
+     * If robot is faster than the engine settings it will slow down by friction
+     */
+    @Override
+    public void alterMovingVector() {
+        Vector2D incVec = Vector2D.creatCartesian(getTrajectoryMagnitude() * percentageOfMaxSpeedAsSpeedup, pose.getRotation());
+        Vector2D moving = movingVec.get();
+
+        if (moving.getLength() < getTrajectoryMagnitude()) {
+            moving = moving.add(incVec);
+            // rotating again to avoid imprecision
+            movingVec.set(moving.rotateTo(pose.getRotation()));
+        } else if (moving.getLength() > getTrajectoryMagnitude()) {
+            movingVec.set(moving.multiplication(1 - frictionInPercent).rotateTo(pose.getRotation()));
         }
     }
 

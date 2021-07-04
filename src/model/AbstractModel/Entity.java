@@ -9,38 +9,38 @@ import java.util.Random;
 
 public interface Entity {
 
-    abstract public Color getClassColor();
+    Color getClassColor();
 
-    abstract public Pose getPose();
+    Pose getPose();
 
-    abstract public void togglePause();
+    void togglePause();
 
-    abstract public boolean getPaused();
+    boolean getPaused();
 
-    abstract public boolean equals(Entity entity);
+    boolean equals(Entity entity);
 
-    abstract public Random getRandom();
+    Random getRandom();
 
-    abstract public void setPrevPose();
+    void setPrevPose();
 
-    abstract public void setNextPose();
+    void setNextPose();
 
-    abstract public void setToLatestPose();
+    void setToLatestPose();
 
-    abstract public Color getColor();
+    Color getColor();
 
-    abstract public void updatePositionMemory();
+    void updatePositionMemory();
 
-    abstract public boolean isCollidable();
+    boolean isCollidable();
 
-    abstract public boolean isPositionInEntity(Position position);
+    boolean isPositionInEntity(Position position);
 
-    abstract public Position getClosestPositionInEntity(Position position);
+    Position getClosestPositionInEntity(Position position);
 
-    abstract public double getWidth();
+    double getWidth();
 
-    abstract public double getHeight();
+    double getHeight();
 
-    abstract public double getArea();
+    double getArea();
 
 }
