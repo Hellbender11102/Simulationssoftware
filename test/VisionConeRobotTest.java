@@ -1,7 +1,5 @@
 import model.*;
 import model.AbstractModel.RobotInterface;
-import model.RobotTypes.BaseRobot;
-import model.RobotTypes.BaseVisionConeRobot;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -33,7 +31,7 @@ public class VisionConeRobotTest {
                 .maxSpeed(max)
                 .ticsPerSimulatedSecond(10)
                 .pose(new Pose(poseX, poseY, poseRotation))
-                .visionCone();
+                .buildVisionCone();
     }
 
     public VisionConeRobotTest(boolean isTorus,double engineRight, double engineLeft, int rounds) {

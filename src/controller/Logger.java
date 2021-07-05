@@ -127,7 +127,7 @@ public class Logger {
             fileWriter.flush();
             fileWriter.close();
         } catch (IOException e) {
-            System.err.println("Fehler. Error konnte nicht geloggt werden!");
+            System.err.println("Fehler. Fehler konnte nicht geloggt werden!");
             e.printStackTrace();
         }
     }

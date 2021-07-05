@@ -356,7 +356,7 @@ class JsonLoader {
                     robot = builder.buildRobot4();
                     break;
                 case "vision":
-                    robot = builder.visionCone();
+                    robot = builder.buildVisionCone();
                     break;
                 default:
                     robot = builder.buildDefault();

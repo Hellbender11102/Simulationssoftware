@@ -1,6 +1,7 @@
 import model.Area;
 import model.Arena;
 import model.Pose;
+import model.Position;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -11,7 +12,8 @@ import java.util.Random;
 
 @RunWith(Parameterized.class)
 public class PositionTest {
-    private final Area area;
+    private Position position1;
+    private Position position2;
 
     @Parameterized.Parameters
     public static Collection<Object[]> data() {
@@ -20,13 +22,9 @@ public class PositionTest {
         });
     }
 
-    public PositionTest(double diameters, double noticeableDistanceDiameters, double poseX,double poseY){
-        area = creatArea(diameters,noticeableDistanceDiameters,poseX,poseY);
+    public PositionTest(double x1, double y1, double x2, double y2) {
+        position1 = new Position(x1, y1);
+        position2 = new Position(x2, y2);
     }
-
-    public Area creatArea( double diameters, double noticeableDistanceDiameters, double poseX,double poseY) {
-        return new Area(Arena.getInstance(1000,1000,false),new Random(),diameters,noticeableDistanceDiameters,new Pose(poseX,poseY,0));
-    }
-
 
 }

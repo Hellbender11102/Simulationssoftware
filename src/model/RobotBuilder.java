@@ -182,7 +182,7 @@ public class RobotBuilder {
         };
     }
 
-    public BaseVisionConeRobot visionCone() {
+    public BaseVisionConeRobot buildVisionCone() {
         return new BaseVisionConeRobot(this) {
             @Override
             public void behavior() {

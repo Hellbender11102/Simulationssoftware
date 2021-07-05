@@ -11,7 +11,8 @@ import java.util.Random;
 
 @RunWith(Parameterized.class)
 public class PoseTest {
-    private final Area area;
+    private final Pose pose1;
+    private final Pose pose2;
 
     @Parameterized.Parameters
     public static Collection<Object[]> data() {
@@ -20,12 +21,10 @@ public class PoseTest {
         });
     }
 
-    public PoseTest(double diameters, double noticeableDistanceDiameters, double poseX,double poseY){
-        area = creatArea(diameters,noticeableDistanceDiameters,poseX,poseY);
+    public PoseTest(double x1, double y1, double rotation1, double x2, double y2, double rotation2) {
+        pose1 = new Pose(x1, y1, rotation1);
+        pose2 = new Pose(x2, y2, rotation2);
     }
 
-    public Area creatArea( double diameters, double noticeableDistanceDiameters, double poseX,double poseY) {
-        return new Area(Arena.getInstance(1000,1000,false),new Random(),diameters,noticeableDistanceDiameters,new Pose(poseX,poseY,0));
-    }
 
 }

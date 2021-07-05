@@ -23,14 +23,14 @@ public abstract class BaseVisionConeRobot extends BaseRobot {
      */
     public BaseVisionConeRobot(RobotBuilder builder, double visionRange, double visionAngle) {
         super(builder);
-        this.visionRange = visionRange;
+        this.visionRange = visionRange > 0 ? visionRange : 0;
         visionAngle = visionAngle > 360 ? 360 : visionAngle < 0 ? 0 : visionAngle;
         this.visionAngle = Math.toRadians(visionAngle);
     }
 
     public BaseVisionConeRobot(RobotBuilder builder) {
         super(builder);
-        this.visionRange = builder.getVisionRange();
+        this.visionRange = builder.getVisionRange() > 0 ? builder.getVisionRange() : 0;;
         double visionAngle = builder.getVisionAngle();
         visionAngle = visionAngle > 360 ? 360 : visionAngle < 0 ? 0 : visionAngle;
         this.visionAngle = Math.toRadians(visionAngle);

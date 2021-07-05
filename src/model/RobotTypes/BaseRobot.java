@@ -1,12 +1,10 @@
 package model.RobotTypes;
 
+import controller.Logger;
+import model.*;
 import model.AbstractModel.BasePhysicalEntity;
 import model.AbstractModel.Entity;
-import model.Pose;
-import model.Position;
-import model.RobotBuilder;
 import model.AbstractModel.RobotInterface;
-import model.Vector2D;
 import org.uncommons.maths.random.ExponentialGenerator;
 import org.uncommons.maths.random.GaussianGenerator;
 
@@ -90,6 +88,28 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         logger = builder.getLogger();
         timeToSimulate = builder.getTimeToSimulate() * builder.getTicsPerSimulatedSecond();
         simulateWithView = builder.getSimulateWithView();
+    }
+
+    /**
+     * Constructs object via Builder
+     *
+     */
+    public BaseRobot(double maxSpeed, double minSpeed, double engineL, double engineR, double distanceE, double diameters,
+                     double powerTransmission, Logger logger, int timeToSimulate, boolean simulateWithView,
+                     Arena arena,  Random random, Pose pose,int ticsPerSimulatedSecond) {
+
+        super(arena,random, diameters,diameters, pose, ticsPerSimulatedSecond);
+        poseRingMemory[poseRingMemoryHead] = pose;
+        this.maxSpeed = maxSpeed;
+        this.minSpeed = minSpeed;
+        setEngineL(engineL);
+        setEngineR(engineR);
+        this.distanceE = distanceE;
+        this.diameters = diameters;
+        this.powerTransmission = powerTransmission;
+        this.logger = logger;
+        this.timeToSimulate = timeToSimulate * ticsPerSimulatedSecond;
+        this.simulateWithView = simulateWithView;
     }
 
     /**
