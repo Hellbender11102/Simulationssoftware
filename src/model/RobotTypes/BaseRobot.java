@@ -132,7 +132,10 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      */
     @Override
     public void setNextPosition() {
-        pose.addToPosition(movingVec.get());
+        if (!movingVec.get().containsNaN())
+            if (getTrajectoryMagnitude() >= 0)
+                pose.addToPosition(movingVec.get());
+            else pose.subtractFromPosition(movingVec.get());
         pose.incRotation(angularVelocity());
     }
 
@@ -167,11 +170,12 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     public void alterMovingVector() {
         Vector2D incVec = Vector2D.creatCartesian(getTrajectoryMagnitude() * accelerationInPercent, pose.getRotation());
         Vector2D moving = movingVec.getAcquire();
-
         if (moving.getLength() < getTrajectoryMagnitude()) {
             moving = moving.add(incVec);
         } else if (moving.getLength() > getTrajectoryMagnitude()) {
             moving = moving.normalize().multiplication(getTrajectoryMagnitude());
+        } else if (moving.containsNaN()) {
+            moving.set(incVec);
         }
 
         // rotating again to avoid imprecision
@@ -487,7 +491,6 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     }
 
 
-
     private boolean isEngineLowerOrMaxSpeed(double engine) {
         return engine <= maxSpeed;
     }
@@ -525,6 +528,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     }
 
     //Getter & Setter
+
     /**
      * Sets the left engine
      * Cuts at maxSpeed and minSpeed
@@ -610,7 +614,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     }
 
     @Override
-    public double getAccelerationInPercent(){
+    public double getAccelerationInPercent() {
         return accelerationInPercent;
     }
 }

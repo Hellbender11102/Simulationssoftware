@@ -112,7 +112,7 @@ public class Position extends Point2D {
 
     synchronized
     public void addToPosition(Vector2D vector) {
-        xCoordinate += vector.getX();
+        xCoordinate += vector.getX() ;
         yCoordinate += vector.getY();
     }
 

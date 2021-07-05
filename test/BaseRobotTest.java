@@ -94,21 +94,29 @@ public class BaseRobotTest {
         double max = Math.max(baseRobot.getEngineL(), baseRobot.getEngineR());
         baseRobot.setEngines(max, max);
         double speed = baseRobot.getTrajectoryMagnitude();
+        double speedAtStart =0;
         Position position;
         if (speed != 0) {
             if (max > 0) {
                 position = baseRobot.getPose().getPositionInDirection(rounds);
                 for (int i = 0; i < rounds / speed; i++) {
                     setNext();
+                    if(baseRobot.getAccelerationInPercent()*baseRobot.getTrajectoryMagnitude()* i <= baseRobot.getTrajectoryMagnitude() ) {
+                        speedAtStart += baseRobot.getTrajectoryMagnitude() - baseRobot.getAccelerationInPercent()*baseRobot.getTrajectoryMagnitude()* i;
+                    }
                 }
             } else {
                 position = baseRobot.getPose().getPositionInDirection(-rounds);
                 for (int i = 0; i > rounds / speed; i--) {
                     setNext();
+                    if(baseRobot.getAccelerationInPercent()*baseRobot.getTrajectoryMagnitude()* i <= baseRobot.getTrajectoryMagnitude() ) {
+                        speedAtStart +=  baseRobot.getTrajectoryMagnitude() - baseRobot.getAccelerationInPercent() * baseRobot.getTrajectoryMagnitude()* i;
+                    }
                 }
             }
-            Assert.assertEquals(baseRobot.getPose().getX(), position.getX(), baseRobot.getAccelerationInPercent() * rounds);
-            Assert.assertEquals(baseRobot.getPose().getY(), position.getY(), baseRobot.getAccelerationInPercent() * rounds);
+            System.out.println(baseRobot.getAccelerationInPercent() * rounds + speedAtStart);
+            Assert.assertEquals(baseRobot.getPose().getX(), position.getX(), baseRobot.getAccelerationInPercent() * rounds + speedAtStart);
+            Assert.assertEquals(baseRobot.getPose().getY(), position.getY(), baseRobot.getAccelerationInPercent() * rounds + speedAtStart);
         }
     }
 
