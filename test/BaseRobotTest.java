@@ -107,8 +107,8 @@ public class BaseRobotTest {
                     setNext();
                 }
             }
-            Assert.assertEquals(baseRobot.getPose().getX(), position.getX(), 1);
-            Assert.assertEquals(baseRobot.getPose().getY(), position.getY(), 1);
+            Assert.assertEquals(baseRobot.getPose().getX(), position.getX(), baseRobot.getAccelerationInPercent() * rounds);
+            Assert.assertEquals(baseRobot.getPose().getY(), position.getY(), baseRobot.getAccelerationInPercent() * rounds);
         }
     }
 

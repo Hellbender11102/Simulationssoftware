@@ -21,11 +21,17 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
      * the lowest time scale is 1 ms
      */
     protected final int ticsPerSimulatedSecond;
-    protected final double frictionInPercent = .50;
+    /**
+     * Entities will be slowed down by this each step
+     * If below .25 objects will increase speed what so ever
+     * Best is around .35
+     */
+    protected final double frictionInPercent;
     /**
      * Describes how elastic the bump is
      * bumpParam = 1 for the elastic bump
      * bumpParam = 0 for the completely inelastic angle
+     * The simulation is set up for the elastic bump
      */
     private final int bumpParam = 1;
     protected AtomicReference<Vector2D> movingVec = new AtomicReference<Vector2D>();
@@ -35,6 +41,7 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
         super(arena, random, width, height, pose);
         movingVec.set(Vector2D.zeroVector());
         this.ticsPerSimulatedSecond = ticsPerSimulatedSecond;
+        frictionInPercent = 0.9999 / ticsPerSimulatedSecond;
     }
 
     /**
@@ -80,7 +87,7 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
 
     @Override
     public void alterMovingVector() {
-        movingVec.set(movingVec.get().multiplication(1 - frictionInPercent));
+        movingVec.set(movingVec.get().multiplication(1. - frictionInPercent));
     }
 
 
@@ -124,13 +131,12 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
 
         // if squared entity use other position to calculate the pushing angle
         if (Wall.class.isAssignableFrom(physicalEntity.getClass()) || Box.class.isAssignableFrom(physicalEntity.getClass())) {
-            u2Angle = physicalEntity.getClosestPositionInEntity(position).getAngleToPosition(position);
-            u1Angle = position.getAngleToPosition(physicalEntity.getClosestPositionInEntity(position));
+            u2Angle = physicalEntity.getPose().getRotation();
+            u1Angle = pose.getRotation();
         }
-
         if (Wall.class.isAssignableFrom(getClass()) || Box.class.isAssignableFrom(getClass())) {
-            u2Angle = positionPe.getAngleToPosition(getClosestPositionInEntity(positionPe));
-            u1Angle = getClosestPositionInEntity(positionPe).getAngleToPosition(positionPe);
+            u2Angle = physicalEntity.getPose().getRotation();
+            u1Angle = pose.getRotation();
         }
 
         synchronized (this) {
@@ -145,8 +151,12 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
             Vector2D resultingPe = Vector2D.creatCartesian(u2New, u2Angle),
                     resulting = Vector2D.creatCartesian(u1New, u1Angle);
 
-            movingVec.setRelease(moving1.add(resulting).rotateTo(u1Angle));
-            physicalEntity.getMovingVec().setRelease(moving2.add(resultingPe).rotateTo(u2Angle));
+            if (!Wall.class.isAssignableFrom(getClass()) || !Box.class.isAssignableFrom(getClass())) {
+                System.out.println(Math.toDegrees(u1Angle)+ "   " +resulting.getLength());
+            }
+
+            movingVec.setRelease(resulting.rotateTo(u1Angle));
+            physicalEntity.getMovingVec().setRelease(resultingPe.rotateTo(u2Angle));
         }
     }
 
@@ -263,6 +273,11 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
     @Override
     public AtomicReference<Vector2D> getMovingVec() {
         return movingVec;
+    }
+
+    @Override
+    public double getFriction(){
+       return frictionInPercent;
     }
 
 }

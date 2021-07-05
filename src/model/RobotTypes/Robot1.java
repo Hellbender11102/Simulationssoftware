@@ -16,9 +16,7 @@ public class Robot1 extends BaseRobot {
 
     @Override
     public void behavior() {
-        if(identifier == 0)
-            identifier = random.nextInt();
-        moveRandom(10,8,60);
+        turn(10,10,8);
     }
 
     @Override

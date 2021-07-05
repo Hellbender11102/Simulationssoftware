@@ -22,4 +22,6 @@ public interface RobotInterface extends PhysicalEntity {
 
     double cmPerSecond();
 
+    double getAccelerationInPercent();
+
 }

@@ -28,32 +28,49 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * distance between the engines
      */
     private final double distanceE;
-
-    private double powerTransmission;
+    /**
+     * The percentage of power transmission
+     * from one engine to the other axis
+     */
+    private final double powerTransmission;
     /**
      * in cm
      */
-    private double diameters;
-    private final boolean simulateWithView;
+    private final double diameters;
+    /**
+     * A memory for an angle to rotate to
+     */
     private double rotation;
-    private Pose afterTurn;
-
-    // flag for moveRandom()
+    /**
+     * A memory if the robot currently turns
+     */
     boolean isInTurn = false;
+    /**
+     *
+     */
     private double turnsTo = Double.NaN;
-
-    //Counter to get precises straight moves for a given path length
+    /**
+     * Counter to get precises straight moves for a given path length
+     */
     private int straightMoves = -1;
+    /**
+     * Memory for moveRandom
+     */
     private int straight = 0;
+    /**
+     * Memory to count the remaining straight moves
+     */
     private double straightMovesRest;
     /**
-     * Can be used for distinct logging via Random number
+     * A signal to communicate
      */
-    int identifier = 0;
     protected boolean signal = false;
-    protected double percentageOfMaxSpeedAsSpeedup = 0.1;
-    private double currentSpeed = 0;
+    /**
+     * A modifier to slowly increase acceleration
+     */
+    protected double accelerationInPercent = .9 / ticsPerSimulatedSecond;
 
+    private final boolean simulateWithView;
 
     /**
      * Constructs object via Builder
@@ -102,13 +119,12 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
 
     /**
      * Returns the (last speed + current speed) / 2
+     *
      * @return double
      */
     @Override
     public double cmPerSecond() {
-        currentSpeed += movingVec.get().getLength() * ticsPerSimulatedSecond;
-        currentSpeed /= 2;
-        return currentSpeed;
+        return movingVec.get().getLength() * ticsPerSimulatedSecond;
     }
 
     /**
@@ -149,16 +165,17 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      */
     @Override
     public void alterMovingVector() {
-        Vector2D incVec = Vector2D.creatCartesian(getTrajectoryMagnitude() * percentageOfMaxSpeedAsSpeedup, pose.getRotation());
-        Vector2D moving = movingVec.get();
+        Vector2D incVec = Vector2D.creatCartesian(getTrajectoryMagnitude() * accelerationInPercent, pose.getRotation());
+        Vector2D moving = movingVec.getAcquire();
 
         if (moving.getLength() < getTrajectoryMagnitude()) {
             moving = moving.add(incVec);
-            // rotating again to avoid imprecision
-            movingVec.set(moving.rotateTo(pose.getRotation()));
         } else if (moving.getLength() > getTrajectoryMagnitude()) {
-            movingVec.set(moving.multiplication(1 - frictionInPercent).rotateTo(pose.getRotation()));
+            moving = moving.normalize().multiplication(getTrajectoryMagnitude());
         }
+
+        // rotating again to avoid imprecision
+        movingVec.setRelease(moving.rotateTo(pose.getRotation()));
     }
 
     /**
@@ -349,7 +366,6 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         if (isInTurn) {
             if (rotateToAngle(rotation, Math.toRadians(1), speed, 0)) {
                 isInTurn = false;
-                afterTurn = pose;
             }
         } else if (straight <= 0) {
             isInTurn = true;
@@ -470,6 +486,45 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         isInTurn = false;
     }
 
+
+
+    private boolean isEngineLowerOrMaxSpeed(double engine) {
+        return engine <= maxSpeed;
+    }
+
+    private boolean isEngineGreaterOrMinSpeed(double engine) {
+        return minSpeed <= engine;
+    }
+
+    /**
+     * When paused sets the robot on the next available position
+     * saved in the ring memory.
+     * If no further position is existing it will creat a next position
+     * and adds it to the memory.
+     */
+    @Override
+    public void setNextPose() {
+        if (isPaused) {
+            List<Pose> positions = getPosesFromMemory();
+            if (0 < poseRingMemoryPointer) {
+                if (poseRingMemoryPointer < positions.size())
+                    pose = positions.get(poseRingMemoryPointer);
+                poseRingMemoryPointer -= 1;
+            } else {
+                behavior();
+                setNextPosition();
+                inArenaBounds();
+                collisionDetection();
+                updatePositionMemory();
+            }
+        }
+    }
+
+    public String toString() {
+        return "Engines: " + engineR + " - " + engineL + "\n" + pose;
+    }
+
+    //Getter & Setter
     /**
      * Sets the left engine
      * Cuts at maxSpeed and minSpeed
@@ -513,40 +568,6 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         setEngineL(leftEngine);
     }
 
-    private boolean isEngineLowerOrMaxSpeed(double engine) {
-        return engine <= maxSpeed;
-    }
-
-    private boolean isEngineGreaterOrMinSpeed(double engine) {
-        return minSpeed <= engine;
-    }
-
-    /**
-     * When paused sets the robot on the next available position
-     * saved in the ring memory.
-     * If no further position is existing it will creat a next position
-     * and adds it to the memory.
-     */
-    @Override
-    public void setNextPose() {
-        if (isPaused) {
-            List<Pose> positions = getPosesFromMemory();
-            if (0 < poseRingMemoryPointer) {
-                if (poseRingMemoryPointer < positions.size())
-                    pose = positions.get(poseRingMemoryPointer);
-                poseRingMemoryPointer -= 1;
-            } else {
-                behavior();
-                setNextPosition();
-                inArenaBounds();
-                collisionDetection();
-                updatePositionMemory();
-            }
-        }
-    }
-
-
-    //Getter & Setter
     @Override
     public boolean getSignal() {
         return signal;
@@ -588,10 +609,8 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         return timeToSimulate;
     }
 
-    // default functions
-
-    public String toString() {
-        return "Engines: " + engineR + " - " + engineL + "\n" + pose;
+    @Override
+    public double getAccelerationInPercent(){
+        return accelerationInPercent;
     }
-
 }

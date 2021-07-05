@@ -31,4 +31,6 @@ public interface PhysicalEntity extends Entity, Runnable {
     AtomicReference<Vector2D> getMovingVec();
 
     void alterMovingVector();
+
+    double getFriction();
 }
