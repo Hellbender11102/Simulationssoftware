@@ -1,7 +1,6 @@
 import controller.Logger;
 import model.*;
 import model.AbstractModel.BaseEntity;
-import model.AbstractModel.Entity;
 import model.AbstractModel.PhysicalEntity;
 import model.RobotTypes.BaseRobot;
 import model.RobotTypes.BaseVisionConeRobot;
@@ -17,19 +16,16 @@ import java.util.Random;
 
 @RunWith(Parameterized.class)
 public class VisionConeRobotTest {
-
-    final int max = 10;
-    final int min = -10;
-
+    private Arena arena;
+    private BaseVisionConeRobot robot;
     private double poseX;
     private final double poseY;
     private final boolean isInSight;
-    private final BaseVisionConeRobot robot;
-    private Arena arena;
 
-    public BaseVisionConeRobot creatTestBaseRobot(int arenaWidth, int arenaHeight, boolean isTorus, double engineR, double engineL,
-                                                  double engineDistance, double diameters, double poseX, double poseY,
-                                                  double poseRotation, double visionAngle, double visionRange) {
+
+    protected BaseVisionConeRobot creatTestBaseRobot(int arenaWidth, int arenaHeight, boolean isTorus, double engineR, double engineL,
+                                                     double engineDistance, double diameters, double poseX, double poseY,
+                                                     double poseRotation, double visionAngle, double visionRange) {
         arena = Arena.overWriteInstance(arenaWidth, arenaHeight, isTorus);
         BaseVisionConeRobot robot = new RobotBuilder()
                 .arena(arena)
@@ -40,8 +36,8 @@ public class VisionConeRobotTest {
                 .engineLeft(engineL)
                 .engineRight(engineR)
                 .timeToSimulate(0)
-                .minSpeed(min)
-                .maxSpeed(max)
+                .minSpeed(10)
+                .maxSpeed(-10)
                 .ticsPerSimulatedSecond(10)
                 .pose(new Pose(poseX, poseY, poseRotation))
                 .visionAngle(visionAngle)
@@ -93,6 +89,44 @@ public class VisionConeRobotTest {
                 {false, false, 2 * Math.PI, Math.PI, 5, 10, 10, 100, 100},
                 {false, false, 2 * Math.PI, 2 * Math.PI, 5, 10, 10, 100, 100},
                 {false, false, 2 * Math.PI, Math.PI / 2, 5, 10, 10, 100, 100},
+
+                {true, false, 0, 0, 0, 0, 0, 0, 0},
+                {true, false, 0, 0, 0, 0, 0, 1, 1},
+
+                {true, true, 0, 0, 5.01, 5, 5, 10, 10},
+                {true, true, Math.PI / 2, 0, 5.01, 5, 5, 10, 10},
+                {true, true, Math.PI, 0, 5.01, 5, 5, 10, 10},
+                {true, true, 3 / 2 * Math.PI, 0, 5.01, 5, 5, 10, 10},
+                {true, true, Math.PI * 2, 0, 5.01, 5, 5, 10, 10},
+
+                {true, false, Math.PI / 4, Math.PI / 4, 5.01, 5, 5, 10, 10},
+                {true, false, 3 / Math.PI * 4, Math.PI / 4, 5.01, 5, 5, 10, 10},
+                {true, false, 5 / Math.PI * 4, Math.PI / 4, 5.01, 5, 5, 10, 10},
+                {true, false, 7 / Math.PI * 4, Math.PI / 4, 5.01, 5, 5, 10, 10},
+
+                {true, false, 0, Math.PI, 5, 10, 10, 100, 100},
+                {true, false, 0, 2 * Math.PI, 5, 10, 10, 100, 100},
+                {true, false, 0, Math.PI / 2, 5, 10, 10, 100, 100},
+
+                {true, false, Math.PI, Math.PI, 5, 10, 10, 100, 100},
+                {true, false, Math.PI, 2 * Math.PI, 5, 10, 10, 100, 100},
+                {true, false, Math.PI, Math.PI / 2, 5, 10, 10, 100, 100},
+
+                {true, false, Math.PI / 2, Math.PI, 5, 10, 10, 100, 100},
+                {true, false, Math.PI / 2, 2 * Math.PI, 5, 10, 10, 100, 100},
+                {true, false, Math.PI / 2, Math.PI / 2, 5, 10, 10, 100, 100},
+
+                {true, false, Math.PI * 3 / 4, Math.PI, 5, 10, 10, 100, 100},
+                {true, false, Math.PI * 3 / 4, 2 * Math.PI, 5, 10, 10, 100, 100},
+                {true, false, Math.PI * 3 / 4, Math.PI / 2, 5, 10, 10, 100, 100},
+
+                {true, false, -Math.PI / 2, Math.PI, 5, 10, 10, 100, 100},
+                {true, false, -Math.PI / 2, 2 * Math.PI, 5, 10, 10, 100, 100},
+                {true, false, -Math.PI / 2, Math.PI / 2, 5, 10, 10, 100, 100},
+
+                {true, false, 2 * Math.PI, Math.PI, 5, 10, 10, 100, 100},
+                {true, false, 2 * Math.PI, 2 * Math.PI, 5, 10, 10, 100, 100},
+                {true, false, 2 * Math.PI, Math.PI / 2, 11, 10, 10, 10, 10},
         });
     }
 
@@ -107,6 +141,7 @@ public class VisionConeRobotTest {
 
     @Test
     public void testIsArenaBoundsInVision() {
+        if(!arena.isTorus)
         Assert.assertEquals(robot.isArenaBoundsInVision(), isInSight);
     }
 
@@ -199,14 +234,28 @@ public class VisionConeRobotTest {
             else if (robot.getVisionRange() <= 4)
                 Assert.assertTrue(numberOfEntitiesInVision == 4 || numberOfEntitiesInVision == 8);
             else if (robot.getVisionRange() <= 5)
-                Assert.assertTrue(numberOfEntitiesInVision == 8 || numberOfEntitiesInVision ==12);
+                Assert.assertTrue(numberOfEntitiesInVision == 8 || numberOfEntitiesInVision == 12);
             else Assert.assertEquals(12, numberOfEntitiesInVision);
         }
     }
 
     @Test
     public void testIsPositionInVisionCone() {
-
+        System.out.println(robot.getVisionRange());
+        System.out.println(robot.getVisionAngle());
+        System.out.println(robot.getPose());
+        System.out.println(robot.getPose().getPositionInDirection(robot.getVisionRange(), robot.getPose().getRotation() - robot.getVisionAngle()));
+        if(robot.getVisionRange() > 0 && robot.getVisionAngle() > 0) {
+            Assert.assertTrue(robot.isPositionInVisionCone(robot.getPose().getPositionInDirection(robot.getVisionRange(), robot.getPose().getRotation() + robot.getVisionAngle())));
+            Assert.assertTrue(robot.isPositionInVisionCone(robot.getPose().getPositionInDirection(robot.getVisionRange(), robot.getPose().getRotation() - robot.getVisionAngle())));
+            Assert.assertTrue(robot.isPositionInVisionCone(robot.getPose().getPositionInDirection(robot.getVisionRange(), robot.getPose().getRotation())));
+            if (robot.getVisionRange() > arena.getWidth() && arena.isTorus) {
+                Assert.assertTrue(robot.isPositionInVisionCone(robot.getPose().getPositionInDirection(-(robot.getRadius() + .2), robot.getPose().getRotation())));
+            }
+            if (!arena.isTorus) {
+                Assert.assertFalse(robot.isPositionInVisionCone(robot.getPose().getPositionInDirection(-(robot.getRadius() + .2), robot.getPose().getRotation())));
+            }
+        }
     }
 
     @Test
@@ -228,4 +277,5 @@ public class VisionConeRobotTest {
     public void testIsSquareInSight() {
 
     }
+
 }

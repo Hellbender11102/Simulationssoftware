@@ -175,9 +175,9 @@ public abstract class BaseVisionConeRobot extends BaseRobot {
         if (angleOfEntity <= upperAngle && angleOfEntity >= lowerAngle)
             return true;
         else if (upperAngle > 2 * Math.PI || lowerAngle < 0) {
-            if (upperAngle > 2 * Math.PI && angleOfEntity < upperAngle % (2 * Math.PI)) {
+            if (upperAngle > 2 * Math.PI && angleOfEntity <= upperAngle % (2 * Math.PI)) {
                 return true;
-            } else if (lowerAngle < 0 && angleOfEntity > lowerAngle + 2 * Math.PI) {
+            } else if (lowerAngle < 0 && angleOfEntity >= lowerAngle + 2 * Math.PI) {
                 return true;
             }
         }
