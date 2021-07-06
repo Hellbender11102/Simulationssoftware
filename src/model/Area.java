@@ -127,5 +127,8 @@ public class Area extends BaseEntity {
         return width / 2;
     }
 
-
+    @Override
+    public String toString() {
+        return "Area at " + pose + " radius:" + width / 2;
+    }
 }

@@ -90,5 +90,10 @@ public class Pose extends Position {
         double angleDiff = (getRotation() - angleInRadians) % (2 * Math.PI);
         return angleDiff < 0 ? angleDiff + (2 * Math.PI) : angleDiff;
     }
-
+    @Override
+    public String toString() {
+        return "Pose x:" + String.format("%,.2f", xCoordinate) +
+                ", y:" + String.format("%,.2f", yCoordinate)+
+                ", rotation:" + String.format("%,.2f", Math.toDegrees(rotation));
+    }
 }

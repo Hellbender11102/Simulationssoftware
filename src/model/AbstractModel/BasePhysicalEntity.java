@@ -271,6 +271,10 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
        return frictionInPercent;
     }
 
+    @Override
+    public String toString(){
+        return "Base physical entity with "+pose+" width:"+width+" height:"+height;
+    }
 }
 
 

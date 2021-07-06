@@ -30,7 +30,8 @@ public abstract class BaseVisionConeRobot extends BaseRobot {
 
     public BaseVisionConeRobot(RobotBuilder builder) {
         super(builder);
-        this.visionRange = builder.getVisionRange() > 0 ? builder.getVisionRange() : 0;;
+        this.visionRange = builder.getVisionRange() > 0 ? builder.getVisionRange() : 0;
+        ;
         double visionAngle = builder.getVisionAngle();
         visionAngle = visionAngle > 360 ? 360 : visionAngle < 0 ? 0 : visionAngle;
         this.visionAngle = Math.toRadians(visionAngle);
@@ -63,11 +64,14 @@ public abstract class BaseVisionConeRobot extends BaseRobot {
         entityList.addAll(getListOfWallsInSight());
         entityList.addAll(getListOfAreasInSight());
         entityList.addAll(getListOfRobotsInSight());
+        if (entityList.contains(this))
+            entityList.remove(this);
         return entityList;
     }
 
     /**
      * Returns all Areas in the current vision
+     *
      * @return List<Area>
      */
     public List<Area> getListOfAreasInSight() {
@@ -83,9 +87,10 @@ public abstract class BaseVisionConeRobot extends BaseRobot {
     /**
      * Returns all Areas in the current vision
      * Checks for areas noticeable distance
+     *
      * @return List<Area>
      */
-    public   List<Area> getListOfAreasInSightByAreaNoticeableDistance() {
+    public List<Area> getListOfAreasInSightByAreaNoticeableDistance() {
         List<Area> entityList = new LinkedList<>();
         for (Area area : arena.getAreaList()) {
             if (isAreaVisionRangeInSight(area)) {
@@ -97,12 +102,13 @@ public abstract class BaseVisionConeRobot extends BaseRobot {
 
     /**
      * Returns all Robots in the current vision
+     *
      * @return List<RobotInterface>
      */
-    public    List<RobotInterface> getListOfRobotsInSight() {
+    public List<RobotInterface> getListOfRobotsInSight() {
         List<RobotInterface> entityList = new LinkedList<>();
         for (RobotInterface robotInterface : arena.getRobots()) {
-            if (isCircleInSight(robotInterface.getPose(),robotInterface.getRadius())) {
+            if (isCircleInSight(robotInterface.getPose(), robotInterface.getRadius())) {
                 entityList.add(robotInterface);
             }
         }
@@ -111,13 +117,14 @@ public abstract class BaseVisionConeRobot extends BaseRobot {
 
     /**
      * Returns all Boxes in the current vision
+     *
      * @return List<Entity>
      */
-    public  List<Box> getListOfBoxesInSight() {
+    public List<Box> getListOfBoxesInSight() {
         List<Box> entityList = new LinkedList<>();
         for (Box box : arena.getBoxList()) {
-            if (isSquareInSight(box.getPose(), box.getWidth(),box.getHeight())) {
-                entityList.add(box)  ;
+            if (isSquareInSight(box.getPose(), box.getWidth(), box.getHeight())) {
+                entityList.add(box);
             }
         }
         return entityList;
@@ -125,13 +132,14 @@ public abstract class BaseVisionConeRobot extends BaseRobot {
 
     /**
      * Returns all Walls in the current vision
+     *
      * @return List<Entity>
      */
-    public  List<Wall> getListOfWallsInSight() {
+    public List<Wall> getListOfWallsInSight() {
         List<Wall> entityList = new LinkedList<>();
         for (Wall wall : arena.getWallList()) {
-            if (isSquareInSight(wall.getPose(), wall.getWidth(),wall.getHeight())) {
-                entityList.add(wall) ;
+            if (isSquareInSight(wall.getPose(), wall.getWidth(), wall.getHeight())) {
+                entityList.add(wall);
             }
         }
         return entityList;
@@ -156,6 +164,7 @@ public abstract class BaseVisionConeRobot extends BaseRobot {
 
     /**
      * Returns true if the position is located in the cone of the vision
+     *
      * @param position Position
      * @return boolean
      */
@@ -226,6 +235,7 @@ public abstract class BaseVisionConeRobot extends BaseRobot {
      * Returns true if either the robot is inside Square
      * Or the Vision range reaches the Square
      * TODO
+     *
      * @param center Position
      * @param width  Position
      * @param height Position
@@ -233,13 +243,12 @@ public abstract class BaseVisionConeRobot extends BaseRobot {
      */
     public boolean isSquareInSight(Position center, double width, double height) {
         double rotation = pose.getRotation();
-        Rectangle2D rectangle2D = new Rectangle2D.Double(center.getX(), center.getY() - height / 2, width, height);
+        Rectangle2D rectangle2D = new Rectangle2D.Double(center.getX() - width / 2, center.getY() - height / 2, width, height);
         // if body is square
         if (rectangle2D.contains(getClosestPositionInEntity(center))) return true;
         // one side of the vision cone is inside box
         Line2D firstConeLine = new Line2D.Double(pose, pose.getPositionInDirection(visionRange, rotation - visionAngle / 2));
         Line2D secondConeLine = new Line2D.Double(pose, pose.getPositionInDirection(visionRange, rotation + visionAngle / 2));
-     //   System.out.println((firstConeLine.intersects(rectangle2D) || secondConeLine.intersects(rectangle2D)));
         if (firstConeLine.intersects(rectangle2D) || secondConeLine.intersects(rectangle2D)) return true;
         // a point on the vision cone is inside the wall
         // with points taken every degree
@@ -271,5 +280,10 @@ public abstract class BaseVisionConeRobot extends BaseRobot {
 
     public double getVisionRange() {
         return visionRange;
+    }
+
+    @Override
+    public String toString() {
+        return "Base vision robot at " + pose + " radius:" + getRadius();
     }
 }

@@ -227,4 +227,9 @@ abstract public class BaseEntity extends Thread implements Entity {
     public double getAreaCircle() {
         return Math.PI * Math.pow(width / 2, 2);
     }
+
+    @Override
+    public String toString(){
+        return "Base entity with "+pose+" width:"+width+" height:"+height;
+    }
 }

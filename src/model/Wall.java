@@ -45,4 +45,8 @@ public class Wall extends BasePhysicalEntity {
     public void setNextPosition() {
     }
 
+    @Override
+    public String toString() {
+        return "Wall at " + pose + " width:" + width + " height:" + height;
+    }
 }

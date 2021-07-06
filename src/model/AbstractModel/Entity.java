@@ -43,4 +43,6 @@ public interface Entity {
 
     double getArea();
 
+    String toString();
+
 }

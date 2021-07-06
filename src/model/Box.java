@@ -41,5 +41,8 @@ public class Box extends BasePhysicalEntity {
     public double getArea() {
         return getAreaSquare();
     }
-
+    @Override
+    public String toString() {
+        return "Box at " + pose + " width:" + width + " height:" + height;
+    }
 }

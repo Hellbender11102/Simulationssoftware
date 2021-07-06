@@ -158,7 +158,7 @@ public class Arena {
 
     @Override
     public String toString() {
-        return "width:" + singleton.width + " height:" + singleton.height + " is torus " + isTorus;
+        return "Arena width:" + singleton.width + " height:" + singleton.height + " is torus " + isTorus;
     }
 
     synchronized public void addEntities(List<Entity> entities) {
@@ -217,4 +217,5 @@ public class Arena {
             singleton.entityList.add(entity);
         }
     }
+
 }

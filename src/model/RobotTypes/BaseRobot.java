@@ -92,13 +92,12 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
 
     /**
      * Constructs object via Builder
-     *
      */
     public BaseRobot(double maxSpeed, double minSpeed, double engineL, double engineR, double distanceE, double diameters,
                      double powerTransmission, Logger logger, int timeToSimulate, boolean simulateWithView,
-                     Arena arena,  Random random, Pose pose,int ticsPerSimulatedSecond) {
+                     Arena arena, Random random, Pose pose, int ticsPerSimulatedSecond) {
 
-        super(arena,random, diameters,diameters, pose, ticsPerSimulatedSecond);
+        super(arena, random, diameters, diameters, pose, ticsPerSimulatedSecond);
         poseRingMemory[poseRingMemoryHead] = pose;
         this.maxSpeed = maxSpeed;
         this.minSpeed = minSpeed;
@@ -543,10 +542,11 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         }
     }
 
-    public String toString() {
-        return "Engines: " + engineR + " - " + engineL + "\n" + pose;
-    }
 
+    @Override
+    public String toString() {
+        return "Base robot entity at " + pose + " width:" + width + " height:" + height;
+    }
     //Getter & Setter
 
     /**
