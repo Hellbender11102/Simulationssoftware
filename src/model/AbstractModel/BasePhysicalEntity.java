@@ -126,18 +126,9 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
              positionPe = arena.getClosestPositionInTorus(pose, physicalEntity.getPose());
         }
 
-        double u1Angle = position.getAngleToPosition(positionPe);
-        double u2Angle =positionPe.getAngleToPosition(position);
+        double u1Angle = positionPe.getAngleToPosition(position);
+        double u2Angle =position.getAngleToPosition(positionPe);
 
-        // if squared entity use other position to calculate the pushing angle
-        if (Wall.class.isAssignableFrom(physicalEntity.getClass()) || Box.class.isAssignableFrom(physicalEntity.getClass())) {
-            u2Angle = physicalEntity.getPose().getRotation();
-            u1Angle = pose.getRotation();
-        }
-        if (Wall.class.isAssignableFrom(getClass()) || Box.class.isAssignableFrom(getClass())) {
-            u2Angle = physicalEntity.getPose().getRotation();
-            u1Angle = pose.getRotation();
-        }
 
         synchronized (this) {
             Vector2D moving1 = movingVec.getAcquire(), moving2 = physicalEntity.getMovingVec().getAcquire();

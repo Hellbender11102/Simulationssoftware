@@ -114,31 +114,31 @@ public class Vector2DTest {
 
     @Test
     public void TestDivide() {
-        if(param != 0) {
+        if (param != 0) {
             Vector2D changed = vector2D.divide(param);
             if (changed.getLength() > 0) {
-                Assert.assertEquals(changed.getX(), vector2D.getX()/param, 0.00001);
-                Assert.assertEquals(changed.getY(), vector2D.getY()/param, 0.00001);
+                Assert.assertEquals(changed.getX(), vector2D.getX() / param, 0.00001);
+                Assert.assertEquals(changed.getY(), vector2D.getY() / param, 0.00001);
             }
         }
     }
 
 
-
     @Test
     public void TestCreatCartesian() {
-
+        Assert.assertEquals(vector2D.getX(), Vector2D.creatCartesian(vector2D.getLength(), vector2D.angle()).rotateTo(vector2D.angle()).getX(), 0.0001);
+        Assert.assertEquals(vector2D.getY(), Vector2D.creatCartesian(vector2D.getLength(), vector2D.angle()).rotateTo(vector2D.angle()).getY(), 0.0001);
     }
 
     @Test
     public void TestRotateTo() {
-
+        Assert.assertTrue(vector2D.rotateTo(param).equals(Vector2D.creatCartesian(vector2D.getLength(), param)));
     }
 
 
     @Test
     public void TestDistance() {
-
+        Assert.assertEquals(vector2D.distance(new Vector2D(0,0)),new Position(vector2D.getX(),vector2D.getY()).distance(0,0),0);
     }
 
 }

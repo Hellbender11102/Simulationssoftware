@@ -41,9 +41,9 @@ public abstract class BaseVisionConeRobot extends BaseRobot {
      *
      * @return boolean
      */
-    boolean isArenaBoundsInVision() {
+    public boolean isArenaBoundsInVision() {
         double rotation = pose.getRotation();
-        for (double i = rotation - visionAngle / 2; i <= rotation + visionAngle / 2; i += Math.toRadians(2)) {
+        for (double i = rotation - visionAngle / 2; i <= rotation + visionAngle / 2; i += Math.toRadians(1)) {
             Position position = pose.getPositionInDirection(visionRange, i);
             if (!arena.inArenaBounds(position))
                 return true;
@@ -57,12 +57,12 @@ public abstract class BaseVisionConeRobot extends BaseRobot {
      *
      * @return List<Entity>
      */
-    List<Entity> listOfEntityInVision() {
+    public List<Entity> getListOfEntityInVision() {
         List<Entity> entityList = new LinkedList<>();
-        entityList.addAll(listOfBoxesInSight());
-        entityList.addAll(listOfWallsInSight());
-        entityList.addAll(listOfAreasInSight());
-        entityList.addAll(listOfRobotsInSight());
+        entityList.addAll(getListOfBoxesInSight());
+        entityList.addAll(getListOfWallsInSight());
+        entityList.addAll(getListOfAreasInSight());
+        entityList.addAll(getListOfRobotsInSight());
         return entityList;
     }
 
@@ -70,7 +70,7 @@ public abstract class BaseVisionConeRobot extends BaseRobot {
      * Returns all Areas in the current vision
      * @return List<Area>
      */
-    List<Area> listOfAreasInSight() {
+    public List<Area> getListOfAreasInSight() {
         List<Area> entityList = new LinkedList<>();
         for (Area area : arena.getAreaList()) {
             if (isAreaInSight(area)) {
@@ -85,7 +85,7 @@ public abstract class BaseVisionConeRobot extends BaseRobot {
      * Checks for areas noticeable distance
      * @return List<Area>
      */
-    List<Area> listOfAreasInSightByAreaNoticeableDistance() {
+    public   List<Area> getListOfAreasInSightByAreaNoticeableDistance() {
         List<Area> entityList = new LinkedList<>();
         for (Area area : arena.getAreaList()) {
             if (isAreaVisionRangeInSight(area)) {
@@ -99,7 +99,7 @@ public abstract class BaseVisionConeRobot extends BaseRobot {
      * Returns all Robots in the current vision
      * @return List<RobotInterface>
      */
-    List<RobotInterface> listOfRobotsInSight() {
+    public    List<RobotInterface> getListOfRobotsInSight() {
         List<RobotInterface> entityList = new LinkedList<>();
         for (RobotInterface robotInterface : arena.getRobots()) {
             if (isCircleInSight(robotInterface.getPose(),robotInterface.getRadius())) {
@@ -113,7 +113,7 @@ public abstract class BaseVisionConeRobot extends BaseRobot {
      * Returns all Boxes in the current vision
      * @return List<Entity>
      */
-    List<Box> listOfBoxesInSight() {
+    public  List<Box> getListOfBoxesInSight() {
         List<Box> entityList = new LinkedList<>();
         for (Box box : arena.getBoxList()) {
             if (isSquareInSight(box.getPose(), box.getWidth(),box.getHeight())) {
@@ -127,7 +127,7 @@ public abstract class BaseVisionConeRobot extends BaseRobot {
      * Returns all Walls in the current vision
      * @return List<Entity>
      */
-    List<Wall> listOfWallsInSight() {
+    public  List<Wall> getListOfWallsInSight() {
         List<Wall> entityList = new LinkedList<>();
         for (Wall wall : arena.getWallList()) {
             if (isSquareInSight(wall.getPose(), wall.getWidth(),wall.getHeight())) {
@@ -149,7 +149,7 @@ public abstract class BaseVisionConeRobot extends BaseRobot {
             position = arena.getClosestPositionInTorus(pose, position);
         }
         if (pose.getEuclideanDistance(position) <= visionRange) {
-            return isInBetween(position);
+            return isInVisionAngle(position);
         }
         return false;
     }
@@ -159,8 +159,8 @@ public abstract class BaseVisionConeRobot extends BaseRobot {
      * @param position Position
      * @return boolean
      */
-    private boolean isInBetween(Position position) {
-        double angleOfEntity = pose.getAngleFromPosition(position) < 0 ? pose.getAngleFromPosition(position) + 2 * Math.PI : pose.getAngleFromPosition(position);
+    public boolean isInVisionAngle(Position position) {
+        double angleOfEntity = pose.getAngleToPosition(position) < 0 ? pose.getAngleToPosition(position) + 2 * Math.PI : pose.getAngleToPosition(position);
         double upperAngle = pose.getRotation() + visionAngle / 2;
         double lowerAngle = pose.getRotation() - visionAngle / 2;
         if (angleOfEntity <= upperAngle && angleOfEntity >= lowerAngle)
@@ -234,12 +234,6 @@ public abstract class BaseVisionConeRobot extends BaseRobot {
     public boolean isSquareInSight(Position center, double width, double height) {
         double rotation = pose.getRotation();
         Rectangle2D rectangle2D = new Rectangle2D.Double(center.getX(), center.getY() - height / 2, width, height);
-        System.out.println("center x" + rectangle2D.getCenterX()+" y" + rectangle2D.getCenterY());
-        System.out.println("top left x" + (rectangle2D.getCenterX() - height / 2) +" y" + (rectangle2D.getCenterY() +width /2));
-        System.out.println("top right x" +( rectangle2D.getCenterX() + height / 2)+" y" + (rectangle2D.getCenterY()+width /2));
-        System.out.println("bottom left x" +( rectangle2D.getCenterX()- height / 2)+" y" + (rectangle2D.getCenterY()-width /2));
-        System.out.println("bottom right x" +( rectangle2D.getCenterX()+ height / 2)+" y" + (rectangle2D.getCenterY()-width /2));
-        System.out.println();
         // if body is square
         if (rectangle2D.contains(getClosestPositionInEntity(center))) return true;
         // one side of the vision cone is inside box
@@ -264,7 +258,7 @@ public abstract class BaseVisionConeRobot extends BaseRobot {
      * @return List<Object>
      */
     List<Object> listOfRobotsInVisionByCLass(Class c) {
-        return listOfRobotsInSight().stream()
+        return getListOfRobotsInSight().stream()
                 .filter(x -> c.getClass().isAssignableFrom(x.getClass()))
                 .map(x -> (c.cast(x)))
                 .collect(Collectors.toList());

@@ -142,7 +142,7 @@ abstract public class BaseEntity extends Thread implements Entity {
         if (arena.isTorus) {
             position = arena.getClosestPositionInTorus(pose, position);
         }
-        return pose.getPositionInDirection(radius, pose.getAngleFromPosition(position));
+        return pose.getPositionInDirection(radius, pose.getAngleToPosition(position));
     }
 
     /**

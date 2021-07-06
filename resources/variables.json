@@ -4,17 +4,33 @@
   "maxSpeed": 8.0,
   "minSpeed": -8.0,
   "arena": {
-    "torus": true,
+    "torus": false,
     "width": 100,
     "height": 100
   },
   "robots": [
+
+    {
+      "type": "vision",
+      "visionRange": 20.0,
+      "visionAngle": 40.0,
+      "engineR": 8.0,
+      "engineL": 6.0,
+      "distance": 4.0,
+      "diameters": 4.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 100.0,
+        "y": 100.0,
+        "rotation": 0.0
+      }
+    },
     {
       "type": "a",
       "visionRange": 20.0,
       "visionAngle": 40.0,
-      "engineR": -8.0,
-      "engineL": -8.0,
+      "engineR": 8.0,
+      "engineL": 8.0,
       "distance": 4.0,
       "diameters": 4.0,
       "powerTransmission": 0.0,

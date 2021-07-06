@@ -13,6 +13,11 @@ public class Logger {
     Thread saveThread;
     private boolean headWritten = false;
     private ConcurrentHashMap<String, List<String>> logMap = new ConcurrentHashMap<>();
+    /**
+     * Sets the maximum number a single list will hold until the logger will save the current map to an file
+     * If issues with the RAM usage appear try to lower the number
+     */
+    private final int listEntrySize= 5000;
 
     /**
      * Constructor
@@ -20,12 +25,12 @@ public class Logger {
      */
     public Logger() {
         outputFile = new File("out/Log.csv");
-        errFile = new File("out/Log.csv");
+        errFile = new File("out/Error.txt");
         int i = 0;
         while (outputFile.exists())
             outputFile = new File("out/Log" + i++ + ".csv");
         while (errFile.exists())
-            errFile = new File("out/error" + i++ + ".csv");
+            errFile = new File("out/Error" + i++ + ".txt");
     }
 
     /**
@@ -75,6 +80,7 @@ public class Logger {
                 .map(List::size)
                 .reduce((currLargest, nextItem) -> currLargest > nextItem ? currLargest : nextItem);
         int longestListSize = longestList.orElse(0);
+        if(!append) headWritten = false;
         saveLogToFile(append, longestListSize);
     }
 
@@ -89,6 +95,7 @@ public class Logger {
         try {
             FileWriter fileWriter = new FileWriter(outputFile, append);
             StringBuilder stringBuilder = new StringBuilder();
+            if(!append) headWritten = false;
             if (!headWritten) {
                 for (String key : logMap.keySet()) {
                     stringBuilder.append(key).append(",");
@@ -133,14 +140,13 @@ public class Logger {
     }
 
     /**
-     * Starts an thread if any key has more entries as 5000
+     * Starts an thread if any key has more entries as listEntrySize
      * The thread will save to an file and reduce the entries
-     *
      * @param appendDataInFIle boolean
      */
     private void threadedSave(boolean appendDataInFIle) {
         synchronized (this) {
-            if (logMap.values().stream().anyMatch(x -> x.size() > 5000) && (saveThread == null || !saveThread.isAlive())) {
+            if (logMap.values().stream().anyMatch(x -> x.size() > listEntrySize) && (saveThread == null || !saveThread.isAlive())) {
                 saveThread = (new Thread(() -> {
                     Optional<Integer> optionalListSize;
                     optionalListSize = logMap.values().stream().map(List::size)

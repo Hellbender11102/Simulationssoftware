@@ -16,7 +16,7 @@ public class Position extends Point2D {
     }
 
     public double getPolarAngle() {
-        if (getPolarDistance() != 0.0)
+        if (distance(new Position(0,0)) != 0.0)
             return Math.atan2(yCoordinate, xCoordinate);
         else return java.lang.Double.NaN;
     }
@@ -29,29 +29,8 @@ public class Position extends Point2D {
      * @param position Position
      * @return double
      */
-    public double getAngleFromPosition(Position position) {
-        return Math.atan2(position.getY() - yCoordinate, position.getX() - xCoordinate);
-    }
-
-    /**
-     * Returns the angle to the given position
-     * With atan2(y-positionx,x- positionx)
-     * [-pi,pi]
-     *
-     * @param position Position
-     * @return double
-     */
     public double getAngleToPosition(Position position) {
-        return Math.atan2(yCoordinate - position.getY(), xCoordinate - position.getX());
-    }
-
-    /**
-     * Returns polar distance
-     *
-     * @return double
-     */
-    public double getPolarDistance() {
-        return Math.hypot(xCoordinate, yCoordinate);
+        return Math.atan2(position.getY() - yCoordinate, position.getX() - xCoordinate);
     }
 
     synchronized
@@ -69,17 +48,17 @@ public class Position extends Point2D {
     }
 
     synchronized
-    public void set(double xCoordinate, double yCoordinate) {
-        this.xCoordinate = xCoordinate;
-        this.yCoordinate = yCoordinate;
-    }
-
-    synchronized
     public void set(Position position) {
         xCoordinate = position.xCoordinate;
         yCoordinate = position.yCoordinate;
     }
 
+    @Override
+    synchronized
+    public void setLocation(double x, double y) {
+        xCoordinate = x;
+        yCoordinate = y;
+    }
 
     @Override
     public String toString() {
@@ -105,15 +84,24 @@ public class Position extends Point2D {
      * @param vector Vector2D
      */
     synchronized
-    public void subtractFromPosition(Vector2D vector) {
+    public Position subtractFromPosition(Vector2D vector) {
         xCoordinate -= vector.getX();
         yCoordinate -= vector.getY();
+        return this;
     }
 
     synchronized
-    public void addToPosition(Vector2D vector) {
+    public Position subtractFromPosition(double x, double y) {
+        xCoordinate -= x;
+        yCoordinate -= y;
+        return this;
+    }
+
+    synchronized
+    public Position addToPosition(Vector2D vector) {
         xCoordinate += vector.getX() ;
         yCoordinate += vector.getY();
+        return this;
     }
 
     /**
@@ -153,11 +141,6 @@ public class Position extends Point2D {
         return yCoordinate;
     }
 
-    @Override
-    public void setLocation(double x, double y) {
-        xCoordinate = x;
-        yCoordinate = y;
-    }
 
     synchronized
     public void setY(double yCoordinate) {
