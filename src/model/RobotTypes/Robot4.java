@@ -1,7 +1,6 @@
 package model.RobotTypes;
 
 import model.*;
-import model.AbstractModel.BaseEntity;
 import model.AbstractModel.Entity;
 
 import java.awt.*;
@@ -19,8 +18,7 @@ public class Robot4 extends BaseVisionConeRobot {
     @Override
     public void behavior() {
         stayGroupedWithRobotType(5, List.of(Entity.class), 10, 1);
-        if(isArenaBoundsInVision()) signal = true;
-        else signal = false;
+        signal = isArenaBoundsInVision();
     }
 
     @Override

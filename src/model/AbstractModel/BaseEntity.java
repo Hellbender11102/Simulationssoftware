@@ -29,8 +29,8 @@ abstract public class BaseEntity extends Thread implements Entity {
         this.poseRingMemory = new Pose[ringMemorySize];
         this.pose = pose;
         this.arena = arena;
-        this.width = width;
-        this.height = height;
+        this.width = width < 0 ? 0 : width;
+        this.height = height < 0 ? 0 : height;
         this.random = random;
         this.color = new Color(random.nextInt());
     }

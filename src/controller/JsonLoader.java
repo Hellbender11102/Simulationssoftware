@@ -13,7 +13,7 @@ import java.util.*;
 class JsonLoader {
     private JSONObject settings;
     private JSONObject variables;
-    private Logger errorLogger = new Logger();
+    private final Logger errorLogger = new Logger();
     private Arena arena;
     private boolean displayView = false;
     private final String pathSettings = "resources/settings.json";

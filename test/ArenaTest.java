@@ -19,7 +19,7 @@ public class ArenaTest {
     @RunWith(org.junit.runners.Parameterized.class)
     public static class Parameterized {
         private final Arena arena;
-        private Position position;
+        private final Position position;
         private final boolean result;
 
         public Parameterized(int width, int height, boolean torus, double poseX, double poseY, boolean result) {

@@ -16,7 +16,7 @@ import java.util.List;
 public class SimulationView extends JPanel {
     private final Arena arena;
     // Collects all different classes of robots
-    private List<RobotInterface> classList = new LinkedList<>();
+    private final List<RobotInterface> classList = new LinkedList<>();
     private int offsetX, offsetY;
     private boolean drawLines = false;
     private boolean drawRotationIndicator = true;

@@ -24,8 +24,7 @@ public class Pose extends Position {
 
     public void setRotation(double rotation) {
         if (rotation < 0) rotation += 2 * Math.PI;
-        if (rotation >= 2 * Math.PI) this.rotation = rotation - 2 * Math.PI;
-        else this.rotation = rotation;
+        this.rotation = rotation % (2 * Math.PI);
     }
 
     public void incRotation(double rotation) {

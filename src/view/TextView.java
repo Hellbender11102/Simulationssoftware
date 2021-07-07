@@ -11,8 +11,8 @@ import java.io.*;
 public class TextView extends JFrame {
     JTextPane jTextPane;
     Logger errorLogger = new Logger();
-    private JMenuItem itemSave = new JMenuItem("Datei speichern",1);
-    private JMenuItem itemReload = new JMenuItem("Datei neu laden",2);
+    private final JMenuItem itemSave = new JMenuItem("Datei speichern",1);
+    private final JMenuItem itemReload = new JMenuItem("Datei neu laden",2);
 
     TextView(String title, String filePath, int posX, boolean editable) {
         try {

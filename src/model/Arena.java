@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Arena {
-    private List<Entity> entityList = new ArrayList<>();
+    private final List<Entity> entityList = new ArrayList<>();
     private final int height, width;
     private static Arena singleton;
     public final boolean isTorus; //TODO closest position distance and collision through "jumps"
@@ -180,7 +180,7 @@ public class Arena {
     }
 
     synchronized public List<Entity> getNonPhysicalEntityList() {
-        return singleton.entityList.stream().filter(x -> !x.isCollidable()).map(x -> (Entity) x).collect(Collectors.toList());
+        return singleton.entityList.stream().filter(x -> !x.isCollidable()).map(x -> x).collect(Collectors.toList());
     }
 
     synchronized public void clearEntityList() {

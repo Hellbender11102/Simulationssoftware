@@ -5,12 +5,8 @@ import model.Pose;
 import model.Position;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 
 import java.awt.*;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Random;
 
 public class BaseEntityTest {
@@ -76,12 +72,6 @@ public class BaseEntityTest {
             Position position = entity.getPose().getPoseInDirection(entity.getWidth() + entity.getHeight(), i);
             Position positionSquare = entity.closestPositionInEntityForSquare(position);
             Position positionCircle = entity.closestPositionInEntityForCircle(position, entity.getWidth() / 2.);
-
-            System.out.println(i);
-            System.out.println(position);
-            System.out.println(positionSquare);
-            System.out.println(positionCircle);
-            System.out.println();
 
             Assert.assertTrue(positionSquare.getEuclideanDistance(position) < position.getEuclideanDistance(entity.getPose()));
             Assert.assertTrue(entity.isPositionInEntitySquare(positionSquare));

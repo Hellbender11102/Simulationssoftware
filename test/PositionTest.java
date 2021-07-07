@@ -13,8 +13,8 @@ import java.util.Random;
 
 @RunWith(Parameterized.class)
 public class PositionTest {
-    private Position position1;
-    private Position position2;
+    private final Position position1;
+    private final Position position2;
 
     @Parameterized.Parameters
     public static Collection<Object[]> data() {

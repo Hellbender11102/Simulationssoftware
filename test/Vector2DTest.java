@@ -10,8 +10,8 @@ import java.util.Random;
 
 @RunWith(Parameterized.class)
 public class Vector2DTest {
-    private Vector2D vector2D;
-    private double param;
+    private final Vector2D vector2D;
+    private final double param;
 
     @Parameterized.Parameters
     public static Collection<Object[]> data() {

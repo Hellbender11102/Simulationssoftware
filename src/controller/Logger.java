@@ -12,7 +12,7 @@ public class Logger {
     DecimalFormat df;
     Thread saveThread;
     private boolean headWritten = false;
-    private ConcurrentHashMap<String, List<String>> logMap = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, List<String>> logMap = new ConcurrentHashMap<>();
     /**
      * Sets the maximum number a single list will hold until the logger will save the current map to an file
      * If issues with the RAM usage appear try to lower the number

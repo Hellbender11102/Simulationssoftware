@@ -28,7 +28,7 @@ public class View extends JFrame {
     private TextView variabls;
     private TextView log;
     private TextView help;
-    private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    private final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     JFileChooser fileChooserUI;
     FileFilter filter = new FileNameExtensionFilter("txt, JSON", "txt", "JSON", "Json");
 

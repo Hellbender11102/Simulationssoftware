@@ -122,12 +122,12 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
     public void collision(PhysicalEntity physicalEntity) {
         Position position = pose, positionPe = physicalEntity.getPose();
         if (arena.isTorus) {
-             position = arena.getClosestPositionInTorus(physicalEntity.getPose(), pose);
-             positionPe = arena.getClosestPositionInTorus(pose, physicalEntity.getPose());
+            position = arena.getClosestPositionInTorus(physicalEntity.getPose(), pose);
+            positionPe = arena.getClosestPositionInTorus(pose, physicalEntity.getPose());
         }
 
         double u1Angle = positionPe.getAngleToPosition(position);
-        double u2Angle =position.getAngleToPosition(positionPe);
+        double u2Angle = position.getAngleToPosition(positionPe);
 
 
         synchronized (this) {
@@ -141,10 +141,6 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
 
             Vector2D resultingPe = Vector2D.creatCartesian(u2New, u2Angle),
                     resulting = Vector2D.creatCartesian(u1New, u1Angle);
-
-            if (!Wall.class.isAssignableFrom(getClass()) || !Box.class.isAssignableFrom(getClass())) {
-                System.out.println(Math.toDegrees(u1Angle)+ "   " +resulting.getLength());
-            }
 
             movingVec.setRelease(resulting.rotateTo(u1Angle));
             physicalEntity.getMovingVec().setRelease(resultingPe.rotateTo(u2Angle));
@@ -267,13 +263,13 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
     }
 
     @Override
-    public double getFriction(){
-       return frictionInPercent;
+    public double getFriction() {
+        return frictionInPercent;
     }
 
     @Override
-    public String toString(){
-        return "Base physical entity with "+pose+" width:"+width+" height:"+height;
+    public String toString() {
+        return "Base physical entity with " + pose + " width:" + width + " height:" + height;
     }
 }
 

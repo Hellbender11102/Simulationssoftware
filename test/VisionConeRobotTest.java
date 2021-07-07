@@ -17,8 +17,8 @@ import java.util.Random;
 @RunWith(Parameterized.class)
 public class VisionConeRobotTest {
     private Arena arena;
-    private BaseVisionConeRobot robot;
-    private double poseX;
+    private final BaseVisionConeRobot robot;
+    private final double poseX;
     private final double poseY;
     private final boolean isInSight;
 

@@ -31,7 +31,6 @@ public abstract class BaseVisionConeRobot extends BaseRobot {
     public BaseVisionConeRobot(RobotBuilder builder) {
         super(builder);
         this.visionRange = builder.getVisionRange() > 0 ? builder.getVisionRange() : 0;
-        ;
         double visionAngle = builder.getVisionAngle();
         visionAngle = visionAngle > 360 ? 360 : visionAngle < 0 ? 0 : visionAngle;
         this.visionAngle = Math.toRadians(visionAngle);
@@ -64,8 +63,7 @@ public abstract class BaseVisionConeRobot extends BaseRobot {
         entityList.addAll(getListOfWallsInSight());
         entityList.addAll(getListOfAreasInSight());
         entityList.addAll(getListOfRobotsInSight());
-        if (entityList.contains(this))
-            entityList.remove(this);
+        entityList.remove(this);
         return entityList;
     }
 
@@ -187,9 +185,7 @@ public abstract class BaseVisionConeRobot extends BaseRobot {
         } else if (upperAngle > 2 * Math.PI || lowerAngle < 0) {
             if (upperAngle >= 2 * Math.PI && angleOfEntity <= upperAngle % (2 * Math.PI)) {
                 return true;
-            } else if (lowerAngle <= 0 && angleOfEntity >= lowerAngle + (2 * Math.PI)) {
-                return true;
-            }
+            } else return lowerAngle <= 0 && angleOfEntity >= lowerAngle + (2 * Math.PI);
         }
         return false;
     }
