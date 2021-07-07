@@ -154,9 +154,15 @@ public abstract class BaseVisionConeRobot extends BaseRobot {
      */
     public boolean isPositionInVisionCone(Position position) {
         if (arena.isTorus) {
-            position = arena.getClosestPositionInTorus(pose, position);
-        }
-        if (pose.getEuclideanDistance(position) <= visionRange) {
+            for (int x = -arena.getWidth(); x < arena.getWidth(); x += arena.getWidth()) {
+                for (int y = -arena.getHeight(); y < arena.getHeight(); y += arena.getHeight()) {
+                    Position pos = position.creatPositionByDecreasing(x, y);
+                    System.out.println(x + " " + y);
+                    if (isInVisionAngle(pos) && pose.getEuclideanDistance(pos) <= visionRange)
+                        return true;
+                }
+            }
+        } else if (pose.getEuclideanDistance(position) <= visionRange) {
             return isInVisionAngle(position);
         }
         return false;
@@ -172,12 +178,16 @@ public abstract class BaseVisionConeRobot extends BaseRobot {
         double angleOfEntity = pose.getAngleToPosition(position) < 0 ? pose.getAngleToPosition(position) + 2 * Math.PI : pose.getAngleToPosition(position);
         double upperAngle = pose.getRotation() + visionAngle / 2;
         double lowerAngle = pose.getRotation() - visionAngle / 2;
-        if (angleOfEntity <= upperAngle && angleOfEntity >= lowerAngle)
+        System.out.println(Math.toDegrees(upperAngle));
+        System.out.println(Math.toDegrees(lowerAngle));
+        System.out.println(Math.toDegrees(angleOfEntity) + " to entity");
+        System.out.println();
+        if (angleOfEntity <= upperAngle && angleOfEntity >= lowerAngle) {
             return true;
-        else if (upperAngle > 2 * Math.PI || lowerAngle < 0) {
-            if (upperAngle > 2 * Math.PI && angleOfEntity <= upperAngle % (2 * Math.PI)) {
+        } else if (upperAngle > 2 * Math.PI || lowerAngle < 0) {
+            if (upperAngle >= 2 * Math.PI && angleOfEntity <= upperAngle % (2 * Math.PI)) {
                 return true;
-            } else if (lowerAngle < 0 && angleOfEntity >= lowerAngle + 2 * Math.PI) {
+            } else if (lowerAngle <= 0 && angleOfEntity >= lowerAngle + (2 * Math.PI)) {
                 return true;
             }
         }

@@ -117,30 +117,29 @@ public class Arena {
 
     /**
      * Checks if an position outside of the walls is closer due to the torus arena
-     *
-     * @param position1 Position
-     * @param position2 Position
+     * @param measuringPosition Position
+     * @param position Position
      * @return position
      */
-    public Position getClosestPositionInTorus(Position position1, Position position2) {
-       double x=position2.getX(),y = position2.getY();
-        if (position2.getX() > width / 2. && position1.getX() < width / 2.)
-            x = position1.getEuclideanDistance(position2.creatPositionByDecreasing(width, 0))
-                    < position1.getEuclideanDistance(position2) ? position2.creatPositionByDecreasing(width, 0).getX() :
-                    position2.getX();
-        else if (position2.getX() < width / 2. && position1.getX() > width / 2.) {
-            x = position1.getEuclideanDistance(position2.creatPositionByDecreasing(-width, 0))
-                    < position1.getEuclideanDistance(position2) ? position2.creatPositionByDecreasing(-width, 0).getX() :
-                    position2.getX();
+    public Position getClosestPositionInTorus(Position measuringPosition, Position position) {
+       double x=position.getX(),y = position.getY();
+        if (position.getX() > width / 2. && measuringPosition.getX() < width / 2.)
+            x = measuringPosition.getEuclideanDistance(position.creatPositionByDecreasing(width, 0))
+                    < measuringPosition.getEuclideanDistance(position) ? position.creatPositionByDecreasing(width, 0).getX() :
+                    position.getX();
+        else if (position.getX() < width / 2. && measuringPosition.getX() > width / 2.) {
+            x = measuringPosition.getEuclideanDistance(position.creatPositionByDecreasing(-width, 0))
+                    < measuringPosition.getEuclideanDistance(position) ? position.creatPositionByDecreasing(-width, 0).getX() :
+                    position.getX();
         }
-        if (position2.getY() > height / 2. && position1.getY() < height / 2.)
-            y = position1.getEuclideanDistance(position2.creatPositionByDecreasing(0, height))
-                    < position1.getEuclideanDistance(position2) ? position2.creatPositionByDecreasing(0, height).getY() :
-                    position2.getY();
-        else if (position2.getY() < height / 2. && position1.getY() > height / 2.) {
-            y = position1.getEuclideanDistance(position2.creatPositionByDecreasing(0, -height))
-                    < position1.getEuclideanDistance(position2) ? position2.creatPositionByDecreasing(0, -height).getY() :
-                    position2.getY();
+        if (position.getY() > height / 2. && measuringPosition.getY() < height / 2.)
+            y = measuringPosition.getEuclideanDistance(position.creatPositionByDecreasing(0, height))
+                    < measuringPosition.getEuclideanDistance(position) ? position.creatPositionByDecreasing(0, height).getY() :
+                    position.getY();
+        else if (position.getY() < height / 2. && measuringPosition.getY() > height / 2.) {
+            y = measuringPosition.getEuclideanDistance(position.creatPositionByDecreasing(0, -height))
+                    < measuringPosition.getEuclideanDistance(position) ? position.creatPositionByDecreasing(0, -height).getY() :
+                    position.getY();
         }
         return new Position(x,y);
     }

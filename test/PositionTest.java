@@ -54,4 +54,12 @@ public class PositionTest {
         Assert.assertEquals(position1.distance(position2),position1.subtractFromPosition(position2.toVector()).distance(0,0), 0.00);
     }
 
+    @Test
+    public void TestPositionAddSubtract() {
+        Position position1Old= position1.clone();
+        Assert.assertEquals(position1.distance(position2),position1.creatPositionByDecreasing(position2).distance(0,0), 0.00);
+        Assert.assertTrue(position1.creatPositionByDecreasing(position2).equals(position1.subtractFromPosition(position2.toVector())));
+        position1.addToPosition(position2);
+        Assert.assertTrue(position1.equals(position1Old));
+    }
 }

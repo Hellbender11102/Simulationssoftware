@@ -17,7 +17,8 @@ public class PoseTest {
     @Parameterized.Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
-                {},
+                {0,0,0,0,0,0},
+                {-1,-1,0,-1,-1,0},
         });
     }
 
@@ -26,5 +27,9 @@ public class PoseTest {
         pose2 = new Pose(x2, y2, rotation2);
     }
 
+    @Test
+    public void TestRotation(){
+
+    }
 
 }

@@ -127,6 +127,8 @@ public class VisionConeRobotTest {
                 {true, false, 2 * Math.PI, Math.PI, 5, 10, 10, 100, 100},
                 {true, false, 2 * Math.PI, 2 * Math.PI, 5, 10, 10, 100, 100},
                 {true, false, 2 * Math.PI, Math.PI / 2, 11, 10, 10, 10, 10},
+
+                {true, false, 2 * Math.PI, Math.PI / 2, 5, 6, 6, 10, 10},
         });
     }
 
@@ -141,8 +143,8 @@ public class VisionConeRobotTest {
 
     @Test
     public void testIsArenaBoundsInVision() {
-        if(!arena.isTorus)
-        Assert.assertEquals(robot.isArenaBoundsInVision(), isInSight);
+        if (!arena.isTorus)
+            Assert.assertEquals(robot.isArenaBoundsInVision(), isInSight);
     }
 
     @Test
@@ -241,14 +243,13 @@ public class VisionConeRobotTest {
 
     @Test
     public void testIsPositionInVisionCone() {
-        System.out.println(robot.getVisionRange());
-        System.out.println(robot.getVisionAngle());
-        System.out.println(robot.getPose());
-        System.out.println(robot.getPose().getPositionInDirection(robot.getVisionRange(), robot.getPose().getRotation() - robot.getVisionAngle()));
-        if(robot.getVisionRange() > 0 && robot.getVisionAngle() > 0) {
-            Assert.assertTrue(robot.isPositionInVisionCone(robot.getPose().getPositionInDirection(robot.getVisionRange(), robot.getPose().getRotation() + robot.getVisionAngle())));
-            Assert.assertTrue(robot.isPositionInVisionCone(robot.getPose().getPositionInDirection(robot.getVisionRange(), robot.getPose().getRotation() - robot.getVisionAngle())));
-            Assert.assertTrue(robot.isPositionInVisionCone(robot.getPose().getPositionInDirection(robot.getVisionRange(), robot.getPose().getRotation())));
+        // -0.001 due to rounding errors
+        if (robot.getVisionRange() > 0 && robot.getVisionAngle() > 0) {
+            Position upper =robot.getPose().getPositionInDirection(robot.getVisionRange()-0.001,robot.getPose().getRotation() + ((robot.getVisionAngle()-0.001)/2)),
+            lower =robot.getPose().getPositionInDirection(robot.getVisionRange()-0.001,robot.getPose().getRotation() - ((robot.getVisionAngle()-0.001)/2));
+           Assert.assertTrue(robot.isPositionInVisionCone(robot.getPose().getPositionInDirection(robot.getVisionRange())));
+           Assert.assertTrue(robot.isPositionInVisionCone(upper));
+           Assert.assertTrue(robot.isPositionInVisionCone(lower));
             if (robot.getVisionRange() > arena.getWidth() && arena.isTorus) {
                 Assert.assertTrue(robot.isPositionInVisionCone(robot.getPose().getPositionInDirection(-(robot.getRadius() + .2), robot.getPose().getRotation())));
             }
@@ -259,23 +260,17 @@ public class VisionConeRobotTest {
     }
 
     @Test
-    public void testIsInBetween() {
-
-    }
-
-    @Test
     public void testisAreaVisionRangeInSight() {
+        Area areaVisionRange = new Area(arena, new Random(), 0, 2.1, new Pose(robot.getPose().getPoseInDirection(robot.getVisionRange()+1), 1));
+        Area areaRadius = new Area(arena, new Random(), 2.1, 0, new Pose(robot.getPose().getPoseInDirection(robot.getVisionRange()+1), 1));
 
-    }
+        if(robot.getVisionRange() > 0) {
+            Assert.assertTrue(robot.isAreaVisionRangeInSight(areaVisionRange));
+            Assert.assertFalse(robot.isAreaInSight(areaVisionRange));
 
-    @Test
-    public void testCircleInSight() {
-
-    }
-
-    @Test
-    public void testIsSquareInSight() {
-
+            Assert.assertFalse(robot.isAreaVisionRangeInSight(areaRadius));
+            Assert.assertTrue(robot.isAreaInSight(areaRadius));
+        }
     }
 
 }

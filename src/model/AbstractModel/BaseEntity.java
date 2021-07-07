@@ -105,28 +105,29 @@ abstract public class BaseEntity extends Thread implements Entity {
      * @param position Position
      * @return Position
      */
-    protected Position closestPositionInEntityForSquare(Position position) {
+    public Position closestPositionInEntityForSquare(Position position) {
+
         if (isPositionInEntitySquare(position)) return position;
         if (arena.isTorus) {
             position = arena.getClosestPositionInTorus(pose, position);
         }
+
         Position closest = pose.clone();
-        if (position.getX() <= pose.getX() + width / 2 &&
-                position.getX() >= pose.getX() - width / 2) {
+
+        if (position.getX() <= pose.getX() + width / 2 && position.getX() >= pose.getX() - width / 2) {
             closest.setX(position.getX());
-            if (position.getY() > pose.getY()) {
-                closest.setY(closest.getY() + height / 2);
-            } else {
-                closest.setY(closest.getY() - height / 2);
-            }
-        } else if (position.getY() <= pose.getY() + height / 2 &&
-                position.getY() >= pose.getY() - height / 2) {
+        }else if(position.getX() > pose.getX() + width / 2){
+            closest.setX(pose.getX()+width /2);
+        } else if(position.getX() < pose.getX() + width / 2){
+            closest.setX(pose.getX()-width /2);
+        }
+
+        if (position.getY() <= pose.getY() + height / 2 && position.getY() >= pose.getY() - height / 2) {
             closest.setY(position.getY());
-            if (position.getX() > pose.getX()) {
-                closest.setX(closest.getX() + width / 2);
-            } else {
-                closest.setX(closest.getX() - width / 2);
-            }
+        }else if(position.getY() > pose.getY() + height / 2){
+            closest.setY(pose.getY()+height /2);
+        } else if(position.getY() < pose.getY() + height / 2){
+            closest.setY(pose.getY()-height /2);
         }
         return closest;
     }
@@ -138,7 +139,7 @@ abstract public class BaseEntity extends Thread implements Entity {
      * @param radius   radius
      * @return Position
      */
-    protected Position closestPositionInEntityForCircle(Position position, double radius) {
+    public Position closestPositionInEntityForCircle(Position position, double radius) {
         if (arena.isTorus) {
             position = arena.getClosestPositionInTorus(pose, position);
         }
@@ -151,12 +152,14 @@ abstract public class BaseEntity extends Thread implements Entity {
      * @param position Position
      * @return boolean
      */
-    protected boolean isPositionInEntitySquare(Position position) {
-        position = arena.setPositionInBoundsTorus(position);
-        return position.getX() <= pose.getX() + width / 2 &&
-                position.getX() >= pose.getX() - width / 2 &&
-                position.getY() <= pose.getY() + height / 2 &&
-                position.getY() >= pose.getY() - height / 2;
+    public boolean isPositionInEntitySquare(Position position) {
+        if (arena.isTorus) {
+            position = arena.setPositionInBoundsTorus(position);
+        }
+        return position.getX() <= pose.getX() + width / 2. &&
+                position.getX() >= pose.getX() - width / 2. &&
+                position.getY() <= pose.getY() + height / 2. &&
+                position.getY() >= pose.getY() - height / 2.;
     }
 
     /**
@@ -166,8 +169,10 @@ abstract public class BaseEntity extends Thread implements Entity {
      * @return boolean
      */
     public boolean isPositionInEntityCircle(Position position) {
-        position = arena.setPositionInBoundsTorus(position);
-        return pose.getEuclideanDistance(position) <= width / 2;
+        if (arena.isTorus) {
+            position = arena.setPositionInBoundsTorus(position);
+        }
+        return pose.getEuclideanDistance(position) <= width / 2.;
     }
 
 
@@ -229,7 +234,7 @@ abstract public class BaseEntity extends Thread implements Entity {
     }
 
     @Override
-    public String toString(){
-        return "Base entity with "+pose+" width:"+width+" height:"+height;
+    public String toString() {
+        return "Base entity with " + pose + " width:" + width + " height:" + height;
     }
 }
