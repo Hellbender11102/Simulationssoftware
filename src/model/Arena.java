@@ -13,7 +13,7 @@ public class Arena {
     private final List<Entity> entityList = new ArrayList<>();
     private final int height, width;
     private static Arena singleton;
-    public final boolean isTorus; //TODO closest position distance and collision through "jumps"
+    public final boolean isTorus;
 
     /**
      * Constructor
@@ -180,7 +180,7 @@ public class Arena {
     }
 
     synchronized public List<Entity> getNonPhysicalEntityList() {
-        return singleton.entityList.stream().filter(x -> !x.isCollidable()).map(x -> x).collect(Collectors.toList());
+        return singleton.entityList.stream().filter(x -> !x.isCollidable()).collect(Collectors.toList());
     }
 
     synchronized public void clearEntityList() {

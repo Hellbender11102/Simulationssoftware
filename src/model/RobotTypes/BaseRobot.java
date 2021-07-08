@@ -66,7 +66,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     /**
      * A modifier to slowly increase acceleration
      */
-    protected double accelerationInPercent = .9 / ticsPerSimulatedSecond;
+    protected double accelerationInPercent = .001;
 
     private final boolean simulateWithView;
 
@@ -192,7 +192,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         if (moving.getLength() < getTrajectoryMagnitude()) {
             moving = moving.add(incVec);
         } else if (moving.getLength() > getTrajectoryMagnitude()) {
-            moving = moving.normalize().multiplication(getTrajectoryMagnitude());
+            moving = moving.multiplication(1-frictionInPercent);
         } else if (moving.containsNaN()) {
             moving.set(incVec);
         }

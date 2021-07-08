@@ -2,6 +2,7 @@ package model.AbstractModel;
 
 import model.*;
 
+import java.lang.reflect.Type;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -34,14 +35,14 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
      * The simulation is set up for the elastic bump
      */
     private final int bumpParam = 1;
-    protected AtomicReference<Vector2D> movingVec = new AtomicReference<Vector2D>();
+    protected AtomicReference<Vector2D> movingVec = new AtomicReference<>();
 
 
     protected BasePhysicalEntity(Arena arena, Random random, double width, double height, Pose pose, int ticsPerSimulatedSecond) {
         super(arena, random, width, height, pose);
         movingVec.set(Vector2D.zeroVector());
         this.ticsPerSimulatedSecond = ticsPerSimulatedSecond;
-        frictionInPercent = 0.9999 / ticsPerSimulatedSecond;
+        frictionInPercent = 0.01;
     }
 
     /**
@@ -101,14 +102,14 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
     @Override
     public boolean collisionDetection() {
         boolean returnValue = false;
-        for (PhysicalEntity physicalEntity : collidingWith()) {
-            returnValue = true;
-            collision(physicalEntity);
-        }
         if (!inArenaBounds() && !arena.isTorus) {
             setInArenaBounds();
         } else if (!inArenaBounds() && arena.isTorus) {
             arena.setEntityInTorusArena(this);
+        }
+        for (PhysicalEntity physicalEntity : collidingWith()) {
+            returnValue = true;
+            collision(physicalEntity);
         }
         return returnValue;
     }
@@ -126,9 +127,8 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
             positionPe = arena.getClosestPositionInTorus(pose, physicalEntity.getPose());
         }
 
-        double u1Angle = positionPe.getAngleToPosition(position);
-        double u2Angle = position.getAngleToPosition(positionPe);
-
+        double u1Angle = position.getAngleToPosition(positionPe);
+        double u2Angle = positionPe.getAngleToPosition(position);
 
         synchronized (this) {
             Vector2D moving1 = movingVec.getAcquire(), moving2 = physicalEntity.getMovingVec().getAcquire();
@@ -136,15 +136,28 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
             double m1 = getWeight(), m2 = physicalEntity.getWeight();
             double v1 = moving1.getLength(), v2 = moving2.getLength();
 
-            double u2New = ((bumpParam * m1) / (m1 + m2)) * v1 * Math.cos(u2Angle);
-            double u1New = ((bumpParam * m2) / (m1 + m2)) * v2 * Math.cos(u1Angle);
 
-            Vector2D resultingPe = Vector2D.creatCartesian(u2New, u2Angle),
-                    resulting = Vector2D.creatCartesian(u1New, u1Angle);
+            double v1x = calcX(v1, v2, m1, m2, moving1.angle(), moving2.angle(), u1Angle);
+            double v1y = calcY(v1, v2, m1, m2, moving1.angle(), moving2.angle(), u1Angle);
 
-            movingVec.setRelease(resulting.rotateTo(u1Angle));
-            physicalEntity.getMovingVec().setRelease(resultingPe.rotateTo(u2Angle));
+            double v2x = calcX(v2, v1, m2, m1, moving2.angle(), moving1.angle(), u2Angle);
+            double v2y = calcY(v2, v1, m2, m1, moving2.angle(), moving1.angle(), u2Angle);
+
+            Vector2D resultingPe = new Vector2D(v2x, v2y),
+                    resulting =  new Vector2D(v1x, v1y);
+
+            physicalEntity.getMovingVec().setRelease(resultingPe);
+           movingVec.setRelease(resulting);
         }
+    }
+    private double calcX(double v1, double v2, double m1, double m2, double movingAngle1, double movingAngle2, double contactAngle) {
+        return ((v1 * Math.cos(movingAngle1 - contactAngle) * (m1 - m2) + 2 * m2 * v2 * Math.cos(movingAngle2 - contactAngle)) /
+                (m1 + m2)) * Math.cos(contactAngle) + v1 * Math.sin(movingAngle1 - contactAngle) * Math.cos(movingAngle2 - Math.PI / 2);
+    }
+
+    private double calcY(double v1, double v2, double m1, double m2, double movingAngle1, double movingAngle2, double contactAngle) {
+        return ((v1 * Math.cos(movingAngle1 - contactAngle) * (m1 - m2) + 2 * m2 * v2 * Math.cos(movingAngle2 - contactAngle)) /
+                (m1 + m2)) * Math.sin(contactAngle) + v1 * Math.sin(movingAngle1 - contactAngle) * Math.sin(movingAngle2 - Math.PI / 2);
     }
 
 
@@ -168,24 +181,21 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
      */
     @Override
     public void setInArenaBounds() {
-        Vector2D buff = movingVec.get();
         if (pose.getX() < width / 2) {
             pose.setX(width / 2);
-            buff.set(0, buff.getY());
+            movingVec.set(new Vector2D(-movingVec.get().getX(),movingVec.get().getY()));
         } else if (pose.getX() > arena.getWidth() - width / 2) {
             pose.setX(arena.getWidth() - width / 2);
-            buff.set(0, buff.getY());
+            movingVec.set(new Vector2D(-movingVec.get().getX(),movingVec.get().getY()));
         }
         if (pose.getY() < height / 2) {
             pose.setY(height / 2);
-            buff.set(buff.getX(), 0);
+            movingVec.set(new Vector2D(movingVec.get().getX(),-movingVec.get().getY()));
         } else if (pose.getY() > arena.getHeight() - height / 2) {
-            pose.setY(arena.getHeight() - height / 2);
-            buff.set(buff.getX(), 0);
+            pose.setY( arena.getHeight() - height / 2);
+            movingVec.set(new Vector2D(movingVec.get().getX(),-movingVec.get().getY()));
         }
-        movingVec.set(buff);
     }
-    //TODO FOR TORUS
 
     /**
      * Returns the center of a group
@@ -227,7 +237,7 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
         LinkedList<Entity> entityInGroup = new LinkedList<>();
         for (Entity entity : arena.getPhysicalEntityList()) {
             for (Class c : classList) {
-                if (c.isAssignableFrom(entity.getClass()) || entity.getClass().isInstance(c)) {
+                if (Entity.class == c) {
                     entityInGroup.add(entity);
                 }
             }
@@ -255,6 +265,11 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
     @Override
     public double getWeight() {
         return getArea();
+    }
+
+    @Override
+    public boolean isMovable() {
+        return true;
     }
 
     @Override

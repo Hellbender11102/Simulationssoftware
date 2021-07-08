@@ -131,16 +131,23 @@ public class BasePhysicalEntityTest {
     public void testCollidingWith() {
         PhysicalEntity box = new Box(arena, new Random(), 2, 2, new Pose(position.creatPositionByDecreasing(1, 0), 0), 1);
 
-        entity.getMovingVec().set(Vector2D.creatCartesian(10,0));
-        box.getMovingVec().set(Vector2D.creatCartesian(10,-Math.PI));
+        entity.getMovingVec().set(Vector2D.creatCartesian(position.getX(),0));
+        box.getMovingVec().set(Vector2D.creatCartesian(position.getY(),-Math.PI));
         arena.addEntity(box);
         Vector2D vec1 = entity.getMovingVec().get(), vec2 = box.getMovingVec().get();
 
         entity.collision(box);
+
+        //  m1~v1=m1~u1+m2~u2
+        Vector2D resultingVec = entity.getMovingVec().get().multiplication(entity.getWeight()).add(box.getMovingVec().get().multiplication(box.getWeight()));
+
+        Assert.assertEquals(vec1.multiplication(entity.getWeight()).getX(), resultingVec.getX(),0.01);
+        Assert.assertEquals(vec1.multiplication(entity.getWeight()).getY(), resultingVec.getY(),0.01);
+
         //conservation of energy
-        Assert.assertEquals(vec1.getLength() + vec1.getLength(),
-                box.getMovingVec().get().getLength()
-                        +entity.getMovingVec().get().getLength(),0.01);
+        Assert.assertEquals((entity.getWeight()/2)*vec1.getLength() + (box.getWeight()/2)*vec2.getLength()
+                ,(entity.getWeight()/2)*entity.getMovingVec().get().getLength()+
+                (box.getWeight()/2)*box.getMovingVec().get().getLength(),0.01);
     }
 
     @Test

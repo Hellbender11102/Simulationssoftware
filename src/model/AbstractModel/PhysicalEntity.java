@@ -33,4 +33,6 @@ public interface PhysicalEntity extends Entity, Runnable {
     void alterMovingVector();
 
     double getFriction();
+
+    boolean isMovable();
 }

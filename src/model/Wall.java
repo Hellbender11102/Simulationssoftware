@@ -39,6 +39,16 @@ public class Wall extends BasePhysicalEntity {
         return getAreaSquare();
     }
 
+    @Override
+    public double getWeight() {
+        return getAreaSquare();
+    }
+
+    @Override
+    public boolean isMovable() {
+        return false;
+    }
+
     /**
      * Calculates and sets the next position
      */
