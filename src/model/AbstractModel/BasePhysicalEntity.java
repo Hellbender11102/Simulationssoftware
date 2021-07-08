@@ -120,7 +120,7 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
      *
      * @param physicalEntity PhysicalEntity
      */
-    public void collision(PhysicalEntity physicalEntity) {
+    synchronized public void collision(PhysicalEntity physicalEntity) {
         Position position = pose, positionPe = physicalEntity.getPose();
         if (arena.isTorus) {
             position = arena.getClosestPositionInTorus(physicalEntity.getPose(), pose);
@@ -130,34 +130,46 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
         double u1Angle = position.getAngleToPosition(positionPe);
         double u2Angle = positionPe.getAngleToPosition(position);
 
-        synchronized (this) {
-            Vector2D moving1 = movingVec.getAcquire(), moving2 = physicalEntity.getMovingVec().getAcquire();
+        Vector2D moving1 = movingVec.getAcquire(), moving2 = physicalEntity.getMovingVec().getAcquire();
 
-            double m1 = getWeight(), m2 = physicalEntity.getWeight();
-            double v1 = moving1.getLength(), v2 = moving2.getLength();
+        double m1 = getWeight(), m2 = physicalEntity.getWeight();
+        double v1 = moving1.getLength(), v2 = moving2.getLength();
 
-
-            double v1x = calcX(v1, v2, m1, m2, moving1.angle(), moving2.angle(), u1Angle);
-            double v1y = calcY(v1, v2, m1, m2, moving1.angle(), moving2.angle(), u1Angle);
-
-            double v2x = calcX(v2, v1, m2, m1, moving2.angle(), moving1.angle(), u2Angle);
-            double v2y = calcY(v2, v1, m2, m1, moving2.angle(), moving1.angle(), u2Angle);
-
-            Vector2D resultingPe = new Vector2D(v2x, v2y),
-                    resulting =  new Vector2D(v1x, v1y);
-
-            physicalEntity.getMovingVec().setRelease(resultingPe);
-           movingVec.setRelease(resulting);
+        if (Wall.class.isAssignableFrom(physicalEntity.getClass())) {
+            u1Angle = position.getAngleToPosition(physicalEntity.getClosestPositionInEntity(position));
         }
+        if (Wall.class.isAssignableFrom(getClass())) {
+            u2Angle = positionPe.getAngleToPosition(getClosestPositionInEntity(positionPe));
+        }
+
+        double v1x = calcX(v1, v2, m1, m2, moving1.angle(), moving2.angle(), u1Angle);
+        double v1y = calcY(v1, v2, m1, m2, moving1.angle(), moving2.angle(), u1Angle);
+
+        double v2x = calcX(v2, v1, m2, m1, moving1.angle(), moving2.angle(), u1Angle);
+        double v2y = calcY(v2, v1, m2, m1, moving1.angle(), moving2.angle(), u1Angle);
+
+        Vector2D resultingPe = new Vector2D(v2x, v2y),
+                resulting = new Vector2D(v1x, v1y);
+
+        System.out.println(moving2.getLength() + " 2");
+        System.out.println(resultingPe.getLength());
+        System.out.println(moving1.getLength()+ " 1");
+        System.out.println(resulting.getLength());
+        System.out.println();
+
+        physicalEntity.getMovingVec().setRelease(resultingPe);
+        movingVec.setRelease(resulting);
+
     }
+
     private double calcX(double v1, double v2, double m1, double m2, double movingAngle1, double movingAngle2, double contactAngle) {
         return ((v1 * Math.cos(movingAngle1 - contactAngle) * (m1 - m2) + 2 * m2 * v2 * Math.cos(movingAngle2 - contactAngle)) /
-                (m1 + m2)) * Math.cos(contactAngle) + v1 * Math.sin(movingAngle1 - contactAngle) * Math.cos(movingAngle2 - Math.PI / 2);
+                (m1 + m2)) * Math.cos(contactAngle) + v1 * Math.sin(movingAngle1 - contactAngle) * Math.cos(contactAngle - (Math.PI / 2));
     }
 
     private double calcY(double v1, double v2, double m1, double m2, double movingAngle1, double movingAngle2, double contactAngle) {
         return ((v1 * Math.cos(movingAngle1 - contactAngle) * (m1 - m2) + 2 * m2 * v2 * Math.cos(movingAngle2 - contactAngle)) /
-                (m1 + m2)) * Math.sin(contactAngle) + v1 * Math.sin(movingAngle1 - contactAngle) * Math.sin(movingAngle2 - Math.PI / 2);
+                (m1 + m2)) * Math.sin(contactAngle) + v1 * Math.sin(movingAngle1 - contactAngle) * Math.sin(contactAngle - (Math.PI / 2));
     }
 
 
@@ -181,20 +193,18 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
      */
     @Override
     public void setInArenaBounds() {
+        Vector2D vec = movingVec.getAcquire();
         if (pose.getX() < width / 2) {
-            pose.setX(width / 2);
-            movingVec.set(new Vector2D(-movingVec.get().getX(),movingVec.get().getY()));
+            vec.set(new Vector2D(-vec.getX(), vec.getY()));
         } else if (pose.getX() > arena.getWidth() - width / 2) {
-            pose.setX(arena.getWidth() - width / 2);
-            movingVec.set(new Vector2D(-movingVec.get().getX(),movingVec.get().getY()));
+            vec.set(new Vector2D(-vec.getX(), vec.getY()));
         }
         if (pose.getY() < height / 2) {
-            pose.setY(height / 2);
-            movingVec.set(new Vector2D(movingVec.get().getX(),-movingVec.get().getY()));
+            vec.set(new Vector2D(vec.getX(), -vec.getY()));
         } else if (pose.getY() > arena.getHeight() - height / 2) {
-            pose.setY( arena.getHeight() - height / 2);
-            movingVec.set(new Vector2D(movingVec.get().getX(),-movingVec.get().getY()));
+            vec.set(new Vector2D(vec.getX(), -vec.getY()));
         }
+        movingVec.setRelease(vec);
     }
 
     /**

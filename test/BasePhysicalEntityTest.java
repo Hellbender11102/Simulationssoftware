@@ -40,6 +40,12 @@ public class BasePhysicalEntityTest {
                 {-1, -1, -1, -1, false},
                 {1, 1, 10, 10, false},
                 {10, 10, 1, 1, false},
+                {1, 1, 9, 11, false},
+                {10, 10, 2,8, false},
+                {1, 1, 9, 11, false},
+                {10, 10, -1,9, false},
+                {1, 1, 9, 11, false},
+                {10, 10, 30,-11, false},
         });
     }
 
@@ -129,25 +135,27 @@ public class BasePhysicalEntityTest {
 
     @Test
     public void testCollidingWith() {
-        PhysicalEntity box = new Box(arena, new Random(), 2, 2, new Pose(position.creatPositionByDecreasing(1, 0), 0), 1);
+        Position entityPos = position,boxPos=position.creatPositionByDecreasing(1, 0);
+
+        PhysicalEntity box = new Box(arena, new Random(), 2, 2, new Pose(boxPos, 0), 1);
 
         entity.getMovingVec().set(Vector2D.creatCartesian(position.getX(),0));
         box.getMovingVec().set(Vector2D.creatCartesian(position.getY(),-Math.PI));
         arena.addEntity(box);
         Vector2D vec1 = entity.getMovingVec().get(), vec2 = box.getMovingVec().get();
 
+        Vector2D startingVec = entity.getMovingVec().get().multiplication(entity.getWeight()).add(box.getMovingVec().get().multiplication(box.getWeight()));
+
         entity.collision(box);
 
-        //  m1~v1=m1~u1+m2~u2
+        //  m1*v1+m2*v2=m1*v1+m2*u2
         Vector2D resultingVec = entity.getMovingVec().get().multiplication(entity.getWeight()).add(box.getMovingVec().get().multiplication(box.getWeight()));
 
-        Assert.assertEquals(vec1.multiplication(entity.getWeight()).getX(), resultingVec.getX(),0.01);
-        Assert.assertEquals(vec1.multiplication(entity.getWeight()).getY(), resultingVec.getY(),0.01);
-
         //conservation of energy
-        Assert.assertEquals((entity.getWeight()/2)*vec1.getLength() + (box.getWeight()/2)*vec2.getLength()
-                ,(entity.getWeight()/2)*entity.getMovingVec().get().getLength()+
-                (box.getWeight()/2)*box.getMovingVec().get().getLength(),0.01);
+        Assert.assertEquals(startingVec.getLength(), resultingVec.getLength(),0.01);
+
+        Assert.assertTrue(entityPos.getEuclideanDistance(boxPos)<entity.getPose().getEuclideanDistance(box.getPose()));
+
     }
 
     @Test

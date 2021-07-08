@@ -7,6 +7,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.*;
+import java.net.URL;
 
 public class TextView extends JFrame {
     JTextPane jTextPane;
@@ -36,6 +37,11 @@ public class TextView extends JFrame {
         scrollPane.setViewportView(jTextPane);
         jTextPane.setCaretPosition(0);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        URL iconURL =  getClass().getClassLoader().getResource("icon.PNG");
+        if (null != iconURL) {
+            ImageIcon icon = new ImageIcon(iconURL);
+            setIconImage(icon.getImage());
+        }
         if (editable) {
             JMenuBar bar = new JMenuBar();
             JMenu menu = new JMenu("Optionen");
