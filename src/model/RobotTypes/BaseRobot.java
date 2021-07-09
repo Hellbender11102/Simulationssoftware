@@ -66,7 +66,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     /**
      * A modifier to slowly increase acceleration
      */
-    protected double accelerationInPercent = .001;
+    protected double accelerationInPercent = .01;
 
     private final boolean simulateWithView;
 
@@ -152,9 +152,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     @Override
     public void setNextPosition() {
         if (!movingVec.get().containsNaN())
-            if (getTrajectoryMagnitude() >= 0)
-                pose.addToPosition(movingVec.get());
-            else pose.subtractFromPosition(movingVec.get());
+            pose.addToPosition(movingVec.get());
         pose.incRotation(angularVelocity());
     }
 
@@ -187,18 +185,17 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      */
     @Override
     public void alterMovingVector() {
+
         Vector2D incVec = Vector2D.creatCartesian(getTrajectoryMagnitude() * accelerationInPercent, pose.getRotation());
-        Vector2D moving = movingVec.getAcquire();
-        if (moving.getLength() < getTrajectoryMagnitude()) {
-            moving = moving.add(incVec);
-        } else if (moving.getLength() > getTrajectoryMagnitude()) {
-            moving = moving.multiplication(1-frictionInPercent);
-        } else if (!moving.containsNaN()) {
+        Vector2D moving = movingVec.getAcquire().rotateTo(pose.getRotation());
+         moving.set(moving.getX()+incVec.getX(),moving.getY()+incVec.getY());
+        if (moving.containsNaN()) {
             moving.set(incVec);
         }
-
-        // rotating again to avoid imprecision
-        movingVec.setRelease(moving.rotateTo(pose.getRotation()));
+        if(moving.getLength() > getTrajectoryMagnitude()){
+            moving= moving.normalize().multiplication(getTrajectoryMagnitude());
+        }
+        movingVec.setRelease(moving);
     }
 
     /**
@@ -246,7 +243,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         if (angleDiff <= precisionInRadian / 2 || 2 * Math.PI - angleDiff <= precisionInRadian / 2) {
             setEngines(rotatingEngine, rotatingEngine);
             return true;
-        } else if (angleDiff <= Math.PI) {
+        } else if (angleDiff > Math.PI) {
             setEngines(secondEngine, rotatingEngine);
         } else {
             setEngines(rotatingEngine, secondEngine);

@@ -10,10 +10,9 @@ public class Robot3 extends BaseRobot {
     public Robot3(RobotBuilder builder) {
         super(builder);
     }
-int i =0;
     @Override
     public void behavior() {
-     driveToPosition(new Position(1,1),1,10);
+     driveToPosition(new Position(50,50),10,10);
     }
 
     @Override

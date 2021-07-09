@@ -9,12 +9,12 @@ public class Pose extends Position {
     }
 
     public Pose(Position position, double rotation) {
-        super(position.xCoordinate, position.yCoordinate);
+        super(position.getX(), position.getY());
         setRotation(rotation);
     }
 
     public Pose(Pose pose) {
-        super(pose.xCoordinate, pose.yCoordinate);
+        super(pose.getX(), pose.getY());
         setRotation(pose.getRotation());
     }
 

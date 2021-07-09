@@ -91,7 +91,6 @@ class JsonLoader {
             return (double) variables.get("maxSpeed");
         else {
             error = "Could not read maxSpeed from variables.json.";
-
             errorLogger.dumpError(error);
             return 8.;
         }
@@ -301,7 +300,7 @@ class JsonLoader {
                     , loadSimulatedTime()));
             return robotList;
         }
-        error = "Es wurde kein eintrag für robots gefunden";
+        error = "No entry \"robots\" was found";
         errorLogger.dumpError(error);
         return new LinkedList<>();
     }

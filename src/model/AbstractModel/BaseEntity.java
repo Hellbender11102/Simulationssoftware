@@ -129,7 +129,6 @@ abstract public class BaseEntity extends Thread implements Entity {
         } else if(position.getY() < pose.getY() + height / 2){
             closest.setY(pose.getY()-height /2);
         }
-        System.out.println(closest);
         return closest;
     }
 
@@ -144,7 +143,6 @@ abstract public class BaseEntity extends Thread implements Entity {
         if (arena.isTorus) {
             position = arena.getClosestPositionInTorus(pose, position);
         }
-        System.out.println(pose.getPositionInDirection(radius, pose.getAngleToPosition(position)));
         return pose.getPositionInDirection(radius, pose.getAngleToPosition(position));
     }
 

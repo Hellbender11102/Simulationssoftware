@@ -62,6 +62,7 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
     /**
      * Calculates and sets the next position
      */
+    @Override
     public void setNextPosition() {
         pose.setRotation(movingVec.get().angle());
         pose.addToPosition(movingVec.get());
@@ -108,8 +109,8 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
             arena.setEntityInTorusArena(this);
         }
         for (PhysicalEntity physicalEntity : collidingWith()) {
-            returnValue = true;
             collision(physicalEntity);
+            returnValue = true;
         }
         return returnValue;
     }
@@ -150,6 +151,7 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
 
         Vector2D resultingPe = new Vector2D(v2x, v2y),
                 resulting = new Vector2D(v1x, v1y);
+
 
         //ensures correct distance ist kept
         if (position.getEuclideanDistance(physicalEntity.getPose()) - (resultingPe.getLength() + resulting.getLength()) <
@@ -207,14 +209,22 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
     public void setInArenaBounds() {
         Vector2D vec = movingVec.getAcquire();
         if (pose.getX() < width / 2) {
-            vec.set(new Vector2D(-vec.getX(), vec.getY()));
+            pose.setX(width / 2);
+            if (vec.getX() + pose.getX() < pose.getX())
+                vec.set(new Vector2D(-vec.getX(), vec.getY()));
         } else if (pose.getX() > arena.getWidth() - width / 2) {
-            vec.set(new Vector2D(-vec.getX(), vec.getY()));
+            pose.setX(arena.getWidth() - width / 2);
+            if (vec.getX() + pose.getX() > pose.getX())
+                vec.set(new Vector2D(-vec.getX(), vec.getY()));
         }
         if (pose.getY() < height / 2) {
-            vec.set(new Vector2D(vec.getX(), -vec.getY()));
+            pose.setY(height / 2);
+            if (vec.getY() + pose.getY() < pose.getY())
+                vec.set(new Vector2D(vec.getX(), -vec.getY()));
         } else if (pose.getY() > arena.getHeight() - height / 2) {
-            vec.set(new Vector2D(vec.getX(), -vec.getY()));
+            pose.setY(arena.getHeight() - height / 2);
+            if (vec.getY() + pose.getY() > pose.getY())
+                vec.set(new Vector2D(vec.getX(), -vec.getY()));
         }
         movingVec.setRelease(vec);
     }
@@ -257,7 +267,7 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
      */
     public LinkedList<Entity> entityGroupByClasses(List<Class> classList) {
         LinkedList<Entity> entityInGroup = new LinkedList<>();
-        for (Entity entity : arena.getPhysicalEntityList()) {
+        for (Entity entity : arena.getEntityList()) {
             for (Class c : classList) {
                 if (Entity.class == c) {
                     entityInGroup.add(entity);

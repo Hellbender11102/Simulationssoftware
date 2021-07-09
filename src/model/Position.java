@@ -3,7 +3,7 @@ package model;
 import java.awt.geom.Point2D;
 
 public class Position extends Point2D {
-    double xCoordinate, yCoordinate;
+   protected double xCoordinate, yCoordinate;
 
     public Position(Position position) {
         this.xCoordinate = position.getX();
@@ -40,7 +40,7 @@ public class Position extends Point2D {
     }
 
     public double getEuclideanDistance(Position position) {
-        return Math.hypot(position.xCoordinate - xCoordinate, position.yCoordinate - yCoordinate);
+        return Math.hypot(position.getX() - xCoordinate, position.getY() - yCoordinate);
     }
 
     public double getEuclideanDistance(double x, double y) {
