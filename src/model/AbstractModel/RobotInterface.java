@@ -1,16 +1,27 @@
 package model.AbstractModel;
 
-public interface RobotInterface extends Runnable, PhysicalEntity {
+import java.util.List;
 
-    abstract void behavior();
+public interface RobotInterface extends PhysicalEntity {
 
-    abstract public double getDiameters();
+    void behavior();
 
-    abstract public double getRadius();
+    double getDiameters();
 
-    abstract public double getEngineL();
+    double getRadius();
 
-    abstract public double getEngineR();
+    double getEngineL();
 
-    abstract public boolean getSignal();
+    double getEngineR();
+
+    boolean getSignal();
+
+    double distanceToClosestEntityOfClass(List<Class> classList);
+
+    int getTimeToSimulate();
+
+    double cmPerSecond();
+
+    double getAccelerationInPercent();
+
 }

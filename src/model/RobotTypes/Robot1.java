@@ -1,10 +1,7 @@
 package model.RobotTypes;
 
-import model.Position;
 import model.RobotBuilder;
-
 import java.awt.*;
-import java.util.List;
 
 public class Robot1 extends BaseRobot {
 
@@ -16,18 +13,11 @@ public class Robot1 extends BaseRobot {
 
     @Override
     public void behavior() {
-        if(identifier == 0)
-            identifier = random.nextInt();
-        moveRandom(10,8,60);
+        turn(10,10,8,1);
     }
 
     @Override
     public Color getClassColor() {
         return Color.GREEN;
-    }
-
-    @Override
-    public boolean draw(Graphics g) {
-        return false;
     }
 }

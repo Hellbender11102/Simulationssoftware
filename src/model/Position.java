@@ -1,53 +1,36 @@
 package model;
 
-public class Position {
-    double xCoordinate, yCoordinate;
+import java.awt.geom.Point2D;
+
+public class Position extends Point2D {
+   protected double xCoordinate, yCoordinate;
+
+    public Position(Position position) {
+        this.xCoordinate = position.getX();
+        this.yCoordinate = position.getY();
+    }
 
     public Position(double xCoordinate, double yCoordinate) {
         this.xCoordinate = xCoordinate;
         this.yCoordinate = yCoordinate;
     }
 
-
-    public Position clone() {
-        return new Position(xCoordinate, yCoordinate);
-    }
-
-    synchronized
-    public double getXCoordinate() {
-        return xCoordinate;
-    }
-
-    synchronized
-    public void setXCoordinate(double xCoordinate) {
-        this.xCoordinate = xCoordinate;
-    }
-
-    synchronized
-    public double getYCoordinate() {
-        return yCoordinate;
-    }
-
-    synchronized
-    public void setYCoordinate(double yCoordinate) {
-        this.yCoordinate = yCoordinate;
-    }
-
-    synchronized
     public double getPolarAngle() {
-        if (getPolarDistance() != 0.0)
+        if (distance(new Position(0, 0)) != 0.0)
             return Math.atan2(yCoordinate, xCoordinate);
-        else return Double.NaN;
+        else return java.lang.Double.NaN;
     }
 
-
-    public double calcAngleForPosition(Position position) {
-        return position.creatPositionByDecreasing(this).getPolarAngle();
-    }
-
-    synchronized
-    public double getPolarDistance() {
-        return Math.hypot(xCoordinate, yCoordinate);
+    /**
+     * Returns the angle to the given position
+     * With atan2(positiony - y, positionx -x)
+     * [-pi,pi]
+     *
+     * @param position Position
+     * @return double
+     */
+    public double getAngleToPosition(Position position) {
+        return Math.atan2(position.getY() - yCoordinate, position.getX() - xCoordinate);
     }
 
     synchronized
@@ -56,14 +39,28 @@ public class Position {
                 yCoordinate == position.yCoordinate;
     }
 
+    public double getEuclideanDistance(Position position) {
+        return Math.hypot(position.getX() - xCoordinate, position.getY() - yCoordinate);
+    }
 
-    public double euclideanDistance(Position position) {
-        return Math.sqrt((position.xCoordinate - xCoordinate) * (position.xCoordinate - xCoordinate) +
-                (position.yCoordinate - yCoordinate) * (position.yCoordinate - yCoordinate));
+    public double getEuclideanDistance(double x, double y) {
+        return Math.hypot(xCoordinate - x, yCoordinate - y);
+    }
+
+    synchronized
+    public void set(Position position) {
+        xCoordinate = position.xCoordinate;
+        yCoordinate = position.yCoordinate;
     }
 
     @Override
+    synchronized
+    public void setLocation(double x, double y) {
+        xCoordinate = x;
+        yCoordinate = y;
+    }
 
+    @Override
     public String toString() {
         return "Position: " +
                 "x:" + String.format("%,.2f", xCoordinate) +
@@ -71,29 +68,86 @@ public class Position {
     }
 
     synchronized
-    public void incPosition(Position vector) {
-        xCoordinate += vector.xCoordinate;
-        yCoordinate += vector.yCoordinate;
+    public void addToPosition(Position position) {
+        xCoordinate += position.xCoordinate;
+        yCoordinate += position.yCoordinate;
     }
 
+
     synchronized
-    public void incPosition(double addendX, double addendY) {
+    public void addToPosition(double addendX, double addendY) {
         xCoordinate += addendX;
         yCoordinate += addendY;
     }
 
+    /**
+     * @param vector Vector2D
+     */
     synchronized
-    public void decPosition(Position vector) {
-        xCoordinate -= vector.xCoordinate;
-        yCoordinate -= vector.yCoordinate;
+    public Position subtractFromPosition(Vector2D vector) {
+        xCoordinate -= vector.getX();
+        yCoordinate -= vector.getY();
+        return this;
+    }
+
+    synchronized
+    public Position subtractFromPosition(double x, double y) {
+        xCoordinate -= x;
+        yCoordinate -= y;
+        return this;
+    }
+
+    synchronized
+    public Position addToPosition(Vector2D vector) {
+        xCoordinate += vector.getX();
+        yCoordinate += vector.getY();
+        return this;
     }
 
     /**
      * @param vector Position
      * @return position - position
      */
-    synchronized
     public Position creatPositionByDecreasing(Position vector) {
         return new Position(xCoordinate - vector.xCoordinate, yCoordinate - vector.yCoordinate);
+    }
+
+    /**
+     * @param x double
+     * @param y double
+     * @return position - position
+     */
+    public Position creatPositionByDecreasing(double x, double y) {
+        return new Position(xCoordinate - x, yCoordinate - y);
+    }
+
+
+    synchronized
+    public Position clone() {
+        return new Position(xCoordinate, yCoordinate);
+    }
+
+
+    public double getX() {
+        return xCoordinate;
+    }
+
+    synchronized
+    public void setX(double xCoordinate) {
+        this.xCoordinate = xCoordinate;
+    }
+
+    public double getY() {
+        return yCoordinate;
+    }
+
+
+    synchronized
+    public void setY(double yCoordinate) {
+        this.yCoordinate = yCoordinate;
+    }
+
+    public Vector2D toVector() {
+        return new Vector2D(xCoordinate, yCoordinate);
     }
 }

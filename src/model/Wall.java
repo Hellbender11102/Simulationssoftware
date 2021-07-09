@@ -1,25 +1,47 @@
 package model;
 
 import model.AbstractModel.BasePhysicalEntity;
-import model.AbstractModel.PhysicalEntity;
 
 import java.awt.*;
 import java.util.Random;
 
-//TODO
 public class Wall extends BasePhysicalEntity {
-    protected Wall(Arena arena, double width, double height) {
-        super(arena, null, width, height);
+    final Pose pose;
+
+
+    public Wall(Arena arena, Random random, double width, double height, Pose pose, int ticsPerSimulatedSecond) {
+        super(arena, random, width, height, pose, ticsPerSimulatedSecond);
+        this.pose = pose;
     }
 
     @Override
-    public boolean equals(PhysicalEntity robot) {
-        return false;
+    public double getTrajectoryMagnitude() {
+        return 0;
     }
 
     @Override
-    public Color getColor() {
-        return null;
+    public Color getClassColor() {
+        return new Color(55, 55, 55);
+    }
+
+    @Override
+    public boolean isPositionInEntity(Position position) {
+        return isPositionInEntitySquare(position);
+    }
+
+    @Override
+    public Position getClosestPositionInEntity(Position position) {
+        return closestPositionInEntityForSquare(position);
+    }
+
+    @Override
+    public double getArea() {
+        return getAreaSquare();
+    }
+
+    @Override
+    public double getWeight() {
+        return getAreaSquare();
     }
 
     @Override
@@ -27,33 +49,14 @@ public class Wall extends BasePhysicalEntity {
         return false;
     }
 
-    @Override
-    public boolean draw(Graphics g) {
-        return false;
+    /**
+     * Calculates and sets the next position
+     */
+    public void setNextPosition() {
     }
 
     @Override
-    public double trajectorySpeed() {
-        return 0;
-    }
-
-    @Override
-    public Color getClassColor() {
-        return null;
-    }
-
-    @Override
-    public boolean isPositionInEntity(Position position) {
-        return false;
-    }
-
-    @Override
-    public Position getClosestPositionInBody(Position position) {
-        return null;
-    }
-
-    @Override
-    public int getTimeToSimulate() {
-        return 0;
+    public String toString() {
+        return "Wall at " + pose + " width:" + width + " height:" + height;
     }
 }

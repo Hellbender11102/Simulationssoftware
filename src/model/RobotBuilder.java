@@ -6,14 +6,27 @@ import model.RobotTypes.*;
 import java.awt.*;
 import java.util.Random;
 
+/**
+ * Builder class for simple expansions
+ */
 public class RobotBuilder {
-    private double engineL, engineR, distanceE, maxSpeed, minSpeed, powerTransmission;
+    private double engineL, engineR, distanceE, maxSpeed, minSpeed, powerTransmission, visionRange, visionAngle;
     private Pose pose;
-    private int diameters = 20, timeToSimulate;
+    private int diameters, timeToSimulate;
     private Random random;
     private Arena arena;
     private Logger logger;
     private boolean simulateWithView;
+    private int ticsPerSimulatedSecond;
+
+
+    public double getVisionRange() {
+        return visionRange;
+    }
+
+    public double getVisionAngle() {
+        return visionAngle;
+    }
 
     public double getEngineL() {
         return engineL;
@@ -29,6 +42,10 @@ public class RobotBuilder {
 
     public Pose getPose() {
         return pose;
+    }
+
+    public int getTicsPerSimulatedSecond() {
+        return ticsPerSimulatedSecond;
     }
 
     public double getDistanceE() {
@@ -77,7 +94,7 @@ public class RobotBuilder {
         return this;
     }
 
-    public RobotBuilder engineDistnace(double distanceE) {
+    public RobotBuilder engineDistance(double distanceE) {
         this.distanceE = distanceE;
         return this;
     }
@@ -99,6 +116,11 @@ public class RobotBuilder {
 
     public RobotBuilder pose(Pose pose) {
         this.pose = pose;
+        return this;
+    }
+
+    public RobotBuilder ticsPerSimulatedSecond(int ticsPerSimulatedSecond) {
+        this.ticsPerSimulatedSecond = ticsPerSimulatedSecond;
         return this;
     }
 
@@ -132,6 +154,16 @@ public class RobotBuilder {
         return this;
     }
 
+    public RobotBuilder visionAngle(double visionAngle) {
+        this.visionAngle = visionAngle;
+        return this;
+    }
+
+    public RobotBuilder visionRange(double visionRange) {
+        this.visionRange = visionRange;
+        return this;
+    }
+
     /**
      * Builds Robot without behavior
      *
@@ -150,6 +182,19 @@ public class RobotBuilder {
         };
     }
 
+    public BaseVisionConeRobot buildVisionCone() {
+        return new BaseVisionConeRobot(this) {
+            @Override
+            public void behavior() {
+
+            }
+
+            @Override
+            public Color getClassColor() {
+                return Color.BLUE;
+            }
+        };
+    }
     /**
      * Builds the robot of type 1
      *
@@ -176,14 +221,19 @@ public class RobotBuilder {
     public Robot3 buildRobot3() {
         return new Robot3(this);
     }
+
     /**
      * Builds the robot of type 4
      *
-     * @return Robot3
+     * @return Robot4
      */
     public Robot4 buildRobot4() {
         return new Robot4(this);
     }
+
+
+
+
 
     /* Space to add own robot types */
 }

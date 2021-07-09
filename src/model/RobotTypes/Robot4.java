@@ -1,20 +1,24 @@
 package model.RobotTypes;
 
-import model.Position;
-import model.RobotBuilder;
+import model.*;
+import model.AbstractModel.Entity;
 
 import java.awt.*;
+import java.util.LinkedList;
+import java.util.List;
 
-public class Robot4 extends BaseRobot {
+public class Robot4 extends BaseVisionConeRobot {
 
     public Robot4(RobotBuilder builder) {
         super(builder);
     }
-    Position position=new Position(50,50);
+
+    LinkedList<Entity> entities= entityGroupByClasses(List.of(Entity.class));
+
     @Override
     public void behavior() {
-
-        driveToPosition(position,2,8);
+        stayGroupedWithRobotType(5, List.of(Entity.class), 10, 1);
+        signal = isArenaBoundsInVision();
     }
 
     @Override

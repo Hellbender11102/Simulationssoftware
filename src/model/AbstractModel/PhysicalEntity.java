@@ -1,35 +1,37 @@
 package model.AbstractModel;
 
-import model.Pose;
 import model.Position;
+import model.Vector2D;
 
-import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
+import java.util.concurrent.atomic.AtomicReference;
 
-public interface PhysicalEntity extends Entity {
+public interface PhysicalEntity extends Entity, Runnable {
 
-     abstract Position centerOfGroupWithClasses(List<Class> classList);
+    Position centerOfGroupWithClasses(List<Class> classList);
 
-    abstract public double trajectorySpeed();
+    double getTrajectoryMagnitude();
 
-    abstract public Color getClassColor();
+    boolean inArenaBounds();
 
-    abstract public boolean inArenaBounds();
+    void setInArenaBounds();
 
-    abstract public void setInArenaBounds();
+    LinkedList<PhysicalEntity> collidingWith();
 
-    abstract public boolean isPositionInEntity(Position position);
+    boolean collisionDetection();
 
-    abstract public LinkedList<PhysicalEntity> isCollidingWith();
+    void collision(PhysicalEntity physicalEntity);
 
-    abstract public void collisionDetection();
+    double getWeight();
 
-    abstract public void recursiveCollision(PhysicalEntity physicalEntity);
+    AtomicReference<Vector2D> getMovingVec();
 
-    abstract public Position getClosestPositionInBody(Position position);
+    void alterMovingVector();
 
-    abstract public int getTimeToSimulate();
+    void setNextPosition();
 
+    double getFriction();
+
+    boolean isMovable();
 }

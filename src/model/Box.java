@@ -1,53 +1,46 @@
 package model;
 
 import model.AbstractModel.BasePhysicalEntity;
-import model.AbstractModel.PhysicalEntity;
 
 import java.awt.*;
 import java.util.Random;
-//TODO
+
 public class Box extends BasePhysicalEntity {
-    protected Box(Arena arena, Random random, double width, double height) {
-        super(arena, random, width, height);
+    public Box(Arena arena, Random random, double width, double height, Pose pose,int ticsPerSimulatedSecond) {
+        super(arena, random, width, height, pose, ticsPerSimulatedSecond);
     }
 
     @Override
-    public double trajectorySpeed() {
+    public double getTrajectoryMagnitude() {
         return 0;
     }
 
     @Override
     public Color getClassColor() {
-        return new Color(50,32,28);
+        return new Color(50, 32, 28);
     }
 
     @Override
     public boolean isPositionInEntity(Position position) {
-        return false;
+        return isPositionInEntitySquare(position);
+    }
+
+    /**
+     * Returns the closest position in the body of the box to the given position
+     * @param position Position
+     * @return Position
+     */
+    @Override
+    public Position getClosestPositionInEntity(Position position) {
+        return closestPositionInEntityForSquare(position);
     }
 
     @Override
-    public Position getClosestPositionInBody(Position position) {
-        return null;
+    public double getArea() {
+        return getAreaSquare();
     }
-
     @Override
-    public int getTimeToSimulate() {
-        return 0;
-    }
-
-    @Override
-    public boolean equals(PhysicalEntity robot) {
-        return false;
-    }
-
-    @Override
-    public Color getColor() {
-        return null;
-    }
-
-    @Override
-    public boolean draw(Graphics g) {
-        return false;
+    public String toString() {
+        return "Box at " + pose + " width:" + width + " height:" + height;
     }
 }

@@ -4,32 +4,44 @@ import model.Pose;
 import model.Position;
 
 import java.awt.*;
-import java.util.List;
 import java.util.Random;
 
 public interface Entity {
 
-    abstract public Pose getPose();
+    Color getClassColor();
 
-    abstract public void togglePause();
+    Pose getPose();
 
-    abstract public boolean getPaused();
+    void togglePause();
 
-    abstract public boolean equals(PhysicalEntity robot);
+    boolean getPaused();
 
-    abstract public Random getRandom();
+    boolean equals(Entity entity);
 
-    abstract public void setPrevPose();
+    Random getRandom();
 
-    abstract public void setNextPose();
+    void setPrevPose();
 
-    abstract public void setToLatestPose();
+    void setNextPose();
 
-    abstract public Color getColor();
+    void setToLatestPose();
 
-    abstract public void updatePositionMemory();
+    Color getColor();
 
-    abstract public boolean isMovable();
+    void updatePositionMemory();
 
-    abstract public boolean draw(Graphics g);
+    boolean hasPhysicalBody();
+
+    boolean isPositionInEntity(Position position);
+
+    Position getClosestPositionInEntity(Position position);
+
+    double getWidth();
+
+    double getHeight();
+
+    double getArea();
+
+    String toString();
+
 }

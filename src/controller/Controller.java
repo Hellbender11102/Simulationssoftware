@@ -2,7 +2,6 @@ package controller;
 
 import model.*;
 import model.AbstractModel.PhysicalEntity;
-import model.RobotTypes.BaseRobot;
 import model.AbstractModel.RobotInterface;
 import view.View;
 
@@ -13,18 +12,16 @@ public class Controller {
     private boolean stopped = true;
     private View view;
     private Arena arena;
-    private List<Thread> entityThreads = new LinkedList<>();
-    private Map<RobotInterface, Position> robotsAndPositionOffsets;
-    private Random random;
-    private JsonLoader jsonLoader = new JsonLoader();
+    private final List<Thread> robotThreads = new LinkedList<>();
+    private final JsonLoader jsonLoader = new JsonLoader();
     private final Timer repaintTimer = new Timer();
-    private final Timer logTimer = new Timer();
+    private final Timer loggerTimer = new Timer();
     private final Logger logger = new Logger();
 
     public Controller() {
         long startTime = System.currentTimeMillis();
         arena = jsonLoader.initArena();
-        if (jsonLoader.displayView()) {
+        if (jsonLoader.loadDisplayView()) {
             init();
             view = new View(arena);
             repaintTimer(jsonLoader.loadFps());
@@ -32,45 +29,71 @@ public class Controller {
         } else {
             init();
             int timeToSimulate = arena.getRobots().get(0).getTimeToSimulate();
-            arena.getRobots().forEach(this::startThread);
+            startLoggerTimer(1000);
+            arena.getPhysicalEntityList().forEach(this::startThread);
             Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
-            while (entityThreads.stream().anyMatch(Thread::isAlive)){
-                System.out.print(
-                   Math.round((1- ((double)arena.getRobots().get(0).getTimeToSimulate() / (double)timeToSimulate))*100 )+ "%\r");
+            while (robotThreads.stream().anyMatch(Thread::isAlive)) {
+                int finalTimeToSimulate = timeToSimulate;
+                Optional<Long> percantageUntilDone = arena.getRobots().stream()
+                        .map(robot -> Math.round((1 - ((double) robot.getTimeToSimulate() / (double) finalTimeToSimulate)) * 100))
+                        .reduce(Long::sum);
+                System.out.print((percantageUntilDone.map(Math::toIntExact).orElse(0) / arena.getRobots().size()) + "%\r");
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException interruptedException) {
-                    interruptedException.printStackTrace();
+                    logger.dumpError(interruptedException.getMessage());
                 }
             }
             logger.saveFullLogToFile(true);
-            if(entityThreads.stream().noneMatch(Thread::isAlive)
-                    && (logger.saveThread == null || !logger.saveThread.isAlive())){
-                timeToSimulate=jsonLoader.loadSimulatedTime();
+            if (robotThreads.stream().noneMatch(Thread::isAlive)
+                    && (logger.saveThread == null || !logger.saveThread.isAlive())) {
+                timeToSimulate = jsonLoader.loadSimulatedTime();
                 long endTime = System.currentTimeMillis();
                 System.out.println("Done simulating.\nSimulated "
-                        + (timeToSimulate / 60)/60+ "h " + (timeToSimulate / 60)%60+ "min " + timeToSimulate%60 +"sec ("+timeToSimulate+")");
-                System.out.println("That took " + ((endTime - startTime) /1000) / 60+ " min and " +  ((endTime - startTime) /1000) %60 + " sec");
+                        + (timeToSimulate / 60) / 60 + "h " + (timeToSimulate / 60) % 60 + "min " + timeToSimulate % 60 + "sec (" + timeToSimulate + ")");
+                System.out.println("That took " + ((endTime - startTime) / 1000) / 60 + " min and " + ((endTime - startTime) / 1000) % 60 + " sec");
                 System.exit(0);
             }
         }
     }
 
+    /**
+     * Starts an scheduled timer which logs in an set time interval
+     *
+     * @param logsPerSec int
+     */
+    public void startLoggerTimer(int logsPerSec) {
+        loggerTimer.schedule(new TimerTask() {
+            @Override
+            public void run() { // logging can be done her
+
+            }
+        }, 0, 1000 / logsPerSec);
+    }
+
+    /**
+     * loads all entities from the JSON file and adds them to the arena
+     */
     void init() {
-        random = jsonLoader.loadRandom();
-        robotsAndPositionOffsets = jsonLoader.loadRobots(random, logger);
-        arena.setRobots(new ArrayList<>(robotsAndPositionOffsets.keySet()));
-        arena.setPhysicalEntities(new ArrayList<>(robotsAndPositionOffsets.keySet()));
+        Random random = jsonLoader.loadRandom();
+        arena.getEntityList().clear();
+        arena.addEntities(jsonLoader.loadRobots(random, logger));
+        arena.addEntities(jsonLoader.loadBoxes(random));
+        arena.addEntities(jsonLoader.loadWalls(random));
+        arena.addEntities(jsonLoader.loadAreas(random));
     }
 
 
     /**
-     * Starts an scheduled timer which checks for new robot locations and puts these on the arena
-     * Repaints the view after
+     * Starts an scheduled timer to repaint the view
      *
      * @param framesPerSecond int
      */
     public void repaintTimer(int framesPerSecond) {
+        if(framesPerSecond <= 0){
+            logger.dumpError("Started simulation with 0 frames per second.");
+            framesPerSecond = 1;
+        }
         repaintTimer.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -79,28 +102,6 @@ public class Controller {
         }, 1000, 1000 / framesPerSecond);
     }
 
-    /**
-     * Translates the local position of an robot into an global position of the map
-     *
-     * @param globalOffset offset which the robot had when created
-     * @param robot        robot
-     * @return RobotInterface
-     */
-    private synchronized RobotInterface convertPoseToGlobal(Position globalOffset, BaseRobot robot) {
-        Pose pose = transPos(globalOffset, robot.getPose());
-        robot.getPose().setXCoordinate(pose.getXCoordinate());
-        robot.getPose().setYCoordinate(pose.getYCoordinate());
-        robot.getPose().setRotation(pose.getRotation());
-        return robot;
-    }
-
-
-    private synchronized Pose transPos(Position pGlobal, Pose pLocal) {
-        double x = pGlobal.getXCoordinate() + pLocal.getXCoordinate();
-        double y = pGlobal.getYCoordinate() + pLocal.getYCoordinate();
-        double rotation = pLocal.getRotation();
-        return new Pose(x, y, rotation);
-    }
 
     /**
      * Adds event listener for the Simulation view
@@ -119,27 +120,26 @@ public class Controller {
             public void keyPressed(KeyEvent e) {
                 switch (e.getKeyCode()) {
                     case KeyEvent.VK_SPACE:
-                        robots = new HashMap<>();
-                        for (RobotInterface robot : robotsAndPositionOffsets.keySet()) {
+                        for (PhysicalEntity entity : arena.getPhysicalEntityList()) {
                             if (stopped) {
-                                robot.setToLatestPose();
-                                robot.togglePause();
-                                startThread(robot);
+                                entity.setToLatestPose();
+                                entity.togglePause();
+                                startThread(entity);
                             } else {
-                                robot.togglePause();
+                                entity.togglePause();
                             }
                         }
                         stopped = !stopped;
                         break;
                     case KeyEvent.VK_B:
                         if (stopped)
-                            for (RobotInterface robot : robotsAndPositionOffsets.keySet()) {
+                            for (RobotInterface robot : arena.getRobots()) {
                                 robot.setPrevPose();
                             }
                         break;
                     case KeyEvent.VK_N:
                         if (stopped)
-                            for (RobotInterface robot : robotsAndPositionOffsets.keySet()) {
+                            for (RobotInterface robot : arena.getRobots()) {
                                 robot.setNextPose();
                             }
                         break;
@@ -169,7 +169,7 @@ public class Controller {
                         view.getSimView().toggleDrawrobotRotationo();
                         break;
                     case KeyEvent.VK_C:
-                        view.getSimView().toggleDrawrobotCoordinates();
+                        view.getSimView().toggleDrawRobotCoordinates();
                         break;
                     case KeyEvent.VK_SHIFT:
                         view.getSimView().incFontSize(1);
@@ -195,6 +195,9 @@ public class Controller {
                         break;
                     case KeyEvent.VK_K:
                         view.getSimView().toggleDrawCenter();
+                        break;
+                    case KeyEvent.VK_V:
+                        view.getSimView().toggleDrawRobotCone();
                         break;
                     case KeyEvent.VK_F1:
                         if (stopped) {
@@ -227,12 +230,14 @@ public class Controller {
         };
         view.addKeyListener(keyListener);
 
-        //Menu listener
+        //Menu listener events
+        //saves a log to file causes overwriting an if existing
         view.getLog().addActionListener(actionListener -> {
             logger.saveFullLogToFile(false);
         });
+        //Restarts the simulation
         view.getRestart().addActionListener(actionListener -> {
-            for (RobotInterface robot : robotsAndPositionOffsets.keySet()) {
+            for (RobotInterface robot : arena.getRobots()) {
                 if (!stopped) {
                     robot.togglePause();
                 }
@@ -240,24 +245,41 @@ public class Controller {
             stopped = true;
             init();
         });
+
+        view.getItemLoadVariables().addActionListener(actionListener -> {
+            String path = view.getPathOfSelectedFile();
+            if (path != null)
+                jsonLoader.setPathVariables(path);
+            jsonLoader.reload();
+            init();
+        });
+        //Restarts the simulation after initializing all resources again
+        //Can lead to different behavior without random seed
         view.getFullRestart().addActionListener(actionListener -> {
-            for (RobotInterface robot : robotsAndPositionOffsets.keySet()) {
-                if (!stopped) {
+            for (RobotInterface robot : arena.getRobots()) {
+                if (!robot.getPaused()) {
                     robot.togglePause();
                 }
             }
             stopped = true;
-            jsonLoader = new JsonLoader();
+            arena.clearEntityList();
+            jsonLoader.reload();
             arena = jsonLoader.reloadArena();
             repaintTimer(jsonLoader.loadFps());
             init();
         });
-
     }
 
-    private void startThread(RobotInterface robot) {
-        Thread t = new Thread(robot);
-        entityThreads.add(t);
+    /**
+     * Starts a thread for any given PhysicalEntity
+     * PhysicalEntity extends Runnable
+     *
+     * @param physicalEntity PhysicalEntity
+     */
+    private void startThread(PhysicalEntity physicalEntity) {
+        Thread t = new Thread(physicalEntity);
+        if (RobotInterface.class.isAssignableFrom(physicalEntity.getClass()))
+            robotThreads.add(t);
         t.start();
     }
 }
