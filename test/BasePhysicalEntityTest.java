@@ -18,7 +18,7 @@ import java.util.Random;
 public class BasePhysicalEntityTest {
     private final BasePhysicalEntity entity;
     private final Arena arena;
-    private Position position;
+    private  Position position;
 
     @Parameterized.Parameters
     public static Collection<Object[]> data() {
@@ -41,18 +41,19 @@ public class BasePhysicalEntityTest {
                 {1, 1, 10, 10, false},
                 {10, 10, 1, 1, false},
                 {1, 1, 9, 11, false},
-                {10, 10, 2,8, false},
+                {10, 10, 2, 8, false},
                 {1, 1, 9, 11, false},
-                {10, 10, -1,9, false},
+                {10, 10, -1, 9, false},
                 {1, 1, 9, 11, false},
-                {10, 10, 30,-11, false},
+                {10, 10, 30, -11, false},
         });
     }
 
     public BasePhysicalEntityTest(double width, double height, double poseX, double poseY, boolean isTorus) {
         Pose pose = new Pose(poseX, poseY, 0);
         arena = Arena.overWriteInstance(100, 100, isTorus);
-        entity = new BasePhysicalEntity(Arena.getInstance(100, 100, isTorus), new Random(), width, height, pose, 1) {
+        entity = new BasePhysicalEntity(Arena.getInstance(100, 100, isTorus),
+                new Random(), width, height, pose, 1) {
             @Override
             public double getTrajectoryMagnitude() {
                 return 0;
@@ -105,7 +106,7 @@ public class BasePhysicalEntityTest {
     public void testCollisionDetection() {
         PhysicalEntity wall = new Wall(arena, new Random(), 2, 2, new Pose(position, 0), 1);
         arena.addEntity(wall);
-        Assert.assertTrue(entity.collisionDetection());
+        Assert.assertTrue(entity.collidingWith().contains(wall));
     }
 
     @Test
@@ -135,26 +136,27 @@ public class BasePhysicalEntityTest {
 
     @Test
     public void testCollidingWith() {
-        Position entityPos = position,boxPos=position.creatPositionByDecreasing(1, 0);
+        Position entityPos = position, boxPos = position.creatPositionByDecreasing(1, 0);
 
         PhysicalEntity box = new Box(arena, new Random(), 2, 2, new Pose(boxPos, 0), 1);
 
-        entity.getMovingVec().set(Vector2D.creatCartesian(position.getX(),0));
-        box.getMovingVec().set(Vector2D.creatCartesian(position.getY(),-Math.PI));
+        entity.getMovingVec().set(Vector2D.creatCartesian(position.getX(), 0));
+        box.getMovingVec().set(Vector2D.creatCartesian(position.getY(), -Math.PI));
         arena.addEntity(box);
-        Vector2D vec1 = entity.getMovingVec().get(), vec2 = box.getMovingVec().get();
 
         Vector2D startingVec = entity.getMovingVec().get().multiplication(entity.getWeight()).add(box.getMovingVec().get().multiplication(box.getWeight()));
 
+        System.out.println(entity);
+        System.out.println(box);
         entity.collision(box);
 
         //  m1*v1+m2*v2=m1*v1+m2*u2
         Vector2D resultingVec = entity.getMovingVec().get().multiplication(entity.getWeight()).add(box.getMovingVec().get().multiplication(box.getWeight()));
 
         //conservation of energy
-        Assert.assertEquals(startingVec.getLength(), resultingVec.getLength(),0.01);
+        Assert.assertEquals(startingVec.getLength(), resultingVec.getLength(), 0.01);
 
-        Assert.assertTrue(entityPos.getEuclideanDistance(boxPos)<entity.getPose().getEuclideanDistance(box.getPose()));
+        Assert.assertTrue(entityPos.getEuclideanDistance(boxPos) < entity.getPose().getEuclideanDistance(box.getPose()));
 
     }
 

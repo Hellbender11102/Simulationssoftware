@@ -114,7 +114,6 @@ public class BaseRobotTest {
                     }
                 }
             }
-            System.out.println(baseRobot.getAccelerationInPercent() * rounds + speedAtStart);
             Assert.assertEquals(baseRobot.getPose().getX(), position.getX(), baseRobot.getAccelerationInPercent() * rounds + speedAtStart);
             Assert.assertEquals(baseRobot.getPose().getY(), position.getY(), baseRobot.getAccelerationInPercent() * rounds + speedAtStart);
         }

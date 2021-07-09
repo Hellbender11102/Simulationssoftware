@@ -193,7 +193,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
             moving = moving.add(incVec);
         } else if (moving.getLength() > getTrajectoryMagnitude()) {
             moving = moving.multiplication(1-frictionInPercent);
-        } else if (moving.containsNaN()) {
+        } else if (!moving.containsNaN()) {
             moving.set(incVec);
         }
 

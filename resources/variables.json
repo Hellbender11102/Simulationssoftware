@@ -25,6 +25,36 @@
       }
     },
     {
+      "type": "a",
+      "visionRange": 20.0,
+      "visionAngle": 40.0,
+      "engineR": 8.0,
+      "engineL": 8.0,
+      "distance": 4.0,
+      "diameters": 4.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 10.0,
+        "y": 20.0,
+        "rotation": 0.0
+      }
+    },
+    {
+      "type": "a",
+      "visionRange": 20.0,
+      "visionAngle": 40.0,
+      "engineR": 8.0,
+      "engineL": 8.0,
+      "distance": 4.0,
+      "diameters": 4.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 25.0,
+        "y": 50.0,
+        "rotation": 0.0
+      }
+    },
+    {
       "type": "vision",
       "visionRange": 20.0,
       "visionAngle": 40.0,
@@ -66,8 +96,8 @@
       }
     },
     {
-      "width": 1.0,
-      "height": 1.0,
+      "width": 5.0,
+      "height": 5.0,
       "position": {
         "x": 35.0,
         "y": 50.0,

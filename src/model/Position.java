@@ -16,7 +16,7 @@ public class Position extends Point2D {
     }
 
     public double getPolarAngle() {
-        if (distance(new Position(0,0)) != 0.0)
+        if (distance(new Position(0, 0)) != 0.0)
             return Math.atan2(yCoordinate, xCoordinate);
         else return java.lang.Double.NaN;
     }
@@ -99,7 +99,7 @@ public class Position extends Point2D {
 
     synchronized
     public Position addToPosition(Vector2D vector) {
-        xCoordinate += vector.getX() ;
+        xCoordinate += vector.getX();
         yCoordinate += vector.getY();
         return this;
     }
@@ -148,6 +148,6 @@ public class Position extends Point2D {
     }
 
     public Vector2D toVector() {
-        return new Vector2D(xCoordinate,yCoordinate);
+        return new Vector2D(xCoordinate, yCoordinate);
     }
 }
