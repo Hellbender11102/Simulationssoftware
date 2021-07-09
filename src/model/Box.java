@@ -5,8 +5,6 @@ import model.AbstractModel.BasePhysicalEntity;
 import java.awt.*;
 import java.util.Random;
 
-//TODO
-//TODO Arena
 public class Box extends BasePhysicalEntity {
     public Box(Arena arena, Random random, double width, double height, Pose pose,int ticsPerSimulatedSecond) {
         super(arena, random, width, height, pose, ticsPerSimulatedSecond);

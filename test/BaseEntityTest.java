@@ -22,7 +22,7 @@ public class BaseEntityTest {
             }
 
             @Override
-            public boolean isCollidable() {
+            public boolean hasPhysicalBody() {
                 return true;
             }
 

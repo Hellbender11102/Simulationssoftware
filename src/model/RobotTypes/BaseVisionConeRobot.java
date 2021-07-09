@@ -8,6 +8,7 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public abstract class BaseVisionConeRobot extends BaseRobot {
@@ -235,7 +236,6 @@ public abstract class BaseVisionConeRobot extends BaseRobot {
     /**
      * Returns true if either the robot is inside Square
      * Or the Vision range reaches the Square
-     * TODO
      *
      * @param center Position
      * @param width  Position
@@ -269,8 +269,8 @@ public abstract class BaseVisionConeRobot extends BaseRobot {
      */
     List<Object> listOfRobotsInVisionByCLass(Class c) {
         return getListOfRobotsInSight().stream()
-                .filter(x -> c.getClass().isAssignableFrom(x.getClass()))
-                .map(x -> (c.cast(x)))
+                .filter(x -> c.isAssignableFrom(x.getClass()))
+                .map((Function<RobotInterface, Object>) (c)::cast)
                 .collect(Collectors.toList());
     }
 

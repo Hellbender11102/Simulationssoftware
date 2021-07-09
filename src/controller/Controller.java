@@ -18,7 +18,6 @@ public class Controller {
     private final Timer loggerTimer = new Timer();
     private final Logger logger = new Logger();
 
-
     public Controller() {
         long startTime = System.currentTimeMillis();
         arena = jsonLoader.initArena();

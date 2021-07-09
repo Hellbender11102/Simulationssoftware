@@ -180,7 +180,7 @@ public class Arena {
     }
 
     synchronized public List<Entity> getNonPhysicalEntityList() {
-        return singleton.entityList.stream().filter(x -> !x.isCollidable()).collect(Collectors.toList());
+        return singleton.entityList.stream().filter(x -> !x.hasPhysicalBody()).collect(Collectors.toList());
     }
 
     synchronized public void clearEntityList() {

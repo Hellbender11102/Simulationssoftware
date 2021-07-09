@@ -94,7 +94,7 @@ public class RobotBuilder {
         return this;
     }
 
-    public RobotBuilder engineDistnace(double distanceE) {
+    public RobotBuilder engineDistance(double distanceE) {
         this.distanceE = distanceE;
         return this;
     }

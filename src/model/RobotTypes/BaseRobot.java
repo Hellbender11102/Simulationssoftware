@@ -172,7 +172,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
                 try {
                     sleep(1000 / ticsPerSimulatedSecond);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    logger.dumpError("InterruptedException in Robot \n"+e.getMessage());
                 }
             }
             if (!simulateWithView) timeToSimulate--;
@@ -187,12 +187,12 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     public void alterMovingVector() {
         Vector2D incVec = Vector2D.creatCartesian(getTrajectoryMagnitude() * accelerationInPercent, pose.getRotation());
         Vector2D moving = movingVec.getAcquire().rotateTo(pose.getRotation());
-         moving.set(moving.getX()+incVec.getX(),moving.getY()+incVec.getY());
+        moving.set(moving.getX() + incVec.getX(), moving.getY() + incVec.getY());
         if (moving.containsNaN()) {
             moving.set(incVec);
         }
-        if(moving.getLength() > getTrajectoryMagnitude()){
-            moving= moving.normalize().multiplication(getTrajectoryMagnitude());
+        if (moving.getLength() > getTrajectoryMagnitude()) {
+            moving = moving.normalize().multiplication(getTrajectoryMagnitude());
         }
         movingVec.setRelease(moving);
     }
@@ -374,7 +374,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * @param turnRadiusInDegree int
      */
     public void moveRandom(double pathLength, double speed, int turnRadiusInDegree) {
-        double steps = 0;
+        double steps;
         ExponentialGenerator exponentialGenerator = new ExponentialGenerator(0, random);
         if (getTrajectoryMagnitude() != 0) {
             steps = pathLength / getTrajectoryMagnitude();
@@ -402,11 +402,10 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * Useful in an state based agent
      *
      * @param speed double
-     * @return double
      */
-    public double increaseSpeed(double speed) {
+    public void increaseSpeed(double speed) {
         setEngines(engineL + speed, engineR + speed);
-        return getTrajectoryMagnitude();
+        getTrajectoryMagnitude();
     }
 
     /**
@@ -419,10 +418,8 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * @return boolean
      */
     boolean turn(double degree) {
-        return turn(degree, engineR, engineL);
+        return turn(degree, engineR, engineL,1);
     }
-
-    //Todo
 
     /**
      * Turns to an given angle
@@ -432,16 +429,17 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * @param degree  double
      * @param engine1 double
      * @param engine2 double
+     * @param precisionInDegree double
      * @return boolean
      */
-    public boolean turn(double degree, double engine1, double engine2) {
+    public boolean turn(double degree, double engine1, double engine2,double precisionInDegree) {
         if (!isInTurn) {
             turnsTo = pose.getRotation() + Math.toRadians(degree) < 0 ?
                     pose.getRotation() + Math.toRadians(degree) + 2 * Math.PI :
-                    pose.getRotation() + Math.toRadians(degree) % 2 * Math.PI;
+                    pose.getRotation() + Math.toRadians(degree) % (2 * Math.PI);
             isInTurn = true;
         } else {
-            if (rotateToAngle(turnsTo, Math.toRadians(2), Math.max(engine1, engine2), Math.min(engine1, engine2))) {
+            if (rotateToAngle(turnsTo, Math.toRadians(precisionInDegree), Math.max(engine1, engine2), Math.min(engine1, engine2))) {
                 turnsTo = Double.NaN;
                 isInTurn = false;
             }

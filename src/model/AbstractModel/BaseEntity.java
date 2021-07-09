@@ -198,7 +198,7 @@ abstract public class BaseEntity extends Thread implements Entity {
 
     public boolean equals(Entity entity) {
         return pose.equals(entity.getPose()) && color == entity.getColor()
-                && entity.isCollidable() == isCollidable() && entity.getClass().equals(getClass());
+                && entity.hasPhysicalBody() == hasPhysicalBody() && entity.getClass().equals(getClass());
     }
 
     public Color getColor() {

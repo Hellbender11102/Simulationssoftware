@@ -4,7 +4,6 @@ import model.Pose;
 import model.Position;
 
 import java.awt.*;
-import java.awt.geom.AffineTransform;
 import java.util.Random;
 
 public interface Entity {
@@ -31,7 +30,7 @@ public interface Entity {
 
     void updatePositionMemory();
 
-    boolean isCollidable();
+    boolean hasPhysicalBody();
 
     boolean isPositionInEntity(Position position);
 

@@ -47,7 +47,7 @@ public class BuilderTest {
         robotBuilder = new RobotBuilder()
                 .arena(arena)
                 .diameters(diameters)
-                .engineDistnace(engineDistance)
+                .engineDistance(engineDistance)
                 .powerTransmission(0)
                 .random(new Random())
                 .engineLeft(engineL)

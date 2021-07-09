@@ -324,7 +324,7 @@ class JsonLoader {
             RobotBuilder builder = new RobotBuilder()
                     .engineRight((Double) robotObject.get("engineR"))
                     .engineLeft((Double) robotObject.get("engineL"))
-                    .engineDistnace((Double) robotObject.get("distance"))
+                    .engineDistance((Double) robotObject.get("distance"))
                     .random(new Random(random.nextInt()))
                     .pose(loadPose(robotObject))
                     .ticsPerSimulatedSecond(loadTicsPerSimulatedSecond())

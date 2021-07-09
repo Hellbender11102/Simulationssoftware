@@ -278,7 +278,7 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
 
 
     @Override
-    public boolean isCollidable() {
+    public boolean hasPhysicalBody() {
         return true;
     }
 

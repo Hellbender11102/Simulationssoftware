@@ -1,10 +1,7 @@
 package model.RobotTypes;
 
-import model.Position;
 import model.RobotBuilder;
-
 import java.awt.*;
-import java.util.List;
 
 public class Robot1 extends BaseRobot {
 
@@ -16,7 +13,7 @@ public class Robot1 extends BaseRobot {
 
     @Override
     public void behavior() {
-        turn(10,10,8);
+        turn(10,10,8,1);
     }
 
     @Override

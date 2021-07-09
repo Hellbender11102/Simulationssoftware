@@ -8,8 +8,6 @@ import java.util.Random;
 /**
  * This can be used to represent Light sources or food sources
  */
-//TODO Arena
-//TODO
 public class Area extends BaseEntity {
 
     double noticeableDistanceDiameters;
@@ -110,7 +108,7 @@ public class Area extends BaseEntity {
     }
 
     @Override
-    public boolean isCollidable() {
+    public boolean hasPhysicalBody() {
         return false;
     }
 
