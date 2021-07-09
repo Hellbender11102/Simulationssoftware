@@ -39,7 +39,7 @@ public class BaseRobotTest {
         return baseRobot;
     }
 
-    public BaseRobotTest( double engineRight, double engineLeft, int rounds) {
+    public BaseRobotTest(double engineRight, double engineLeft, int rounds) {
         this.rounds = rounds;
         baseRobot = creatTestBaseRobot(1000, 1000, false, engineRight,
                 engineLeft, 1, 5, 10, 10, 0);
@@ -78,44 +78,45 @@ public class BaseRobotTest {
         });
     }
 
-    private void setNext(){
+    private void setNext() {
         baseRobot.alterMovingVector();
         baseRobot.setNextPosition();
     }
-    
+
     /**
      * Tests if the robot will stand on the correct position with given distance after driving
      * Also checks if when driven backwards position is correct
-     * <p>
-     * Turns out it calculates an difference of 0.799999997902 with an path length of 10 000
      */
     @Test
     public void testDriveStraight() {
         double max = Math.max(baseRobot.getEngineL(), baseRobot.getEngineR());
         baseRobot.setEngines(max, max);
         double speed = baseRobot.getTrajectoryMagnitude();
-        double speedAtStart =0;
+        double speedAtStart = 0;
         Position position;
         if (speed != 0) {
             if (max > 0) {
                 position = baseRobot.getPose().getPositionInDirection(rounds);
                 for (int i = 0; i < rounds / speed; i++) {
                     setNext();
-                    if(baseRobot.getAccelerationInPercent()*baseRobot.getTrajectoryMagnitude()* i <= baseRobot.getTrajectoryMagnitude() ) {
-                        speedAtStart += baseRobot.getTrajectoryMagnitude() - baseRobot.getAccelerationInPercent()*baseRobot.getTrajectoryMagnitude()* i;
+                    if (baseRobot.getAccelerationInPercent() * baseRobot.getTrajectoryMagnitude() * i <= baseRobot.getTrajectoryMagnitude()) {
+                        speedAtStart += baseRobot.getTrajectoryMagnitude() - baseRobot.getAccelerationInPercent() * baseRobot.getTrajectoryMagnitude() * i;
                     }
                 }
             } else {
                 position = baseRobot.getPose().getPositionInDirection(-rounds);
                 for (int i = 0; i > rounds / speed; i--) {
                     setNext();
-                    if(baseRobot.getAccelerationInPercent()*baseRobot.getTrajectoryMagnitude()* i <= baseRobot.getTrajectoryMagnitude() ) {
-                        speedAtStart +=  baseRobot.getTrajectoryMagnitude() - baseRobot.getAccelerationInPercent() * baseRobot.getTrajectoryMagnitude()* i;
+                    if (baseRobot.getAccelerationInPercent() * baseRobot.getTrajectoryMagnitude() * i >= baseRobot.getTrajectoryMagnitude()) {
+                        speedAtStart += baseRobot.getTrajectoryMagnitude() - baseRobot.getAccelerationInPercent() * baseRobot.getTrajectoryMagnitude() * i;
                     }
                 }
             }
-            Assert.assertEquals(baseRobot.getPose().getX(), position.getX(), baseRobot.getAccelerationInPercent() * rounds + speedAtStart);
-            Assert.assertEquals(baseRobot.getPose().getY(), position.getY(), baseRobot.getAccelerationInPercent() * rounds + speedAtStart);
+            if (0 > max)
+                speedAtStart = -speedAtStart;
+
+            Assert.assertEquals(baseRobot.getPose().getX(), position.getX(), speedAtStart);
+            Assert.assertEquals(baseRobot.getPose().getY(), position.getY(), speedAtStart);
         }
     }
 
@@ -230,7 +231,6 @@ public class BaseRobotTest {
             Assert.assertEquals(baseRobot.getEngineL(), max, 0.0);
         else Assert.assertEquals(baseRobot.getEngineL(), engineR, 0.0);
         if (engineL <= min) {
-            System.out.println(baseRobot.getEngineR());
             Assert.assertEquals(baseRobot.getEngineR(), min, 0.0);
         } else if (engineL >= max)
             Assert.assertEquals(baseRobot.getEngineR(), max, 0.0);

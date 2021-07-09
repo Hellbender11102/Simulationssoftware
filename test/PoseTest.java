@@ -50,7 +50,8 @@ public class PoseTest {
     public void TestGetPositionInDirection() {
         Position position = pose1.getPoseInDirection(10);
         Assert.assertEquals(pose1.getEuclideanDistance(position), 10, 0.001);
-        Assert.assertEquals(pose1.getAngleToPosition(position), pose1.getRotation(), 0.001);
+        Assert.assertTrue(pose1.getAngleToPosition(position) == pose1.getRotation() ||
+                (pose1.getAngleToPosition(position)+2*Math.PI) == pose1.getRotation());
     }
 
     @Test

@@ -6,7 +6,6 @@ import org.junit.runners.Parameterized;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Random;
 
 @RunWith(Parameterized.class)
 public class Vector2DTest {
@@ -126,8 +125,8 @@ public class Vector2DTest {
 
     @Test
     public void TestCreatCartesian() {
-        Assert.assertEquals(vector2D.getX(), Vector2D.creatCartesian(vector2D.getLength(), vector2D.angle()).rotateTo(vector2D.angle()).getX(), 0.0001);
-        Assert.assertEquals(vector2D.getY(), Vector2D.creatCartesian(vector2D.getLength(), vector2D.angle()).rotateTo(vector2D.angle()).getY(), 0.0001);
+        Assert.assertEquals(vector2D.getX(), Vector2D.creatCartesian(vector2D.getLength(), vector2D.getAngle()).rotateTo(vector2D.getAngle()).getX(), 0.0001);
+        Assert.assertEquals(vector2D.getY(), Vector2D.creatCartesian(vector2D.getLength(), vector2D.getAngle()).rotateTo(vector2D.getAngle()).getY(), 0.0001);
     }
 
     @Test

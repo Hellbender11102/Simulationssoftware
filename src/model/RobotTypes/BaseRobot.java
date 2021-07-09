@@ -44,7 +44,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      */
     boolean isInTurn = false;
     /**
-     *
+     * Memory for an angle
      */
     private double turnsTo = Double.NaN;
     /**
@@ -185,7 +185,6 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      */
     @Override
     public void alterMovingVector() {
-
         Vector2D incVec = Vector2D.creatCartesian(getTrajectoryMagnitude() * accelerationInPercent, pose.getRotation());
         Vector2D moving = movingVec.getAcquire().rotateTo(pose.getRotation());
          moving.set(moving.getX()+incVec.getX(),moving.getY()+incVec.getY());

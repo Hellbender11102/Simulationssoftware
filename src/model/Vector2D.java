@@ -157,7 +157,7 @@ public class Vector2D {
      *
      * @return double
      */
-    public double angle() {
+    public double getAngle() {
         return Math.atan2(y, x);
     }
 

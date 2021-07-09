@@ -141,37 +141,6 @@ public class BasePhysicalEntityTest {
         Assert.assertTrue(entity.collidingWith().contains(wall));
     }
 
-    @Test
-    public void testCollision() {
-        BaseRobot robot = new BaseRobot(0, 0, 1, 1, 0,
-                1, 0, new Logger(), 100, true, arena,
-                new Random(), new Pose(position.creatPositionByDecreasing(-1, -1), 0), 1) {
-            @Override
-            public void behavior() {
-            }
-
-            @Override
-            public Color getClassColor() {
-                return null;
-            }
-        };
-        PhysicalEntity box = new Box(arena, new Random(), 1, 1, new Pose(position.creatPositionByDecreasing(2.5, 0), 0), 1);
-        PhysicalEntity wall = new Wall(arena, new Random(), 1, 1, new Pose(position.creatPositionByDecreasing(0, 2.5), 0), 1);
-        arena.addEntity(box);
-        arena.addEntity(robot);
-        arena.addEntity(wall);
-        while (entity.collisionDetection()) {
-            entity.alterMovingVector();
-            box.alterMovingVector();
-            wall.alterMovingVector();
-            robot.alterMovingVector();
-            entity.setNextPosition();
-            wall.setNextPosition();
-            box.setNextPosition();
-            robot.setNextPosition();
-        }
-        Assert.assertEquals(0, entity.collidingWith().size());
-    }
 
     @Test
     public void testCollidingWith() {
@@ -204,7 +173,7 @@ public class BasePhysicalEntityTest {
 
     @Test
     public void testEntityGroupByClasses() {
-        BaseEntity robot = new BaseRobot(0, 0, 1, 1, 0,
+        PhysicalEntity robot = new BaseRobot(0, 0, 1, 1, 0,
                 0, 0, new Logger(), 100, true, arena,
                 new Random(), new Pose(position.creatPositionByDecreasing(-1, -1), 0), 0) {
             @Override
@@ -218,14 +187,19 @@ public class BasePhysicalEntityTest {
         };
         PhysicalEntity box = new Box(arena, new Random(), 2, 2, new Pose(position.creatPositionByDecreasing(1, 0), 0), 1);
         PhysicalEntity wall = new Wall(arena, new Random(), 2, 2, new Pose(position.creatPositionByDecreasing(0, 1), 0), 1);
+       Entity area = new Area(arena, new Random(), 2, 2, new Pose(position.creatPositionByDecreasing(0, 1), 0));
         arena.addEntity(box);
         arena.addEntity(robot);
         arena.addEntity(wall);
-        System.out.println(arena.getPhysicalEntityList().size());
-        System.out.println(entity.entityGroupByClasses(List.of(Entity.class)).size());
-        Assert.assertEquals(entity.entityGroupByClasses(List.of(Box.class)).size(), 1);
-        Assert.assertEquals(entity.entityGroupByClasses(List.of(Wall.class, Box.class)).size(), 2);
-        Assert.assertEquals(entity.entityGroupByClasses(List.of(Wall.class, Box.class, RobotInterface.class)).size(), 3);
+        arena.addEntity(area);
+
+        Assert.assertEquals(entity.entityGroupByClasses(List.of(Box.class)).size(),1);
+        Assert.assertEquals(entity.entityGroupByClasses(List.of(Wall.class, Box.class)).size(),2);
+        Assert.assertEquals(entity.entityGroupByClasses(List.of(Wall.class, Box.class, BaseRobot.class)).size(),3);
+        Assert.assertEquals(entity.entityGroupByClasses(List.of(Wall.class, Box.class, BaseRobot.class, Area.class)).size(),4);
+        Assert.assertEquals(entity.entityGroupByClasses(List.of(Entity.class)).size(),5);
+        Assert.assertEquals(entity.entityGroupByClasses(List.of(PhysicalEntity.class)).size(),4);
+        Assert.assertEquals(entity.entityGroupByClasses(List.of(RobotInterface.class)).size(),1);
     }
 
     @Test
@@ -250,5 +224,38 @@ public class BasePhysicalEntityTest {
         entity.entityGroupByClasses(List.of(Box.class));
         entity.entityGroupByClasses(List.of(Wall.class));
         entity.entityGroupByClasses(List.of(RobotInterface.class));
+    }
+
+
+    @Test
+    public void testCollision() {
+        BaseRobot robot = new BaseRobot(0, 0, 1, 1, 0,
+                1, 0, new Logger(), 100, true, arena,
+                new Random(), new Pose(position.creatPositionByDecreasing(-1, -1), 0), 1) {
+            @Override
+            public void behavior() {
+            }
+
+            @Override
+            public Color getClassColor() {
+                return null;
+            }
+        };
+        PhysicalEntity box = new Box(arena, new Random(), 1, 1, new Pose(position.creatPositionByDecreasing(2.5, 0), 0), 1);
+        PhysicalEntity wall = new Wall(arena, new Random(), 1, 1, new Pose(position.creatPositionByDecreasing(0, 2.5), 0), 1);
+        arena.addEntity(box);
+        arena.addEntity(robot);
+        arena.addEntity(wall);
+        while (entity.collisionDetection()) {
+            entity.alterMovingVector();
+            box.alterMovingVector();
+            wall.alterMovingVector();
+            robot.alterMovingVector();
+            entity.setNextPosition();
+            wall.setNextPosition();
+            box.setNextPosition();
+            robot.setNextPosition();
+        }
+        Assert.assertEquals(0, entity.collidingWith().size());
     }
 }

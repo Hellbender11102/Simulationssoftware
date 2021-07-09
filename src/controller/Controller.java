@@ -38,8 +38,7 @@ public class Controller {
                 Optional<Long> percantageUntilDone = arena.getRobots().stream()
                         .map(robot -> Math.round((1 - ((double) robot.getTimeToSimulate() / (double) finalTimeToSimulate)) * 100))
                         .reduce(Long::sum);
-                System.out.print(
-                        (percantageUntilDone.map(Math::toIntExact).orElse(0) / arena.getRobots().size()) + "%\r");
+                System.out.print((percantageUntilDone.map(Math::toIntExact).orElse(0) / arena.getRobots().size()) + "%\r");
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException interruptedException) {

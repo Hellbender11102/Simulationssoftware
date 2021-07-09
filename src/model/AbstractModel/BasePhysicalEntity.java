@@ -2,7 +2,6 @@ package model.AbstractModel;
 
 import model.*;
 
-import java.lang.reflect.Type;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -64,7 +63,7 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
      */
     @Override
     public void setNextPosition() {
-        pose.setRotation(movingVec.get().angle());
+        pose.setRotation(movingVec.get().getAngle());
         pose.addToPosition(movingVec.get());
         movingVec.set(movingVec.get());
     }
@@ -143,11 +142,11 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
             u2Angle = positionPe.getAngleToPosition(getClosestPositionInEntity(positionPe));
         }
 
-        double v1x = calcX(v1, v2, m1, m2, moving1.angle(), moving2.angle(), u1Angle);
-        double v1y = calcY(v1, v2, m1, m2, moving1.angle(), moving2.angle(), u1Angle);
+        double v1x = calcX(v1, v2, m1, m2, moving1.getAngle(), moving2.getAngle(), u1Angle);
+        double v1y = calcY(v1, v2, m1, m2, moving1.getAngle(), moving2.getAngle(), u1Angle);
 
-        double v2x = calcX(v2, v1, m2, m1, moving2.angle(), moving1.angle(), u2Angle);
-        double v2y = calcY(v2, v1, m2, m1, moving2.angle(), moving1.angle(), u2Angle);
+        double v2x = calcX(v2, v1, m2, m1, moving2.getAngle(), moving1.getAngle(), u2Angle);
+        double v2y = calcY(v2, v1, m2, m1, moving2.getAngle(), moving1.getAngle(), u2Angle);
 
         Vector2D resultingPe = new Vector2D(v2x, v2y),
                 resulting = new Vector2D(v1x, v1y);
@@ -269,7 +268,7 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
         LinkedList<Entity> entityInGroup = new LinkedList<>();
         for (Entity entity : arena.getEntityList()) {
             for (Class c : classList) {
-                if (Entity.class == c) {
+                if (c.isAssignableFrom(entity.getClass()) || c == entity.getClass()) {
                     entityInGroup.add(entity);
                 }
             }

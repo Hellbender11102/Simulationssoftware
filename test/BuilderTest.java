@@ -77,9 +77,15 @@ public class BuilderTest {
             Assert.assertEquals(robot.getEngineR(), max, 0);
         else Assert.assertEquals(robot.getEngineR(), engineR, 0);
 
+        if(robotBuilder.getDiameters() >= 0 ) {
+            Assert.assertEquals(robot.getHeight(), robotBuilder.getDiameters(), 0);
+            Assert.assertEquals(robot.getWidth(), robotBuilder.getDiameters(), 0);
+        }   else{
+            Assert.assertEquals(robot.getHeight(),0, 0);
+            Assert.assertEquals(robot.getWidth(), 0, 0);
+        }
+        if(robotBuilder.getDiameters() > 0 )
         Assert.assertEquals(robot.getDiameters(), robotBuilder.getDiameters(), 0);
-        Assert.assertEquals(robot.getHeight(), robotBuilder.getDiameters(), 0);
-        Assert.assertEquals(robot.getWidth(), robotBuilder.getDiameters(), 0);
         Assert.assertEquals(robot.getRadius() * 2, robotBuilder.getDiameters(), 0);
 
         if(robotBuilder.getPose().getRotation() >=Math.PI * 2)

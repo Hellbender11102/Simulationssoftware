@@ -155,7 +155,6 @@ public abstract class BaseVisionConeRobot extends BaseRobot {
             for (int x = -arena.getWidth(); x < arena.getWidth(); x += arena.getWidth()) {
                 for (int y = -arena.getHeight(); y < arena.getHeight(); y += arena.getHeight()) {
                     Position pos = position.creatPositionByDecreasing(x, y);
-                    System.out.println(x + " " + y);
                     if (isInVisionAngle(pos) && pose.getEuclideanDistance(pos) <= visionRange)
                         return true;
                 }
@@ -176,10 +175,6 @@ public abstract class BaseVisionConeRobot extends BaseRobot {
         double angleOfEntity = pose.getAngleToPosition(position) < 0 ? pose.getAngleToPosition(position) + 2 * Math.PI : pose.getAngleToPosition(position);
         double upperAngle = pose.getRotation() + visionAngle / 2;
         double lowerAngle = pose.getRotation() - visionAngle / 2;
-        System.out.println(Math.toDegrees(upperAngle));
-        System.out.println(Math.toDegrees(lowerAngle));
-        System.out.println(Math.toDegrees(angleOfEntity) + " to entity");
-        System.out.println();
         if (angleOfEntity <= upperAngle && angleOfEntity >= lowerAngle) {
             return true;
         } else if (upperAngle > 2 * Math.PI || lowerAngle < 0) {
