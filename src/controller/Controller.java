@@ -102,7 +102,7 @@ public class Controller {
      * @param framesPerSecond int
      */
     public void repaintTimer(int framesPerSecond) {
-        if(framesPerSecond <= 0){
+        if (framesPerSecond <= 0) {
             logger.dumpError("Started simulation with 0 frames per second.");
             framesPerSecond = 1;
         }

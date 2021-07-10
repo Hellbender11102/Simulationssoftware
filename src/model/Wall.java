@@ -9,8 +9,8 @@ public class Wall extends BasePhysicalEntity {
     final Pose pose;
 
 
-    public Wall(Arena arena, Random random, double width, double height,boolean simulateWithView, Pose pose, int ticsPerSimulatedSecond) {
-        super(arena, random, width, height, simulateWithView,pose, ticsPerSimulatedSecond);
+    public Wall(Arena arena, Random random, double width, double height, boolean simulateWithView, Pose pose, int ticsPerSimulatedSecond) {
+        super(arena, random, width, height, simulateWithView, pose, ticsPerSimulatedSecond);
         this.pose = pose;
     }
 

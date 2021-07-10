@@ -24,7 +24,7 @@ public class Area extends BaseEntity {
      */
     public void decreaseAreaDiameters(double number) {
         if (getDiameters() >= number) {
-            height -= number ;
+            height -= number;
             width -= number;
         } else {
             height = 0;
@@ -103,7 +103,7 @@ public class Area extends BaseEntity {
     }
 
     public Position getClosestPositionInEntity(Position position) {
-        if ( pose.getEuclideanDistance(position) < getRadius()) return position;
+        if (pose.getEuclideanDistance(position) < getRadius()) return position;
         return closestPositionInEntityForCircle(position, getRadius());
     }
 

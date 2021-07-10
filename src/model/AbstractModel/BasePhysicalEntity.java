@@ -32,8 +32,8 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
     protected AtomicReference<Vector2D> movingVec = new AtomicReference<>();
 
 
-    protected BasePhysicalEntity(Arena arena, Random random, double width, double height,boolean simulateWithView, Pose pose, int ticsPerSimulatedSecond) {
-        super(arena, random,width, height, pose);
+    protected BasePhysicalEntity(Arena arena, Random random, double width, double height, boolean simulateWithView, Pose pose, int ticsPerSimulatedSecond) {
+        super(arena, random, width, height, pose);
         movingVec.set(Vector2D.zeroVector());
         this.ticsPerSimulatedSecond = ticsPerSimulatedSecond;
         this.simulateWithView = simulateWithView;
@@ -72,7 +72,7 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
             alterMovingVector();
             collisionDetection();
             setNextPosition();
-            if(simulateWithView) updatePositionMemory();
+            if (simulateWithView) updatePositionMemory();
             try {
                 sleep(1000 / ticsPerSimulatedSecond);
             } catch (InterruptedException e) {

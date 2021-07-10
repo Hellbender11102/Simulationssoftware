@@ -114,7 +114,7 @@ public class BaseRobotTest {
             }
             if (0 > max)
                 speedAtStart = -speedAtStart;
-
+            speedAtStart+= rounds * baseRobot.getFriction();
             Assert.assertEquals(baseRobot.getPose().getX(), position.getX(), speedAtStart);
             Assert.assertEquals(baseRobot.getPose().getY(), position.getY(), speedAtStart);
         }

@@ -1,6 +1,7 @@
 package model.RobotTypes;
 
 import model.RobotBuilder;
+
 import java.awt.*;
 
 public class Sheep extends BaseRobot {
@@ -13,7 +14,7 @@ public class Sheep extends BaseRobot {
 
     @Override
     public void behavior() {
-        turn(10,10,8,1);
+        turn(10, 10, 8, 1);
     }
 
     @Override

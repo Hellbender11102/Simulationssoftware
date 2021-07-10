@@ -75,7 +75,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * @param builder RobotBuilder
      */
     public BaseRobot(RobotBuilder builder) {
-        super(builder.getArena(), builder.getRandom(), builder.getDiameters(), builder.getDiameters(),builder.getSimulateWithView(), builder.getPose(), builder.getTicsPerSimulatedSecond());
+        super(builder.getArena(), builder.getRandom(), builder.getDiameters(), builder.getDiameters(), builder.getSimulateWithView(), builder.getPose(), builder.getTicsPerSimulatedSecond());
         poseRingMemory[poseRingMemoryHead] = builder.getPose();
         maxSpeed = builder.getMaxSpeed();
         minSpeed = builder.getMinSpeed();
@@ -95,7 +95,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
                      double powerTransmission, Logger logger, int timeToSimulate, boolean simulateWithView,
                      Arena arena, Random random, Pose pose, int ticsPerSimulatedSecond) {
 
-        super(arena, random, diameters, diameters,simulateWithView, pose, ticsPerSimulatedSecond);
+        super(arena, random, diameters, diameters, simulateWithView, pose, ticsPerSimulatedSecond);
         poseRingMemory[poseRingMemoryHead] = pose;
         this.maxSpeed = maxSpeed;
         this.minSpeed = minSpeed;
@@ -164,12 +164,12 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
             behavior();
             collisionDetection();
             setNextPosition();
-            if(simulateWithView)updatePositionMemory();
+            if (simulateWithView) updatePositionMemory();
             if (timeToSimulate <= 0 || simulateWithView) {
                 try {
                     sleep(1000 / ticsPerSimulatedSecond);
                 } catch (InterruptedException e) {
-                    logger.dumpError("InterruptedException in Robot \n"+e.getMessage());
+                    logger.dumpError("InterruptedException in Robot \n" + e.getMessage());
                 }
             }
             if (!simulateWithView) timeToSimulate--;
@@ -415,7 +415,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * @return boolean
      */
     boolean turn(double degree) {
-        return turn(degree, engineR, engineL,1);
+        return turn(degree, engineR, engineL, 1);
     }
 
     /**
@@ -423,13 +423,13 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * Returns true if turning is complete
      * Useful in an state based agent
      *
-     * @param degree  double
-     * @param engine1 double
-     * @param engine2 double
+     * @param degree            double
+     * @param engine1           double
+     * @param engine2           double
      * @param precisionInDegree double
      * @return boolean
      */
-    public boolean turn(double degree, double engine1, double engine2,double precisionInDegree) {
+    public boolean turn(double degree, double engine1, double engine2, double precisionInDegree) {
         if (!isInTurn) {
             turnsTo = pose.getRotation() + Math.toRadians(degree) < 0 ?
                     pose.getRotation() + Math.toRadians(degree) + 2 * Math.PI :

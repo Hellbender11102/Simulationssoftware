@@ -195,6 +195,7 @@ public class RobotBuilder {
             }
         };
     }
+
     /**
      * Builds the robot of type sheep
      *

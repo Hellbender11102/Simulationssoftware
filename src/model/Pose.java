@@ -50,9 +50,11 @@ public class Pose extends Position {
     public Pose getPoseInDirection(double distance) {
         return new Pose(getPositionInDirection(distance, rotation, xCoordinate, yCoordinate), rotation);
     }
+
     public Vector2D getVectorInDirection(double distance) {
         return new Vector2D(getPositionInDirection(distance, rotation, 0, 0));
     }
+
     public Vector2D getVectorInDirection(double distance, double rotation) {
         return new Vector2D(getPositionInDirection(distance, rotation, 0, 0));
     }
@@ -82,6 +84,7 @@ public class Pose extends Position {
     /**
      * Calculates the difference between current orientation and angleInRadians
      * Returns difference between angles[0,2*PI]
+     *
      * @param angleInRadians double
      * @return double
      */
@@ -89,10 +92,11 @@ public class Pose extends Position {
         double angleDiff = (getRotation() - angleInRadians) % (2 * Math.PI);
         return angleDiff < 0 ? angleDiff + (2 * Math.PI) : angleDiff;
     }
+
     @Override
     public String toString() {
         return "Pose x:" + String.format("%,.2f", xCoordinate) +
-                ", y:" + String.format("%,.2f", yCoordinate)+
+                ", y:" + String.format("%,.2f", yCoordinate) +
                 ", rotation:" + String.format("%,.2f", Math.toDegrees(rotation));
     }
 }

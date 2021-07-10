@@ -214,7 +214,7 @@ class JsonLoader {
                         (double) jsonWall.get("width"),
                         (double) jsonWall.get("height"),
                         displayView,
-                        loadPose(jsonWall),loadTicsPerSimulatedSecond()));
+                        loadPose(jsonWall), loadTicsPerSimulatedSecond()));
             else {
                 error = "Could not load wall " + (wallList.size() + missing++) + " correctly. Entry width, height or position missing.";
                 errorLogger.dumpError(error);

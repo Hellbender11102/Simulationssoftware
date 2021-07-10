@@ -6,8 +6,8 @@ import java.awt.*;
 import java.util.Random;
 
 public class Box extends BasePhysicalEntity {
-    public Box(Arena arena, Random random, double width, double height,boolean simulateWithView, Pose pose,int ticsPerSimulatedSecond) {
-        super(arena, random, width, height, simulateWithView,pose, ticsPerSimulatedSecond);
+    public Box(Arena arena, Random random, double width, double height, boolean simulateWithView, Pose pose, int ticsPerSimulatedSecond) {
+        super(arena, random, width, height, simulateWithView, pose, ticsPerSimulatedSecond);
     }
 
     @Override
@@ -27,6 +27,7 @@ public class Box extends BasePhysicalEntity {
 
     /**
      * Returns the closest position in the body of the box to the given position
+     *
      * @param position Position
      * @return Position
      */
@@ -39,6 +40,7 @@ public class Box extends BasePhysicalEntity {
     public double getArea() {
         return getAreaSquare();
     }
+
     @Override
     public String toString() {
         return "Box at " + pose + " width:" + width + " height:" + height;

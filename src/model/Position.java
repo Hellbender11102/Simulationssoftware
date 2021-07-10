@@ -3,7 +3,7 @@ package model;
 import java.awt.geom.Point2D;
 
 public class Position extends Point2D {
-   protected double xCoordinate, yCoordinate;
+    protected double xCoordinate, yCoordinate;
 
     public Position(Position position) {
         this.xCoordinate = position.getX();
