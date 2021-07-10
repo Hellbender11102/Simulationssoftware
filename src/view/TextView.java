@@ -4,8 +4,6 @@ import controller.Logger;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.io.*;
 import java.net.URL;
 
@@ -13,7 +11,8 @@ public class TextView extends JFrame {
     JTextPane jTextPane;
     Logger errorLogger = new Logger();
     private final JMenuItem itemSave = new JMenuItem("Datei speichern",1);
-    private final JMenuItem itemReload = new JMenuItem("Datei neu laden",2);
+    private final JMenuItem itemSaveTo = new JMenuItem("Datei speichern unter",2);
+    private final JMenuItem itemReload = new JMenuItem("Datei neu laden",3);
 
     TextView(String title, String filePath, int posX, boolean editable) {
         try {
@@ -46,9 +45,9 @@ public class TextView extends JFrame {
             JMenuBar bar = new JMenuBar();
             JMenu menu = new JMenu("Optionen");
             menu.add(itemSave);
-            itemSave.addActionListener(listener -> saveFile(filePath));
+            menu.add(itemSaveTo);
             menu.add(itemReload);
-            itemReload.addActionListener(listener -> jTextPane.setText(readFile(filePath)));
+            addEventLsitener(filePath);
             bar.add(menu);
             getContentPane().add(bar, BorderLayout.NORTH);
         }
@@ -89,5 +88,28 @@ public class TextView extends JFrame {
             errorLogger.dumpError("Datei konnte nicht gespeichert werden von "+this.getClass());
             errorLogger.dumpError(ioException.getMessage());
         }
+    }
+
+    private void addEventLsitener(String filePath){
+
+        itemSave.addActionListener(listener -> saveFile(filePath));
+
+        itemSaveTo.addActionListener(listener -> {
+            JFileChooser jFileChooser= new JFileChooser();
+            int userSelection = jFileChooser.showSaveDialog(null);
+            if (userSelection == JFileChooser.APPROVE_OPTION) {
+                File fileToSave = jFileChooser.getSelectedFile();
+                try {
+                    FileWriter writer= new FileWriter(fileToSave);
+                    writer.write(jTextPane.getText());
+                    writer.flush();
+                    writer.close();
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
+            }
+        });
+
+        itemReload.addActionListener(listener -> jTextPane.setText(readFile(filePath)));
     }
 }

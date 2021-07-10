@@ -7,9 +7,9 @@ import model.RobotBuilder;
 import java.awt.*;
 import java.util.List;
 
-public class Robot2 extends BaseRobot {
+public class Dog extends BaseRobot {
 
-    public Robot2(RobotBuilder builder) {
+    public Dog(RobotBuilder builder) {
         super(builder);
     }
 

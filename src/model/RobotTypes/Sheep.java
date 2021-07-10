@@ -3,9 +3,9 @@ package model.RobotTypes;
 import model.RobotBuilder;
 import java.awt.*;
 
-public class Robot1 extends BaseRobot {
+public class Sheep extends BaseRobot {
 
-    public Robot1(RobotBuilder builder) {
+    public Sheep(RobotBuilder builder) {
         super(builder);
     }
 

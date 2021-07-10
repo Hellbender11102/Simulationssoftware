@@ -28,6 +28,7 @@ public class View extends JFrame {
     private TextView variabls;
     private TextView log;
     private TextView help;
+    private String variablesPath = "resources/variables.json";
     private final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     JFileChooser fileChooserUI;
     FileFilter filter = new FileNameExtensionFilter("txt, JSON", "txt", "JSON", "Json");
@@ -81,10 +82,8 @@ public class View extends JFrame {
         itemHelp.addActionListener(helpAction);
 
         ActionListener settingsAction = e -> {
-            if (variabls == null)
-                variabls = new TextView("variables.json", "resources/variables.json",
+                variabls = new TextView(variablesPath, variablesPath,
                         (int) (screenSize.width * 0.75), true);
-            else variabls.setVisible(true);
         };
         itemSettingsEditor.addActionListener(settingsAction);
 
@@ -127,8 +126,8 @@ public class View extends JFrame {
         int returnVal = fileChooserUI.showOpenDialog(null);
 
         if (returnVal == JFileChooser.APPROVE_OPTION && fileChooserUI.getSelectedFile() != null && fileChooserUI.getSelectedFile().exists())
-            return fileChooserUI.getSelectedFile().getAbsolutePath();
-    return null;
+             variablesPath = fileChooserUI.getSelectedFile().getAbsolutePath();
+        return variablesPath;
     }
 
 }

@@ -13,7 +13,7 @@ import java.util.*;
 class JsonLoader {
     private JSONObject settings;
     private JSONObject variables;
-    private final Logger errorLogger = new Logger();
+    private final Logger errorLogger;
     private Arena arena;
     private boolean displayView = false;
     private final String pathSettings = "resources/settings.json";
@@ -24,7 +24,8 @@ class JsonLoader {
      * Constructor
      * Loads default path for settings and variables
      */
-    JsonLoader() {
+    JsonLoader(Logger errorLogger) {
+        this.errorLogger = errorLogger;
         {
             try {
                 settings = loadJSON(pathSettings, errorLogger);
@@ -341,22 +342,20 @@ class JsonLoader {
                 builder = builder.visionAngle((double) robotObject.get("visionAngle")).visionRange((Double) robotObject.get("visionRange"));
             }
             RobotInterface robot;
+            // Implement new robot classes
             switch ((String) robotObject.get("type")) {
-                case "1":
-                    robot = builder.buildRobot1();
+                case "sheep":
+                    robot = builder.buildSheep();
                     break;
-                case "2":
-                    robot = builder.buildRobot2();
-                    break;
-                case "3":
-                    robot = builder.buildRobot3();
-                    break;
-                case "4":
-                    robot = builder.buildRobot4();
+                case "dog":
+                    robot = builder.buildDog();
                     break;
                 case "vision":
                     robot = builder.buildVisionCone();
                     break;
+                /* Space to add own robot types */
+
+                /* ----------------------------- */
                 default:
                     robot = builder.buildDefault();
             }
