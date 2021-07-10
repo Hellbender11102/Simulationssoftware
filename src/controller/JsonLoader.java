@@ -178,6 +178,7 @@ class JsonLoader {
                                 new Random(random.nextInt()),
                                 (double) jsonBox.get("width"),
                                 (double) jsonBox.get("height"),
+                                displayView,
                                 loadPose(jsonBox),
                                 loadTicsPerSimulatedSecond()));
             else {
@@ -209,10 +210,13 @@ class JsonLoader {
         for (Object wall : walls) {
             JSONObject jsonWall = (JSONObject) wall;
             if (jsonWall.containsKey("width") && jsonWall.containsKey("position") && jsonWall.containsKey("height") && loadPose(jsonWall) != null)
-                wallList.add(new Wall(arena, new Random(random.nextInt()), (double) jsonWall.get("width"), (double) jsonWall.get("height"), loadPose(jsonWall),loadTicsPerSimulatedSecond()));
+                wallList.add(new Wall(arena, new Random(random.nextInt()),
+                        (double) jsonWall.get("width"),
+                        (double) jsonWall.get("height"),
+                        displayView,
+                        loadPose(jsonWall),loadTicsPerSimulatedSecond()));
             else {
                 error = "Could not load wall " + (wallList.size() + missing++) + " correctly. Entry width, height or position missing.";
-
                 errorLogger.dumpError(error);
             }
         }
@@ -239,7 +243,8 @@ class JsonLoader {
         for (Object area : areas) {
             JSONObject jsonArea = (JSONObject) area;
             if (jsonArea.containsKey("diameters") && jsonArea.containsKey("noticeableDistanceDiameters") && loadPose(jsonArea) != null)
-                areaList.add(new Area(arena, new Random(random.nextInt()), (double) jsonArea.get("diameters"), (double) jsonArea.get("noticeableDistanceDiameters"), loadPose(jsonArea)));
+                areaList.add(new Area(arena, new Random(random.nextInt()), (double) jsonArea.get("diameters"),
+                        (double) jsonArea.get("noticeableDistanceDiameters"), loadPose(jsonArea)));
             else {
                 error = "Could not load area " + (areaList.size() + missing++) + " correctly. Entry diameters, noticeableDistance or position missing.";
 

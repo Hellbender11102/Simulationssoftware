@@ -161,8 +161,8 @@ public class VisionConeRobotTest {
                 return null;
             }
         };
-        PhysicalEntity box = new Box(arena, new Random(), 2, 2, new Pose(poseX, poseY + 5, 1), 1);
-        PhysicalEntity wall = new Wall(arena, new Random(), 2, 2, new Pose(poseX, poseY - 5, 1), 1);
+        PhysicalEntity box = new Box(arena, new Random(), 2, 2,false, new Pose(poseX, poseY + 5, 1), 1);
+        PhysicalEntity wall = new Wall(arena, new Random(), 2, 2,false, new Pose(poseX, poseY - 5, 1), 1);
 
         arena.addEntity(area);
         arena.addEntity(baseRobot);

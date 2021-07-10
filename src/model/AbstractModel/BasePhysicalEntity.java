@@ -26,22 +26,17 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
      * If below .25 objects will increase speed what so ever
      * Best is around .35
      */
-    protected final double frictionInPercent;
-    /**
-     * Describes how elastic the bump is
-     * bumpParam = 1 for the elastic bump
-     * bumpParam = 0 for the completely inelastic angle
-     * The simulation is set up for the elastic bump
-     */
-    private final int bumpParam = 1;
+    protected final double frictionInPercent = 0.1;
+
+    protected final boolean simulateWithView;
     protected AtomicReference<Vector2D> movingVec = new AtomicReference<>();
 
 
-    protected BasePhysicalEntity(Arena arena, Random random, double width, double height, Pose pose, int ticsPerSimulatedSecond) {
-        super(arena, random, width, height, pose);
+    protected BasePhysicalEntity(Arena arena, Random random, double width, double height,boolean simulateWithView, Pose pose, int ticsPerSimulatedSecond) {
+        super(arena, random,width, height, pose);
         movingVec.set(Vector2D.zeroVector());
         this.ticsPerSimulatedSecond = ticsPerSimulatedSecond;
-        frictionInPercent = 0.01;
+        this.simulateWithView = simulateWithView;
     }
 
     /**
@@ -77,7 +72,7 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
             alterMovingVector();
             collisionDetection();
             setNextPosition();
-            updatePositionMemory();
+            if(simulateWithView) updatePositionMemory();
             try {
                 sleep(1000 / ticsPerSimulatedSecond);
             } catch (InterruptedException e) {

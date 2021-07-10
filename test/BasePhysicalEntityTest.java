@@ -76,7 +76,7 @@ public class BasePhysicalEntityTest {
         Pose pose = new Pose(poseX, poseY, 0);
         arena = Arena.overWriteInstance(100, 100, isTorus);
         entity = new BasePhysicalEntity(arena,
-                new Random(), width, height, pose, 1) {
+                new Random(), width, height,false, pose, 1) {
             @Override
             public double getTrajectoryMagnitude() {
                 return 0;
@@ -131,7 +131,7 @@ public class BasePhysicalEntityTest {
 
     @Test
     public void testCollisionDetection() {
-        PhysicalEntity wall = new Wall(arena, new Random(), 2, 2, new Pose(position, 0), 1);
+        PhysicalEntity wall = new Wall(arena, new Random(), 2, 2,false, new Pose(position, 0), 1);
         arena.addEntity(wall);
 
         if (arena.isTorus) {
@@ -146,7 +146,7 @@ public class BasePhysicalEntityTest {
     public void testCollidingWith() {
         Position entityPos = position.clone(), boxPos = position.creatPositionByDecreasing(1, 0);
         double width = 2, height = 2;
-        Box box = new Box(arena, new Random(), width, height, new Pose(boxPos, 0), 1);
+        Box box = new Box(arena, new Random(), width, height,false, new Pose(boxPos, 0), 1);
 
         entity.getMovingVec().set(Vector2D.creatCartesian(position.getX(), 0));
         box.getMovingVec().set(Vector2D.creatCartesian(position.getY(), Math.PI));
@@ -185,8 +185,8 @@ public class BasePhysicalEntityTest {
                 return null;
             }
         };
-        PhysicalEntity box = new Box(arena, new Random(), 2, 2, new Pose(position.creatPositionByDecreasing(1, 0), 0), 1);
-        PhysicalEntity wall = new Wall(arena, new Random(), 2, 2, new Pose(position.creatPositionByDecreasing(0, 1), 0), 1);
+        PhysicalEntity box = new Box(arena, new Random(), 2, 2,false, new Pose(position.creatPositionByDecreasing(1, 0), 0), 1);
+        PhysicalEntity wall = new Wall(arena, new Random(), 2, 2,false, new Pose(position.creatPositionByDecreasing(0, 1), 0), 1);
        Entity area = new Area(arena, new Random(), 2, 2, new Pose(position.creatPositionByDecreasing(0, 1), 0));
         arena.addEntity(box);
         arena.addEntity(robot);
@@ -216,8 +216,8 @@ public class BasePhysicalEntityTest {
                 return null;
             }
         };
-        PhysicalEntity box = new Box(arena, new Random(), 2, 2, new Pose(position.creatPositionByDecreasing(1, 0), 0), 1);
-        PhysicalEntity wall = new Wall(arena, new Random(), 2, 2, new Pose(position.creatPositionByDecreasing(0, 1), 0), 1);
+        PhysicalEntity box = new Box(arena, new Random(), 2, 2,false, new Pose(position.creatPositionByDecreasing(1, 0), 0), 1);
+        PhysicalEntity wall = new Wall(arena, new Random(), 2, 2,false, new Pose(position.creatPositionByDecreasing(0, 1), 0), 1);
         arena.addEntity(box);
         arena.addEntity(robot);
         arena.addEntity(wall);
@@ -241,8 +241,8 @@ public class BasePhysicalEntityTest {
                 return null;
             }
         };
-        PhysicalEntity box = new Box(arena, new Random(), 1, 1, new Pose(position.creatPositionByDecreasing(2.5, 0), 0), 1);
-        PhysicalEntity wall = new Wall(arena, new Random(), 1, 1, new Pose(position.creatPositionByDecreasing(0, 2.5), 0), 1);
+        PhysicalEntity box = new Box(arena, new Random(), 1, 1,false, new Pose(position.creatPositionByDecreasing(2.5, 0), 0), 1);
+        PhysicalEntity wall = new Wall(arena, new Random(), 1, 1, false,new Pose(position.creatPositionByDecreasing(0, 2.5), 0), 1);
         arena.addEntity(box);
         arena.addEntity(robot);
         arena.addEntity(wall);

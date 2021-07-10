@@ -149,8 +149,8 @@ public class ArenaTest {
                     return null;
                 }
             };
-            PhysicalEntity box = new Box(arena, new Random(), 2, 2, new Pose(1, 1, 1), 1);
-            PhysicalEntity wall = new Wall(arena, new Random(), 2, 2, new Pose(1, 1, 1), 1);
+            PhysicalEntity box = new Box(arena, new Random(), 2, 2,false, new Pose(1, 1, 1), 1);
+            PhysicalEntity wall = new Wall(arena, new Random(), 2, 2,false, new Pose(1, 1, 1), 1);
             arena.addEntity(area);
             arena.addEntity(robot);
             arena.addEntity(box);

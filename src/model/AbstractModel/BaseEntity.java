@@ -116,18 +116,18 @@ abstract public class BaseEntity extends Thread implements Entity {
 
         if (position.getX() <= pose.getX() + width / 2 && position.getX() >= pose.getX() - width / 2) {
             closest.setX(position.getX());
-        }else if(position.getX() > pose.getX() + width / 2){
-            closest.setX(pose.getX()+width /2);
-        } else if(position.getX() < pose.getX() + width / 2){
-            closest.setX(pose.getX()-width /2);
+        } else if (position.getX() > pose.getX() + width / 2) {
+            closest.setX(pose.getX() + width / 2);
+        } else if (position.getX() < pose.getX() + width / 2) {
+            closest.setX(pose.getX() - width / 2);
         }
 
         if (position.getY() <= pose.getY() + height / 2 && position.getY() >= pose.getY() - height / 2) {
             closest.setY(position.getY());
-        }else if(position.getY() > pose.getY() + height / 2){
-            closest.setY(pose.getY()+height /2);
-        } else if(position.getY() < pose.getY() + height / 2){
-            closest.setY(pose.getY()-height /2);
+        } else if (position.getY() > pose.getY() + height / 2) {
+            closest.setY(pose.getY() + height / 2);
+        } else if (position.getY() < pose.getY() + height / 2) {
+            closest.setY(pose.getY() - height / 2);
         }
         return closest;
     }

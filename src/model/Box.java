@@ -6,8 +6,8 @@ import java.awt.*;
 import java.util.Random;
 
 public class Box extends BasePhysicalEntity {
-    public Box(Arena arena, Random random, double width, double height, Pose pose,int ticsPerSimulatedSecond) {
-        super(arena, random, width, height, pose, ticsPerSimulatedSecond);
+    public Box(Arena arena, Random random, double width, double height,boolean simulateWithView, Pose pose,int ticsPerSimulatedSecond) {
+        super(arena, random, width, height, simulateWithView,pose, ticsPerSimulatedSecond);
     }
 
     @Override

@@ -68,7 +68,6 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      */
     protected double accelerationInPercent = .01;
 
-    private final boolean simulateWithView;
 
     /**
      * Constructs object via Builder
@@ -76,7 +75,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * @param builder RobotBuilder
      */
     public BaseRobot(RobotBuilder builder) {
-        super(builder.getArena(), builder.getRandom(), builder.getDiameters(), builder.getDiameters(), builder.getPose(), builder.getTicsPerSimulatedSecond());
+        super(builder.getArena(), builder.getRandom(), builder.getDiameters(), builder.getDiameters(),builder.getSimulateWithView(), builder.getPose(), builder.getTicsPerSimulatedSecond());
         poseRingMemory[poseRingMemoryHead] = builder.getPose();
         maxSpeed = builder.getMaxSpeed();
         minSpeed = builder.getMinSpeed();
@@ -87,7 +86,6 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         powerTransmission = builder.getPowerTransmission();
         logger = builder.getLogger();
         timeToSimulate = builder.getTimeToSimulate() * builder.getTicsPerSimulatedSecond();
-        simulateWithView = builder.getSimulateWithView();
     }
 
     /**
@@ -97,7 +95,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
                      double powerTransmission, Logger logger, int timeToSimulate, boolean simulateWithView,
                      Arena arena, Random random, Pose pose, int ticsPerSimulatedSecond) {
 
-        super(arena, random, diameters, diameters, pose, ticsPerSimulatedSecond);
+        super(arena, random, diameters, diameters,simulateWithView, pose, ticsPerSimulatedSecond);
         poseRingMemory[poseRingMemoryHead] = pose;
         this.maxSpeed = maxSpeed;
         this.minSpeed = minSpeed;
@@ -108,7 +106,6 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         this.powerTransmission = powerTransmission;
         this.logger = logger;
         this.timeToSimulate = timeToSimulate * ticsPerSimulatedSecond;
-        this.simulateWithView = simulateWithView;
     }
 
     /**
@@ -167,7 +164,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
             behavior();
             collisionDetection();
             setNextPosition();
-            updatePositionMemory();
+            if(simulateWithView)updatePositionMemory();
             if (timeToSimulate <= 0 || simulateWithView) {
                 try {
                     sleep(1000 / ticsPerSimulatedSecond);
@@ -192,7 +189,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
             moving.set(incVec);
         }
         if (moving.getLength() > getTrajectoryMagnitude()) {
-            moving = moving.normalize().multiplication(getTrajectoryMagnitude());
+            moving = moving.normalize().multiplication(moving.getLength() * (1 - frictionInPercent));
         }
         movingVec.setRelease(moving);
     }
