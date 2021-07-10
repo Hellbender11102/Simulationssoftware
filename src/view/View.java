@@ -25,10 +25,12 @@ public class View extends JFrame {
     private final JMenuItem itemRestart = new JMenuItem("Versuch neu starten", 7);
     private final JMenuItem itemFullRestart = new JMenuItem("Neu laden und neu Starten", 8);
     private TextView settings;
-    private TextView variabls;
     private TextView log;
     private TextView help;
     private String variablesPath = "resources/variables.json";
+    private String settingsPath = "resources/settings.json";
+    private String logPath = "out/log.csv";
+    private String readmePath = "README.md";
     private final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     JFileChooser fileChooserUI;
     FileFilter filter = new FileNameExtensionFilter("txt, JSON", "txt", "JSON", "Json");
@@ -76,20 +78,20 @@ public class View extends JFrame {
     private void setMenuLogic() {
         ActionListener helpAction = e -> {
             if (help == null)
-                help = new TextView("Hilfe", "README.md", 0, false);
+                help = new TextView("Hilfe", readmePath, 0, false);
             else help.setVisible(true);
         };
         itemHelp.addActionListener(helpAction);
 
         ActionListener settingsAction = e -> {
-                variabls = new TextView(variablesPath, variablesPath,
+            new TextView(variablesPath, variablesPath,
                         (int) (screenSize.width * 0.75), true);
         };
         itemSettingsEditor.addActionListener(settingsAction);
 
         ActionListener variablesAction = e -> {
             if (settings == null)
-                settings = new TextView("settings.json", "resources/settings.json",
+                settings = new TextView("settings.json", settingsPath,
                         (int) (screenSize.width * 0.75), true);
             else settings.setVisible(true);
         };
@@ -97,7 +99,7 @@ public class View extends JFrame {
 
         ActionListener logAction = e -> {
             if (log == null)
-                log = new TextView("log.csv", "out/log.csv",
+                log = new TextView("log.csv", logPath,
                         (int) (screenSize.width * 0.75), true);
             else log.setVisible(true);
         };
