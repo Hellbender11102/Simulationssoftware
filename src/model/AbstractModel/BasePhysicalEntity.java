@@ -27,6 +27,7 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
      * Best is around .35
      */
     protected final double frictionInPercent = 0.1;
+    protected final boolean gettingDifferentAngleToSquares = true;
 
     protected final boolean simulateWithView;
     protected AtomicReference<Vector2D> movingVec = new AtomicReference<>();
@@ -129,12 +130,15 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
 
         double m1 = getWeight(), m2 = physicalEntity.getWeight();
         double v1 = moving1.getLength(), v2 = moving2.getLength();
-
-        if (Wall.class.isAssignableFrom(physicalEntity.getClass()) || Box.class.isAssignableFrom(physicalEntity.getClass())) {
-            u1Angle = position.getAngleToPosition(physicalEntity.getClosestPositionInEntity(position));
-        }
-        if (Wall.class.isAssignableFrom(getClass()) || Box.class.isAssignableFrom(getClass())) {
-            u2Angle = positionPe.getAngleToPosition(getClosestPositionInEntity(positionPe));
+        if(gettingDifferentAngleToSquares) {
+            if (Wall.class.isAssignableFrom(physicalEntity.getClass()) || Box.class.isAssignableFrom(physicalEntity.getClass())) {
+                u1Angle = position.getAngleToPosition(physicalEntity.getClosestPositionInEntity(position));
+                u2Angle = physicalEntity.getClosestPositionInEntity(position).getAngleToPosition(position);
+            }
+            if (Wall.class.isAssignableFrom(getClass()) || Box.class.isAssignableFrom(getClass())) {
+                u2Angle = positionPe.getAngleToPosition(getClosestPositionInEntity(positionPe));
+                u1Angle = getClosestPositionInEntity(positionPe).getAngleToPosition(positionPe);
+            }
         }
 
         double v1x = calcX(v1, v2, m1, m2, moving1.getAngle(), moving2.getAngle(), u1Angle);
