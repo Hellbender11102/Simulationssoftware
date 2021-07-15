@@ -43,7 +43,10 @@ public class SimulationView extends JPanel {
 
     public void paint(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
-        g2d.setColor(Color.RED);
+        if (arena.isTorus)
+            g2d.setColor(Color.BLUE);
+        else
+            g2d.setColor(Color.RED);
         g2d.setStroke(new BasicStroke(2));
         g2d.drawString("0,0", -3 - convertZoom(offsetX), convertZoom(arena.getHeight() - offsetY) + 10);
         g2d.drawString(arena.getWidth() + ",0", convertZoom(arena.getWidth() - offsetX), convertZoom(arena.getHeight() - offsetY) + 10);
@@ -128,8 +131,8 @@ public class SimulationView extends JPanel {
                     convertZoom(arena.getHeight() - (entity.getPose().getY() + entity.getHeight() / 2) - offsetY),
                     convertZoom(entity.getWidth()), convertZoom(entity.getHeight()));
 
-            Rectangle2D rectangle2D = new Rectangle2D.Double(convertZoom(entity.getPose().getX()-entity.getWidth()/2- offsetX),
-                    convertZoom(arena.getHeight() -entity.getPose().getY()-entity.getHeight()/2- offsetY), convertZoom(entity.getWidth()), convertZoom(entity.getHeight()));
+            Rectangle2D rectangle2D = new Rectangle2D.Double(convertZoom(entity.getPose().getX() - entity.getWidth() / 2 - offsetX),
+                    convertZoom(arena.getHeight() - entity.getPose().getY() - entity.getHeight() / 2 - offsetY), convertZoom(entity.getWidth()), convertZoom(entity.getHeight()));
             g2d.fill(rectangle2D);
         }
     }

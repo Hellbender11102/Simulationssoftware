@@ -172,12 +172,33 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
 
     }
 
+    /**
+     * Calculates the x value for an elastic collision
+     * @param v1 double
+     * @param v2 double
+     * @param m1 double
+     * @param m2 double
+     * @param movingAngle1 double
+     * @param movingAngle2 double
+     * @param contactAngle double
+     * @return double
+     */
     private double calcX(double v1, double v2, double m1, double m2, double movingAngle1, double movingAngle2, double contactAngle) {
         return ((v1 * Math.cos(movingAngle1 - contactAngle) * (m1 - m2) + 2 * m2 * v2 * Math.cos(movingAngle2 - contactAngle)) /
                 (m1 + m2))
                 * Math.cos(contactAngle) + v1 * Math.sin(movingAngle1 - contactAngle) * Math.cos(contactAngle + (Math.PI / 2));
     }
-
+    /**
+     * Calculates the y value for an elastic collision
+     * @param v1 double
+     * @param v2 double
+     * @param m1 double
+     * @param m2 double
+     * @param movingAngle1 double
+     * @param movingAngle2 double
+     * @param contactAngle double
+     * @return double
+     */
     private double calcY(double v1, double v2, double m1, double m2, double movingAngle1, double movingAngle2, double contactAngle) {
         return ((v1 * Math.cos(movingAngle1 - contactAngle) * (m1 - m2) + 2 * m2 * v2 * Math.cos(movingAngle2 - contactAngle)) /
                 (m1 + m2))

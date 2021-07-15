@@ -17,13 +17,14 @@ import java.nio.file.Paths;
 public class View extends JFrame {
     private final SimulationView simView;
     private final JMenuItem itemHelp = new JMenuItem("Hilfe", 1);
-    private final JMenuItem itemLog = new JMenuItem("Log erstellen", 2);
-    private final JMenuItem itemLogEditor = new JMenuItem("Log einsehen", 3);
-    private final JMenuItem itemVariablesEditor = new JMenuItem("Einstellung", 4);
+    private final JMenuItem itemStartStop = new JMenuItem("Starten / pausieren", 2);
+    private final JMenuItem itemLog = new JMenuItem("Log erstellen", 3);
+    private final JMenuItem itemLogEditor = new JMenuItem("Log einsehen", 4);
+    private final JMenuItem itemVariablesEditor = new JMenuItem("Einstellung", 5);
     private final JMenuItem itemSettingsEditor = new JMenuItem("Simulationsvariablen", 6);
-    private final JMenuItem itemLoadVariables = new JMenuItem("Simulationsvariablen laden von", 5);
-    private final JMenuItem itemRestart = new JMenuItem("Versuch neu starten", 7);
-    private final JMenuItem itemFullRestart = new JMenuItem("Neu laden und neu Starten", 8);
+    private final JMenuItem itemLoadVariables = new JMenuItem("Simulationsvariablen laden von", 7);
+    private final JMenuItem itemRestart = new JMenuItem("Versuch neu starten", 8);
+    private final JMenuItem itemFullRestart = new JMenuItem("Neu laden und neu Starten", 9);
     private TextView settings;
     private TextView log;
     private TextView help;
@@ -54,6 +55,7 @@ public class View extends JFrame {
             setIconImage(icon.getImage());
         }
         menu.add(itemHelp);
+        menu.add(itemStartStop);
         menu.add(itemRestart);
         menu.add(itemFullRestart);
         menu.add(itemLog);
@@ -121,6 +123,10 @@ public class View extends JFrame {
 
     public JMenuItem getItemLoadVariables() {
         return itemLoadVariables;
+    }
+
+    public JMenuItem getItemStartStop() {
+        return itemStartStop;
     }
 
     public String getPathOfSelectedFile() {

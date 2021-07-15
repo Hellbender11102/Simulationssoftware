@@ -130,16 +130,7 @@ public class Controller {
             public void keyPressed(KeyEvent e) {
                 switch (e.getKeyCode()) {
                     case KeyEvent.VK_SPACE:
-                        for (PhysicalEntity entity : arena.getPhysicalEntityList()) {
-                            if (stopped) {
-                                entity.setToLatestPose();
-                                entity.togglePause();
-                                startThread(entity);
-                            } else {
-                                entity.togglePause();
-                            }
-                        }
-                        stopped = !stopped;
+                        startStop();
                         break;
                     case KeyEvent.VK_B:
                         if (stopped)
@@ -249,6 +240,10 @@ public class Controller {
             logger.saveFullLogToFile(false);
         });
         //Restarts the simulation
+        view.getItemStartStop().addActionListener(actionListener -> {
+            startStop();
+        });
+        //Restarts the simulation
         view.getRestart().addActionListener(actionListener -> {
             for (RobotInterface robot : arena.getRobots()) {
                 if (!stopped) {
@@ -294,5 +289,21 @@ public class Controller {
         if (RobotInterface.class.isAssignableFrom(physicalEntity.getClass()))
             robotThreads.add(t);
         t.start();
+    }
+
+    /**
+     *
+     */
+    private void startStop(){
+        for (PhysicalEntity entity : arena.getPhysicalEntityList()) {
+            if (stopped) {
+                entity.setToLatestPose();
+                entity.togglePause();
+                startThread(entity);
+            } else {
+                entity.togglePause();
+            }
+        }
+        stopped = !stopped;
     }
 }

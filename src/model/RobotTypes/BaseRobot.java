@@ -221,6 +221,31 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     }
 
     /**
+     * Drives to an position with given calculates the best engine settings
+     * @param position Position
+     */
+    public void driveToPosition(Position position) {
+        double speed = Math.min(maxSpeed, maxSpeed - position.getEuclideanDistance(position));
+        double angle = pose.getAngleToPosition(position);
+        double rotationSpeed =  diff(angle, pose.getRotation());
+        setEngineR(speed + distanceE * rotationSpeed);
+        setEngineL(speed + (-distanceE * rotationSpeed));
+    }
+
+    /**
+     * Returns the angle different with [-PI,PI]
+     * @param angle1 double
+     * @param angle2 double
+     * @return double
+     */
+    double diff(double angle1, double angle2) {
+        double retVal = angle1 - angle2;
+        retVal = retVal >= Math.PI ? retVal - 2 * Math.PI : retVal;
+        retVal = retVal < -Math.PI ? retVal + 2 * Math.PI : retVal;
+        return retVal;
+    }
+
+    /**
      * Rotates to correct angleInRadian +- (precisionInRadian / 2)
      * Sets the outer engine of the circle to rotatingEngine and the inner to secondEngine
      * If facing to the given angle sets the engines both to rotatingEngine
