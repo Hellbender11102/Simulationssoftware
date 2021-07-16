@@ -11,15 +11,15 @@ import java.net.URL;
 
 public class View extends JFrame {
     private final SimulationView simView;
-    private final JMenuItem itemHelp = new JMenuItem("Hilfe", 1);
-    private final JMenuItem itemStartStop = new JMenuItem("Starten / pausieren", 2);
-    private final JMenuItem itemLog = new JMenuItem("Log erstellen", 3);
-    private final JMenuItem itemLogEditor = new JMenuItem("Log einsehen", 4);
-    private final JMenuItem itemVariablesEditor = new JMenuItem("Einstellung", 5);
-    private final JMenuItem itemSettingsEditor = new JMenuItem("Simulationsvariablen", 6);
-    private final JMenuItem itemLoadVariables = new JMenuItem("Simulationsvariablen laden von", 7);
-    private final JMenuItem itemRestart = new JMenuItem("Versuch neu starten", 8);
-    private final JMenuItem itemFullRestart = new JMenuItem("Neu laden und neu Starten", 9);
+    private final JMenuItem itemHelp = new JMenuItem("Hilfe");
+    private final JMenuItem itemStartStop = new JMenuItem("Starten / pausieren");
+    private final JMenuItem itemLog = new JMenuItem("Log erstellen");
+    private final JMenuItem itemLogEditor = new JMenuItem("Log einsehen");
+    private final JMenuItem itemVariablesEditor = new JMenuItem("Einstellung");
+    private final JMenuItem itemSettingsEditor = new JMenuItem("Simulationsvariablen");
+    private final JMenuItem itemLoadVariables = new JMenuItem("Simulationsvariablen laden von");
+    private final JMenuItem itemRestart = new JMenuItem("Versuch neu starten");
+    private final JMenuItem itemFullRestart = new JMenuItem("Neu laden und neu Starten");
     private TextView settings;
     private TextView log;
     private TextView help;

@@ -13,7 +13,7 @@ public class Controller {
     private View view;
     private Arena arena;
     private final List<Thread> robotThreads = new LinkedList<>();
-    private final Timer repaintTimer = new Timer();
+    private Timer repaintTimer;
     private final Timer loggerTimer = new Timer();
     private final Logger logger = new Logger();
     private final JsonLoader jsonLoader = new JsonLoader(logger);
@@ -102,6 +102,7 @@ public class Controller {
      * @param framesPerSecond int
      */
     public void repaintTimer(int framesPerSecond) {
+        repaintTimer = new Timer();
         if (framesPerSecond <= 0) {
             logger.dumpError("Started simulation with 0 frames per second.");
             framesPerSecond = 1;
@@ -274,6 +275,7 @@ public class Controller {
             jsonLoader.reload();
             arena = jsonLoader.reloadArena();
             view.getSimView().setArena(arena);
+            repaintTimer.cancel();
             repaintTimer(jsonLoader.loadFps());
             init();
         });
