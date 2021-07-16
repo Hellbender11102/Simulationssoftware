@@ -273,6 +273,7 @@ public class Controller {
             arena.clearEntityList();
             jsonLoader.reload();
             arena = jsonLoader.reloadArena();
+            view.getSimView().setArena(arena);
             repaintTimer(jsonLoader.loadFps());
             init();
         });

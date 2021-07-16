@@ -72,7 +72,6 @@ class JsonLoader {
             arena = Arena.overWriteInstance((int) (long) arenaObj.get("width"), (int) (long) arenaObj.get("height"), (boolean) arenaObj.get("torus"));
         } else {
             error = "Could not read arena from variables.json.";
-
             errorLogger.dumpError(error);
         }
         return arena;
