@@ -193,7 +193,7 @@ public class Controller {
                         view.getSimView().toggleDrawTypeInColor();
                         break;
                     case KeyEvent.VK_L:
-                        view.getSimView().toggleDrawInfosLeft();
+                        view.getSimView().toggleDrawInfosRight();
                         break;
                     case KeyEvent.VK_K:
                         view.getSimView().toggleDrawCenter();

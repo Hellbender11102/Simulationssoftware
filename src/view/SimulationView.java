@@ -25,7 +25,7 @@ public class SimulationView extends JPanel {
     private boolean drawRobotRotation = false;
     private boolean drawInClassColor = false;
     private boolean drawCenter = false;
-    private boolean infosLeft = false;
+    private boolean infosRight = false;
     private boolean drawRobotCone = true;
     private boolean drawRobotSignal = true;
     private int fontSize = 10;
@@ -92,8 +92,8 @@ public class SimulationView extends JPanel {
             int x = convertZoom(arena.getWidth() - offsetX + fontSize) + 35, y = -convertZoom(offsetY) - fontSize * 5, n = 0;
             for (RobotInterface robot : arena.getRobots()) {
                 drawRobot(robot, g2d);
-                if (!infosLeft) {
-                    x = convertZoom(robot.getPose().getX() - offsetX - robot.getRadius());
+                if (!infosRight) {
+                    x = convertZoom(robot.getPose().getX() - offsetX);
                     y = convertZoom(arena.getHeight() - (robot.getPose().getY() + offsetY) + robot.getRadius());
                 } else {
                     y += fontSize * 5;
@@ -211,7 +211,7 @@ public class SimulationView extends JPanel {
 
     private void drawInfo(Graphics g2d, RobotInterface robot, int x, int y) {
         g2d.setFont(new Font("TimesRoman", Font.PLAIN, fontSize));
-        if (infosLeft && (drawRobotCoordinates || drawRobotEngines || drawRobotRotation)) {
+        if (infosRight && (drawRobotCoordinates || drawRobotEngines || drawRobotRotation)) {
             g2d.setColor(robot.getColor());
             g2d.fillOval(x, y, fontSize, fontSize);
             if (drawInClassColor) {
@@ -300,8 +300,8 @@ public class SimulationView extends JPanel {
         drawInClassColor = !drawInClassColor;
     }
 
-    public void toggleDrawInfosLeft() {
-        infosLeft = !infosLeft;
+    public void toggleDrawInfosRight() {
+        infosRight = !infosRight;
     }
 
     public void toggleDrawCenter() {

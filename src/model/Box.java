@@ -17,7 +17,7 @@ public class Box extends BasePhysicalEntity {
 
     @Override
     public Color getClassColor() {
-        return new Color(50, 32, 28);
+        return new Color(100, 64, 56);
     }
 
     @Override

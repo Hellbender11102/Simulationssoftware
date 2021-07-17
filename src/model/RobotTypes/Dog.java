@@ -15,7 +15,7 @@ public class Dog extends BaseRobot {
 
     @Override
     public void behavior() {
-       driveToPosition(new Position(50,50));
+       //driveToPosition(new Position(50,50));
     }
 
     @Override

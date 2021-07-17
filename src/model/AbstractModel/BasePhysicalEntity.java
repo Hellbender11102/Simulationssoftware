@@ -135,8 +135,6 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
         if (arena.isTorus && position.getAngleToPosition(positionPe) > distance) { //TODO
             position = arena.getClosestPositionInTorus(pose, physicalEntity.getPose());
             positionPe = arena.getClosestPositionInTorus(physicalEntity.getPose(), pose);
-            System.out.println(position + " pose");
-            System.out.println(positionPe + " entity");
         }
 
         double u1Angle = position.getAngleToPosition(positionPe);
