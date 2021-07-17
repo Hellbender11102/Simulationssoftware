@@ -1,7 +1,9 @@
 package model.AbstractModel;
 
 import model.*;
+import model.RobotTypes.BaseRobot;
 
+import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -118,9 +120,23 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
      */
     synchronized public void collision(PhysicalEntity physicalEntity) {
         Position position = pose, positionPe = physicalEntity.getPose();
+/*
+        Position closest = getClosestPositionInEntity(positionPe),
+                closestPe = physicalEntity.getClosestPositionInEntity(position);
         if (arena.isTorus) {
-            position = arena.getClosestPositionInTorus(physicalEntity.getPose(), pose);
-            positionPe = arena.getClosestPositionInTorus(pose, physicalEntity.getPose());
+            closest = getClosestPositionInEntity(positionPe);
+            closestPe = physicalEntity.getClosestPositionInEntity(position);
+        }
+        //calculate the minimal distance for a collision
+        */
+        double distance = position.getEuclideanDistance(getClosestPositionInEntity(positionPe)) +
+                positionPe.getEuclideanDistance(physicalEntity.getClosestPositionInEntity(position)) - position.getEuclideanDistance(positionPe);
+
+        if (arena.isTorus && position.getAngleToPosition(positionPe) > distance) { //TODO
+            position = arena.getClosestPositionInTorus(pose, physicalEntity.getPose());
+            positionPe = arena.getClosestPositionInTorus(physicalEntity.getPose(), pose);
+            System.out.println(position + " pose");
+            System.out.println(positionPe + " entity");
         }
 
         double u1Angle = position.getAngleToPosition(positionPe);
@@ -130,7 +146,7 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
 
         double m1 = getWeight(), m2 = physicalEntity.getWeight();
         double v1 = moving1.getLength(), v2 = moving2.getLength();
-        if(gettingDifferentAngleToSquares) {
+        if (gettingDifferentAngleToSquares) {
             if (Wall.class.isAssignableFrom(physicalEntity.getClass()) || Box.class.isAssignableFrom(physicalEntity.getClass())) {
                 u1Angle = position.getAngleToPosition(physicalEntity.getClosestPositionInEntity(position));
                 u2Angle = physicalEntity.getClosestPositionInEntity(position).getAngleToPosition(position);
@@ -155,9 +171,6 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
         if (position.getEuclideanDistance(physicalEntity.getPose()) - (resultingPe.getLength() + resulting.getLength()) <
                 position.getEuclideanDistance(getClosestPositionInEntity(positionPe)) +
                         positionPe.getEuclideanDistance(physicalEntity.getClosestPositionInEntity(position))) {
-
-            double distance = position.getEuclideanDistance(getClosestPositionInEntity(positionPe)) +
-                    positionPe.getEuclideanDistance(physicalEntity.getClosestPositionInEntity(position)) - position.getEuclideanDistance(positionPe);
             if (isMovable() && physicalEntity.isMovable()) {
                 pose.addToPosition(Vector2D.creatCartesian(distance / 2, u2Angle));
                 physicalEntity.getPose().addToPosition(Vector2D.creatCartesian(distance / 2, u1Angle));
@@ -174,10 +187,11 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
 
     /**
      * Calculates the x value for an elastic collision
-     * @param v1 double
-     * @param v2 double
-     * @param m1 double
-     * @param m2 double
+     *
+     * @param v1           double
+     * @param v2           double
+     * @param m1           double
+     * @param m2           double
      * @param movingAngle1 double
      * @param movingAngle2 double
      * @param contactAngle double
@@ -188,12 +202,14 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
                 (m1 + m2))
                 * Math.cos(contactAngle) + v1 * Math.sin(movingAngle1 - contactAngle) * Math.cos(contactAngle + (Math.PI / 2));
     }
+
     /**
      * Calculates the y value for an elastic collision
-     * @param v1 double
-     * @param v2 double
-     * @param m1 double
-     * @param m2 double
+     *
+     * @param v1           double
+     * @param v2           double
+     * @param m1           double
+     * @param m2           double
      * @param movingAngle1 double
      * @param movingAngle2 double
      * @param contactAngle double

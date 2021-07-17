@@ -84,8 +84,8 @@ public class SimulationView extends JPanel {
             for (RobotInterface robot : classList) {
                 Position position = robot.centerOfGroupWithClasses(List.of(robot.getClass()));
                 g2d.setColor(robot.getClassColor());
-                g2d.drawOval(convertZoom(position.getX() - offsetX),
-                        convertZoom(arena.getHeight() - position.getY() - offsetY)
+                g2d.drawOval(convertZoom(position.getX() - offsetX- convertZoom(1)),
+                        convertZoom(arena.getHeight() - position.getY() - offsetY- convertZoom(1))
                         , convertZoom(2), convertZoom(2));
             }
         if (arena.getRobots() != null) {

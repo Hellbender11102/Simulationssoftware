@@ -206,14 +206,14 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
 
     /**
      * Rotates to Position
-     * While sets turning engine to speed and other engine to 0
-     * Facing correct sets both to speed
+     * If not correctly facing angle sets turning engine to speed and other engine to 0
+     * Facing correct angle sets both to speed
      *
      * @param position          Position
      * @param precisionInDegree double
      * @param speed             double
      */
-    public void driveToPosition(Position position, double precisionInDegree, double speed) {
+    public void driveToPosition(Position position, double speed, double precisionInDegree) {
         if (arena.isTorus) position = arena.getClosestPositionInTorus(pose, position);
         if (rotateToAngle(pose.getAngleToPosition(position), Math.toRadians(precisionInDegree), speed, 0)) {
             setEngines(speed, speed);
@@ -222,28 +222,27 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
 
     /**
      * Drives to an position with given calculates the best engine settings
+     *
      * @param position Position
      */
     public void driveToPosition(Position position) {
+        driveToPosition(position, maxSpeed);
+    }
+
+    /**
+     * Drives to an position with given calculates the best engine settings
+     * @param position Position
+     */
+    public void driveToPosition(Position position, double maxSpeed) {
+        maxSpeed = maxSpeed <= this.maxSpeed ? maxSpeed : this.maxSpeed;
         double speed = Math.min(maxSpeed, maxSpeed - position.getEuclideanDistance(position));
         double angle = pose.getAngleToPosition(position);
-        double rotationSpeed =  diff(angle, pose.getRotation());
+        double rotationSpeed = pose.getAngleDiff(angle);
         setEngineR(speed + distanceE * rotationSpeed);
         setEngineL(speed + (-distanceE * rotationSpeed));
     }
 
-    /**
-     * Returns the angle different with [-PI,PI]
-     * @param angle1 double
-     * @param angle2 double
-     * @return double
-     */
-    double diff(double angle1, double angle2) {
-        double retVal = angle1 - angle2;
-        retVal = retVal >= Math.PI ? retVal - 2 * Math.PI : retVal;
-        retVal = retVal < -Math.PI ? retVal + 2 * Math.PI : retVal;
-        return retVal;
-    }
+
 
     /**
      * Rotates to correct angleInRadian +- (precisionInRadian / 2)
@@ -261,10 +260,10 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     boolean rotateToAngle(double angleInRadian, double precisionInRadian, double rotatingEngine, double secondEngine) {
         if (rotatingEngine <= secondEngine) secondEngine = rotatingEngine * 0.9;
         double angleDiff = pose.getAngleDiff(angleInRadian);
-        if (angleDiff <= precisionInRadian / 2 || 2 * Math.PI - angleDiff <= precisionInRadian / 2) {
+        if (angleDiff <= precisionInRadian / 2 && angleDiff >= -precisionInRadian / 2) {
             setEngines(rotatingEngine, rotatingEngine);
             return true;
-        } else if (angleDiff > Math.PI) {
+        } else if (angleDiff > 0) {
             setEngines(secondEngine, rotatingEngine);
         } else {
             setEngines(rotatingEngine, secondEngine);
@@ -278,8 +277,8 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * @param robot RobotInterface
      * @param speed double
      */
-    public void follow(RobotInterface robot, double precisionInDegree, double speed) {
-        driveToPosition(robot.getPose(), precisionInDegree, speed);
+    public void follow(RobotInterface robot, double speed) {
+        driveToPosition(robot.getPose(), speed);
     }
 
     /**
@@ -322,9 +321,9 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         }
         dummyPose.setRotation(dummyPose.getRotation());
         if (isEnoughDistance) {
-            driveToPosition(center, precisionInDegree, speed);
+            driveToPosition(center, speed);
         } else {
-            driveToPosition(dummyPose, precisionInDegree, speed);
+            driveToPosition(dummyPose,speed);
         }
     }
 

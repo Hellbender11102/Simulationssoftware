@@ -82,15 +82,16 @@ public class Pose extends Position {
     }
 
     /**
-     * Calculates the difference between current orientation and angleInRadians
-     * Returns difference between angles[0,2*PI]
+     * Returns the angle different with [-PI,PI]
      *
      * @param angleInRadians double
      * @return double
      */
     public double getAngleDiff(double angleInRadians) {
-        double angleDiff = (getRotation() - angleInRadians) % (2 * Math.PI);
-        return angleDiff < 0 ? angleDiff + (2 * Math.PI) : angleDiff;
+        double retVal = angleInRadians - rotation;
+        retVal = retVal >= Math.PI ? retVal - 2 * Math.PI : retVal;
+        retVal = retVal < -Math.PI ? retVal + 2 * Math.PI : retVal;
+        return retVal;
     }
 
     @Override

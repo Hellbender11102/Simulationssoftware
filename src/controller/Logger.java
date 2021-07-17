@@ -99,7 +99,8 @@ public class Logger {
             if (!append) headWritten = false;
             if (!headWritten) {
                 for (String key : logMap.keySet()) {
-                    stringBuilder.append(key).append(",");
+                    stringBuilder.append(key.replace(",",".").replace("\n",""));
+                    stringBuilder.append(",");
                 }
                 headWritten = true;
                 stringBuilder.append('\n');
@@ -108,7 +109,7 @@ public class Logger {
             while (i < longestListSize) {
                 for (String key : logMap.keySet()) {
                     if (i < logMap.get(key).size())
-                        stringBuilder.append(logMap.get(key).get(i)).append(",");
+                        stringBuilder.append(logMap.get(key).get(i).replace(",",".").replace("\n","")).append(",");
                     else stringBuilder.append(",");
                 }
                 stringBuilder.append("\n");
