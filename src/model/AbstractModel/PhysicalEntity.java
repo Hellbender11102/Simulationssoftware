@@ -7,6 +7,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * PhysicalEntity interface declares all necessary functions
+ */
 public interface PhysicalEntity extends Entity, Runnable {
 
     Position centerOfGroupWithClasses(List<Class> classList);

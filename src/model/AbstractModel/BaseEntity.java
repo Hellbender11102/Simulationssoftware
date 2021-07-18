@@ -36,8 +36,6 @@ abstract public class BaseEntity extends Thread implements Entity {
     }
 
 
-    // Ring memory logic
-
     /**
      * Reads the poseRingMemory and orders it correctly in a list
      * from list entry zero current position
@@ -188,6 +186,9 @@ abstract public class BaseEntity extends Thread implements Entity {
         return random;
     }
 
+    /**
+     * Toggles the isPaused boolean
+     */
     public void togglePause() {
         isPaused = !isPaused;
     }
@@ -196,6 +197,11 @@ abstract public class BaseEntity extends Thread implements Entity {
         return isPaused;
     }
 
+    /**
+     * Checks if this equals given entity
+     * @param entity Entity
+     * @return boolean
+     */
     public boolean equals(Entity entity) {
         return pose.equals(entity.getPose()) && color == entity.getColor()
                 && entity.hasPhysicalBody() == hasPhysicalBody() && entity.getClass().equals(getClass());

@@ -607,11 +607,20 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         setEngineL(leftEngine);
     }
 
+    /**
+     * Returns the signal flag
+     * @return boolean
+     */
     @Override
     public boolean getSignal() {
         return signal;
     }
 
+    /**
+     * Returns the closest position from the current robot to the given Position
+     * @param position Position
+     * @return Position
+     */
     @Override
     public Position getClosestPositionInEntity(Position position) {
         if (pose.getEuclideanDistance(position) < getRadius()) return position;
@@ -638,6 +647,10 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         return engineR;
     }
 
+    /**
+     * Returns the area of the Robot
+     * @return double
+     */
     @Override
     public double getArea() {
         return getAreaCircle();

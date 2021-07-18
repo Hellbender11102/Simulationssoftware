@@ -18,6 +18,9 @@ public class Controller {
     private final Logger logger = new Logger();
     private final JsonLoader jsonLoader = new JsonLoader(logger);
 
+    /**
+     * Constructor which loads and start all needed threads
+     */
     public Controller() {
         arena = jsonLoader.initArena();
         if (jsonLoader.loadDisplayView()) {

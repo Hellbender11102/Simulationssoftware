@@ -44,7 +44,7 @@ public class View extends JFrame {
         setTitle("Vibrobot Simulation");
         JMenuBar bar = new JMenuBar();
         JMenu menu = new JMenu("Optionen");
-        URL iconURL =  getClass().getClassLoader().getResource("icon.PNG");
+        URL iconURL = getClass().getClassLoader().getResource("icon.PNG");
         if (null != iconURL) {
             ImageIcon icon = new ImageIcon(iconURL);
             setIconImage(icon.getImage());
@@ -68,24 +68,29 @@ public class View extends JFrame {
         setVisible(true);
     }
 
+
     public SimulationView getSimView() {
         return simView;
     }
 
+    /**
+     * Sets the logic for the dropdown menu
+     */
     private void setMenuLogic() {
+        //displays help
         ActionListener helpAction = e -> {
             if (help == null)
                 help = new TextView("Hilfe", readmePath, 0, false);
             else help.setVisible(true);
         };
         itemHelp.addActionListener(helpAction);
-
+        //display variables
         ActionListener settingsAction = e -> {
             new TextView(variablesPath, variablesPath,
-                        (int) (screenSize.width * 0.75), true);
+                    (int) (screenSize.width * 0.75), true);
         };
         itemSettingsEditor.addActionListener(settingsAction);
-
+        //display settings
         ActionListener variablesAction = e -> {
             if (settings == null)
                 settings = new TextView("settings.json", settingsPath,
@@ -93,7 +98,7 @@ public class View extends JFrame {
             else settings.setVisible(true);
         };
         itemVariablesEditor.addActionListener(variablesAction);
-
+        //display log
         ActionListener logAction = e -> {
             if (log == null)
                 log = new TextView("log.csv", logPath,
@@ -103,33 +108,51 @@ public class View extends JFrame {
         itemLogEditor.addActionListener(logAction);
     }
 
-    //Jmenu getter
+    /**
+     * Returns the JMenuItem for the restart
+     * @return JMenuItem
+     */
     public JMenuItem getRestart() {
         return itemRestart;
     }
-
+    /**
+     * Returns the JMenuItem for the logging
+     * @return JMenuItem
+     */
     public JMenuItem getLog() {
         return itemLog;
     }
-
+    /**
+     * Returns the JMenuItem for the full restart
+     * @return JMenuItem
+     */
     public JMenuItem getFullRestart() {
         return itemFullRestart;
     }
-
+    /**
+     * Returns the JMenuItem for the loading variables
+     * @return JMenuItem
+     */
     public JMenuItem getItemLoadVariables() {
         return itemLoadVariables;
     }
-
+    /**
+     * Returns the JMenuItem for simulation stop
+     * @return JMenuItem
+     */
     public JMenuItem getItemStartStop() {
         return itemStartStop;
     }
-
+    /**
+     * Opens an file chooser and gets the selected path
+     * @return String
+     */
     public String getPathOfSelectedFile() {
         fileChooserUI.setFileFilter(filter);
         int returnVal = fileChooserUI.showOpenDialog(null);
 
         if (returnVal == JFileChooser.APPROVE_OPTION && fileChooserUI.getSelectedFile() != null && fileChooserUI.getSelectedFile().exists())
-             variablesPath = fileChooserUI.getSelectedFile().getAbsolutePath();
+            variablesPath = fileChooserUI.getSelectedFile().getAbsolutePath();
         return variablesPath;
     }
 

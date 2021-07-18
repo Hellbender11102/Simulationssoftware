@@ -29,9 +29,14 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
      * Best is around .35
      */
     protected final double frictionInPercent = 0.1;
+    /**
+     * Toggles a different angle at which objects of type wall and box collide
+     */
     protected final boolean gettingDifferentAngleToSquares = true;
-
     protected final boolean simulateWithView;
+    /**
+     * The moving vector
+     */
     protected AtomicReference<Vector2D> movingVec = new AtomicReference<>();
 
 
@@ -84,6 +89,10 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
         }
     }
 
+    /**
+     * Slows the current velocity by frictionInPercent
+     * Current velocity * 1 - frictionInPercent
+     */
     @Override
     public void alterMovingVector() {
         movingVec.set(movingVec.get().multiplication(1. - frictionInPercent));
@@ -112,7 +121,6 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
         return returnValue;
     }
 
-
     /**
      * Calculates the collision with an elastic shock
      *
@@ -120,15 +128,17 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
      */
     synchronized public void collision(PhysicalEntity physicalEntity) {
         Position position = pose, positionPe = physicalEntity.getPose();
-/*
+        /* TODO :D
         Position closest = getClosestPositionInEntity(positionPe),
                 closestPe = physicalEntity.getClosestPositionInEntity(position);
         if (arena.isTorus) {
             closest = getClosestPositionInEntity(positionPe);
             closestPe = physicalEntity.getClosestPositionInEntity(position);
-        }
-        //calculate the minimal distance for a collision
+}
         */
+
+
+        //calculate the minimal distance for a collision
         double distance = position.getEuclideanDistance(getClosestPositionInEntity(positionPe)) +
                 positionPe.getEuclideanDistance(physicalEntity.getClosestPositionInEntity(position)) - position.getEuclideanDistance(positionPe);
 
@@ -185,7 +195,12 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
 
     /**
      * Calculates the x value for an elastic collision
-     *
+     * v1 vector magnitude of object one
+     * v2 vector magnitude of object two
+     * m1 mass of object one
+     * m2 mass of object two
+     * movingAngle1 angle of current moving direction for object one
+     * movingAngle2 angle of current moving direction for object two
      * @param v1           double
      * @param v2           double
      * @param m1           double
@@ -203,7 +218,12 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
 
     /**
      * Calculates the y value for an elastic collision
-     *
+     * v1 vector magnitude of object one
+     * v2 vector magnitude of object two
+     * m1 mass of object one
+     * m2 mass of object two
+     * movingAngle1 angle of current moving direction for object one
+     * movingAngle2 angle of current moving direction for object two
      * @param v1           double
      * @param v2           double
      * @param m1           double

@@ -45,7 +45,6 @@ class JsonLoader {
 
     /**
      * Loads the arena
-     *
      * @return Arena
      */
     Arena initArena() {
@@ -63,7 +62,6 @@ class JsonLoader {
 
     /**
      * Reloads the arena and overwrites its singleton instance
-     *
      * @return Arena
      */
     Arena reloadArena() {
@@ -77,6 +75,11 @@ class JsonLoader {
         return arena;
     }
 
+    /**
+     * Reads the seed from the current variables json object
+     * Returns a random with given seed else random without seed
+     * @return Random
+     */
     Random loadRandom() {
         if (variables != null && variables.containsKey("seed"))
             return new Random((long) variables.get("seed"));
@@ -86,6 +89,10 @@ class JsonLoader {
         }
     }
 
+    /**
+     *  Returns the max speed value of the current variables json object
+     * @return double
+     */
     double loadMaxSpeed() {
         if (variables != null && variables.containsKey("maxSpeed"))
             return (double) variables.get("maxSpeed");
@@ -96,6 +103,10 @@ class JsonLoader {
         }
     }
 
+    /**
+     * Returns the min speed value of the current variables json object
+     * @return double
+     */
     double loadMinSpeed() {
         if (variables != null && variables.containsKey("minSpeed"))
             return (double) variables.get("minSpeed");
@@ -107,17 +118,24 @@ class JsonLoader {
         }
     }
 
+    /**
+     * Loads the fps value of the current settings json object
+     * @return int
+     */
     int loadFps() {
         if (settings != null && settings.containsKey("fps"))
             return (int) (long) settings.get("fps");
         else {
             error = "Could not read fps from settings.json.";
-
             errorLogger.dumpError(error);
             return 10;
         }
     }
 
+    /**
+     * Returns the simulate-seconds value of the current settings json object
+     * @return int
+     */
     int loadSimulatedTime() {
         if (settings != null && settings.containsKey("simulate-seconds")) {
             return (int) (long) settings.get("simulate-seconds");
@@ -129,6 +147,10 @@ class JsonLoader {
         }
     }
 
+    /**
+     * Returns the display-view value of the current settings json object
+     * @return boolean
+     */
     boolean loadDisplayView() {
         if (settings != null && settings.containsKey("display-view")) {
             displayView = (boolean) settings.get("display-view");
@@ -141,6 +163,10 @@ class JsonLoader {
         }
     }
 
+    /**
+     * Returns the current ticsPerSimulatedSecond value of the variables json object
+     * @return int
+     */
     int loadTicsPerSimulatedSecond() {
         if (variables != null && variables.containsKey("ticsPerSimulatedSecond"))
             return (int) (long) variables.get("ticsPerSimulatedSecond");
@@ -153,9 +179,8 @@ class JsonLoader {
     }
 
     /**
-     * Loads all boxes from the variables.json
+     * Loads all boxes from the variables json object
      * Returns a list of all boxes
-     *
      * @param random Random
      * @return List<Entity>
      */

@@ -44,6 +44,7 @@ public class SimulationView extends JPanel {
     public void paint(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setStroke(new BasicStroke(2));
+        //draw the outer bounds of the arena
         if (arena.isTorus) {
             g2d.setColor(Color.BLUE);
             g2d.drawLine(convertZoom(arena.getWidth() - offsetX), convertZoom(arena.getHeight() - offsetY), convertZoom(-offsetX), convertZoom(arena.getHeight() - offsetY));
@@ -80,6 +81,7 @@ public class SimulationView extends JPanel {
         if (arena.getPhysicalEntitiesWithoutRobots() != null) {
             drawSquares(g2d);
         }
+        //draws the center of each roboter class
         if (drawCenter)
             for (RobotInterface robot : classList) {
                 Position position = robot.centerOfGroupWithClasses(List.of(robot.getClass()));
@@ -88,6 +90,7 @@ public class SimulationView extends JPanel {
                         convertZoom(arena.getHeight() - position.getY() - offsetY- convertZoom(1))
                         , convertZoom(2), convertZoom(2));
             }
+        //draws robots and the infos
         if (arena.getRobots() != null) {
             int x = convertZoom(arena.getWidth() - offsetX + fontSize) + 35, y = -convertZoom(offsetY) - fontSize * 5, n = 0;
             for (RobotInterface robot : arena.getRobots()) {
@@ -202,6 +205,12 @@ public class SimulationView extends JPanel {
         }
     }
 
+    /**
+     * Draws a line between two positions
+     * @param position1 Position
+     * @param position2 Position
+     * @param g Graphics
+     */
     private void drawLine(Position position1, Position position2, Graphics g) {
         g.drawLine(convertZoom(position1.getX() - offsetX),
                 convertZoom(arena.getHeight() - position1.getY() - offsetY),
@@ -209,6 +218,13 @@ public class SimulationView extends JPanel {
                 convertZoom(arena.getHeight() - position2.getY() - offsetY));
     }
 
+    /**
+     * Draws the infos for the given robot
+     * @param g2d Graphics
+     * @param robot RobotInterface
+     * @param x int
+     * @param y int
+     */
     private void drawInfo(Graphics g2d, RobotInterface robot, int x, int y) {
         g2d.setFont(new Font("TimesRoman", Font.PLAIN, fontSize));
         if (infosRight && (drawRobotCoordinates || drawRobotEngines || drawRobotRotation)) {
@@ -251,27 +267,44 @@ public class SimulationView extends JPanel {
     }
 
 
-    //zoom
+    /**
+     * Zooms in and repaints
+     */
     public void incZoom() {
         zoomFactor *= 1.1;
         repaint();
     }
-
+    /**
+     * Zooms out and repaints
+     */
     public void decZoom() {
         zoomFactor /= 1.1;
         repaint();
     }
 
+    /**
+     * Returns the zoomed value
+     * @param number int
+     * @return int
+     */
     private int convertZoom(int number) {
         return (int) Math.round(number * zoomFactor);
     }
-
+    /**
+     * Returns the zoomed value
+     * @param number double
+     * @return int
+     */
     private int convertZoom(double number) {
         return (int) Math.round(number * zoomFactor);
     }
 
     //toggle functions for visuals
 
+    /**
+     * Increase the fond size
+     * @param addend int
+     */
     public void incFontSize(int addend) {
         fontSize += addend + fontSize < 10 ? 0 : addend + fontSize > 30 ? 0 : addend;
     }

@@ -212,6 +212,10 @@ public class Arena {
         return singleton.width;
     }
 
+    /**
+     * Adds an entity to the entity list
+     * @param entity Entity
+     */
     public void addEntity(Entity entity) {
         if (!singleton.entityList.contains(entity)) {
             singleton.entityList.add(entity);

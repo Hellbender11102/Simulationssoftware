@@ -55,6 +55,11 @@ public class TextView extends JFrame {
         setVisible(true);
     }
 
+    /**
+     * Reads a file from the given file path
+     * @param filePath String
+     * @return String
+     */
     private String readFile(String filePath) {
         try {
             File file = new File(filePath);
@@ -90,6 +95,10 @@ public class TextView extends JFrame {
         }
     }
 
+    /**
+     * Adds event listener to item save, item save to and item reload
+     * @param filePath String
+     */
     private void addEventLsitener(String filePath){
 
         itemSave.addActionListener(listener -> saveFile(filePath));
