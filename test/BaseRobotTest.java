@@ -114,7 +114,7 @@ public class BaseRobotTest {
             }
             if (0 > max)
                 speedAtStart = -speedAtStart;
-            speedAtStart+= rounds * baseRobot.getFriction();
+            speedAtStart += rounds * baseRobot.getFriction();
             Assert.assertEquals(baseRobot.getPose().getX(), position.getX(), speedAtStart);
             Assert.assertEquals(baseRobot.getPose().getY(), position.getY(), speedAtStart);
         }
@@ -157,6 +157,28 @@ public class BaseRobotTest {
     }
 
     /**
+     * Tests if the distance between the destination and the robot gets less
+     * if getTrajectoryMagnitude is negative it will test if the robot increased its distance
+     */
+    @Test
+    public void testDriveToPosition2() {
+        double max = Math.max(baseRobot.getEngineL(), baseRobot.getEngineR());
+        if (max != 0) {
+            Position position = new Position(500, 500);
+            double speed = baseRobot.getTrajectoryMagnitude();
+            double distance = position.getEuclideanDistance(baseRobot.getPose());
+            for (int i = 0; i < rounds / speed; i++) {
+                baseRobot.driveToPosition(position);
+                setNext();
+            }
+            if (max > 0)
+                Assert.assertTrue(distance > position.getEuclideanDistance(baseRobot.getPose()));
+            else
+                Assert.assertTrue(distance <= position.getEuclideanDistance(baseRobot.getPose()));
+        }
+    }
+
+    /**
      * Tests if the move random will change the position
      */
     @Test
@@ -166,7 +188,6 @@ public class BaseRobotTest {
         if (speed != 0) {
             if (rounds / speed > 0) {
                 for (int i = 0; i < rounds / speed; i++) {
-
                     setNext();
                 }
             } else {
@@ -235,6 +256,28 @@ public class BaseRobotTest {
         } else if (engineL >= max)
             Assert.assertEquals(baseRobot.getEngineR(), max, 0.0);
         else Assert.assertEquals(baseRobot.getEngineR(), engineL, 0.0);
+    }
+
+    @Test
+    public void testCmPerSecond() {
+        Assert.assertEquals(baseRobot.cmPerSecond(), baseRobot.getMovingVec().get().getLength() * 10, 0);
+    }
+
+    @Test
+    public void testTurn() {
+        double resultingDegree = baseRobot.getPose().getRotation() + Math.toRadians(10);
+        resultingDegree %= (2 * Math.PI);
+        //decreasing speed because rotation speed is to high
+        baseRobot.setEngines(baseRobot.getEngineL() * 0.01, baseRobot.getEngineL() * 0.001);
+        if (baseRobot.getEngineL() == baseRobot.getEngineR()) {
+            baseRobot.setEngines(0.01, .001);
+        }
+        int i = 0;
+        while (!baseRobot.turn(10)) {
+            Assert.assertNotEquals(baseRobot.getPose().getRotation(), resultingDegree);
+            baseRobot.getPose().incRotation(baseRobot.angularVelocity());
+        }
+        Assert.assertEquals(baseRobot.getPose().getRotation(), resultingDegree, Math.toRadians(1));
     }
 
 }

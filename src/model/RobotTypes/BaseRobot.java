@@ -21,7 +21,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     /**
      * in centimeters
      */
-    private final double maxSpeed, minSpeed;
+    protected final double maxSpeed, minSpeed;
     /**
      * distance between the engines
      */
@@ -130,7 +130,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     public double angularVelocity() {
         return (((engineR * (1 - powerTransmission) + engineL * powerTransmission)
                 - (engineL * (1 - powerTransmission) + engineR * powerTransmission))
-                / distanceE) / ticsPerSimulatedSecond;
+                / distanceE * 2) / ticsPerSimulatedSecond;
     }
 
     /**
@@ -231,17 +231,17 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
 
     /**
      * Drives to an position with given calculates the best engine settings
+     *
      * @param position Position
      */
     public void driveToPosition(Position position, double maxSpeed) {
-        maxSpeed = maxSpeed <= this.maxSpeed ? maxSpeed : this.maxSpeed;
+        maxSpeed = Math.min(maxSpeed, this.maxSpeed);
         double speed = Math.min(maxSpeed, maxSpeed - position.getEuclideanDistance(position));
         double angle = pose.getAngleToPosition(position);
         double rotationSpeed = pose.getAngleDiff(angle);
         setEngineR(speed + distanceE * rotationSpeed);
-        setEngineL(speed + (-distanceE * rotationSpeed));
+        setEngineL(speed + -distanceE * rotationSpeed);
     }
-
 
 
     /**
@@ -258,7 +258,9 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * @return boolean
      */
     boolean rotateToAngle(double angleInRadian, double precisionInRadian, double rotatingEngine, double secondEngine) {
-        if (rotatingEngine <= secondEngine) secondEngine = rotatingEngine * 0.9;
+        double buffer = Math.max(secondEngine, rotatingEngine);
+        secondEngine = Math.min(secondEngine, rotatingEngine);
+        rotatingEngine = buffer;
         double angleDiff = pose.getAngleDiff(angleInRadian);
         if (angleDiff <= precisionInRadian / 2 && angleDiff >= -precisionInRadian / 2) {
             setEngines(rotatingEngine, rotatingEngine);
@@ -300,9 +302,8 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * @param distanceToKeep    double
      * @param classList         List<Class>
      * @param speed             double
-     * @param precisionInDegree double
      */
-    public void stayGroupedWithRobotType(double distanceToKeep, List<Class> classList, double speed, double precisionInDegree) {
+    public void stayGroupedWithRobotType(double distanceToKeep, List<Class> classList, double speed) {
         List<RobotInterface> group = robotGroupByClasses(classList);
         Position center = centerOfGroupWithRobots(group);
         Pose dummyPose = new Pose(pose.getX(), pose.getY(), 0);
@@ -323,7 +324,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         if (isEnoughDistance) {
             driveToPosition(center, speed);
         } else {
-            driveToPosition(dummyPose,speed);
+            driveToPosition(dummyPose, speed);
         }
     }
 
@@ -350,7 +351,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * @param speed                  double
      */
     public void stayGroupedWithAllRobots(double distanceToClosestRobot, double speed) {
-        stayGroupedWithRobotType(distanceToClosestRobot, List.of(RobotInterface.class), speed, 2);
+        stayGroupedWithRobotType(distanceToClosestRobot, List.of(RobotInterface.class), speed);
     }
 
     /**
@@ -369,18 +370,32 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * @return double
      */
     public double distanceToClosestEntityOfClass(List<Class> classList) {
+        return  pose.getEuclideanDistance(closestEntityOfClass(classList).getPose());
+    }
+
+    /**
+     * Returns the closest Entity of
+     *
+     * @param classList List<Class>
+     * @return double
+     */
+    public Entity closestEntityOfClass(List<Class> classList) {
         LinkedList<Entity> group = entityGroupByClasses(classList);
-        double closest = -1;
+        double distance;
+        Entity closestEntity = null;
         for (Entity entity : group) {
-            double distance;
             if (arena.isTorus) distance = arena.getEuclideanDistanceToClosestPosition(pose, entity.getPose());
             else distance = pose.getEuclideanDistance(entity.getPose());
             if (!equals(entity)) {
-                if (closest == -1) closest = distance;
-                else closest = Math.min(closest, distance);
+                if (closestEntity == null) {
+                    closestEntity = entity;
+                }
+                else if(pose.getEuclideanDistance(closestEntity.getPose()) > distance ){
+                    closestEntity = entity;
+                }
             }
         }
-        return closest;
+        return closestEntity;
     }
 
     /**
@@ -438,7 +453,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * @param degree double
      * @return boolean
      */
-    boolean turn(double degree) {
+    public boolean turn(double degree) {
         return turn(degree, engineR, engineL, 1);
     }
 
@@ -478,7 +493,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * @param speed      double
      * @return boolean
      */
-    boolean move(double pathLength, double speed) {
+    public boolean move(double pathLength, double speed) {
         if (straightMoves == -2) {
             resetFlags();
             return true;
@@ -494,7 +509,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * @param pathLength double
      * @param speed      double
      */
-    void moveAndStop(double pathLength, double speed) {
+    public void moveAndStop(double pathLength, double speed) {
         if (!isInTurn) {
             if (straightMoves == -1 && straightMovesRest == 0) {
                 setEngines(speed, speed);
@@ -518,7 +533,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     /**
      * resets all intern flags
      */
-    void resetFlags() {
+    public void resetFlags() {
         straightMoves = -1;
         straightMovesRest = 0;
         isInTurn = false;
@@ -609,6 +624,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
 
     /**
      * Returns the signal flag
+     *
      * @return boolean
      */
     @Override
@@ -618,6 +634,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
 
     /**
      * Returns the closest position from the current robot to the given Position
+     *
      * @param position Position
      * @return Position
      */
@@ -649,6 +666,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
 
     /**
      * Returns the area of the Robot
+     *
      * @return double
      */
     @Override

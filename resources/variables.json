@@ -5,11 +5,145 @@
   "minSpeed": 0.0,
   "arena": {
     "torus": true,
-    "width":20,
-    "height": 20
+    "width": 100,
+    "height": 100
   },
   "robots": [
-   
+    {
+      "type": "sheep",
+      "visionRange": 20.0,
+      "visionAngle": 40.0,
+      "engineR": 1.0,
+      "engineL":1.0,
+      "distance": 4.0,
+      "diameters": 4.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 80.0,
+        "y": 91.0,
+        "rotation": 180.0
+      }
+    },
+    {
+      "type": "sheep",
+      "visionRange": 20.0,
+      "visionAngle": 40.0,
+      "engineR": 1.0,
+      "engineL":1.0,
+      "distance": 4.0,
+      "diameters": 4.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 10.0,
+        "y": 10.0,
+        "rotation": 180.0
+      }
+    },
+    {
+      "type": "sheep",
+      "visionRange": 20.0,
+      "visionAngle": 40.0,
+      "engineR": 1.0,
+      "engineL":1.0,
+      "distance": 4.0,
+      "diameters": 4.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 80.0,
+        "y": 91.0,
+        "rotation": 180.0
+      }
+    },
+    {
+      "type": "sheep",
+      "visionRange": 20.0,
+      "visionAngle": 40.0,
+      "engineR": 1.0,
+      "engineL":1.0,
+      "distance": 4.0,
+      "diameters": 4.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 10.0,
+        "y": 90.0,
+        "rotation": 180.0
+      }
+    },
+    {
+      "type": "sheep",
+      "visionRange": 20.0,
+      "visionAngle": 40.0,
+      "engineR": 1.0,
+      "engineL":1.0,
+      "distance": 4.0,
+      "diameters": 4.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 50.0,
+        "y": 90.0,
+        "rotation": 180.0
+      }
+    },
+    {
+      "type": "sheep",
+      "visionRange": 20.0,
+      "visionAngle": 40.0,
+      "engineR": 1.0,
+      "engineL":1.0,
+      "distance": 4.0,
+      "diameters": 4.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 50.0,
+        "y": 10.0,
+        "rotation": 180.0
+      }
+    },
+    {
+      "type": "sheep",
+      "visionRange": 20.0,
+      "visionAngle": 40.0,
+      "engineR": 1.0,
+      "engineL":1.0,
+      "distance": 4.0,
+      "diameters": 4.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 10.0,
+        "y": 50.0,
+        "rotation": 180.0
+      }
+    },
+    {
+      "type": "sheep",
+      "visionRange": 20.0,
+      "visionAngle": 40.0,
+      "engineR": 1.0,
+      "engineL":1.0,
+      "distance": 4.0,
+      "diameters": 4.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 90.0,
+        "y": 50.0,
+        "rotation": 180.0
+      }
+    },
+    {
+      "type": "dog",
+      "visionRange": 20.0,
+      "visionAngle": 40.0,
+      "engineR": 1.0,
+      "engineL":1.0,
+      "distance": 4.0,
+      "diameters": 4.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 90.0,
+        "y": 10.0,
+        "rotation": 180.0
+      }
+    }
   ],
   "boxes": [
   ],

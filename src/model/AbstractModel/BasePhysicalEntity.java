@@ -291,9 +291,6 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
     public Position centerOfGroupWithEntities(List<Entity> group) {
         Position center = new Position(0, 0);
         for (Entity entity : group) {
-            if (arena.isTorus)
-                center.addToPosition(arena.getClosestPositionInTorus(center, entity.getPose()));
-            else
                 center.addToPosition(entity.getPose());
         }
         center.setX(center.getX() / group.size());
