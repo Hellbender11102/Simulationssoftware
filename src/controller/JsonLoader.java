@@ -377,7 +377,12 @@ class JsonLoader {
             RobotInterface robot;
             // Implement new robot classes
             switch ((String) robotObject.get("type")) {
-
+                case "sheep":
+                    robot = builder.buildSheep();
+                    break;
+                case "dog":
+                    robot = builder.buildDog();
+                    break;
                 case "vision":
                     robot = builder.buildVisionCone();
                     break;
