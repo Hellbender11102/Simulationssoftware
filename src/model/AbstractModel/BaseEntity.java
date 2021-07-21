@@ -69,7 +69,7 @@ abstract public class BaseEntity extends Thread implements Entity {
      * Sets the pose to the next pose saved in the memory
      */
     @Override
-    public void setNextPose() {
+    public void setNextPoseInMemory() {
         List<Pose> positions = getPosesFromMemory();
         if (0 < poseRingMemoryPointer) {
             if (poseRingMemoryPointer < positions.size())

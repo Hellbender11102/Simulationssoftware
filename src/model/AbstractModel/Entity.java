@@ -26,7 +26,7 @@ public interface Entity {
 
     void setPrevPose();
 
-    void setNextPose();
+    void setNextPoseInMemory();
 
     void setToLatestPose();
 

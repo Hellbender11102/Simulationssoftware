@@ -145,7 +145,7 @@ public class Controller {
                     case KeyEvent.VK_N:
                         if (stopped)
                             for (RobotInterface robot : arena.getRobots()) {
-                                robot.setNextPose();
+                                robot.setNextPoseInMemory();
                             }
                         break;
                     case KeyEvent.VK_W:

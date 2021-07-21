@@ -1,20 +1,23 @@
+import controller.Logger;
+import model.*;
 import model.AbstractModel.BaseEntity;
-import model.Area;
-import model.Arena;
-import model.Pose;
-import model.Position;
+import model.AbstractModel.Entity;
+import model.RobotTypes.BaseRobot;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.awt.*;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 
 public class BaseEntityTest {
     private final BaseEntity entity;
+    Arena arena;
 
     public BaseEntityTest() {
         Pose pose = new Pose(0, 0, 0);
-        Arena arena = Arena.getInstance(100, 100, false);
+        arena = Arena.getInstance(100, 100, false);
         entity = new BaseEntity(arena, new Random(), 10, 10, pose) {
             @Override
             public Color getClassColor() {
@@ -57,7 +60,7 @@ public class BaseEntityTest {
             Assert.assertEquals(entity.getPose().getY(), pose.creatPositionByDecreasing(-i, i).getY(), 0);
         }
         for (int i = 999; i > 0; i--) {
-            entity.setNextPose();
+            entity.setNextPoseInMemory();
             Assert.assertEquals(entity.getPose().getX(), pose.creatPositionByDecreasing(-i, i).getX(), 0);
             Assert.assertEquals(entity.getPose().getY(), pose.creatPositionByDecreasing(-i, i).getY(), 0);
         }
@@ -81,6 +84,38 @@ public class BaseEntityTest {
             //is wrong due to rounding errors
             if (!(entity.getPose().getEuclideanDistance(positionCircle) > entity.getPose().getEuclideanDistance(position) - positionCircle.getEuclideanDistance(position) - 0.000000001))
                 Assert.assertTrue(entity.isPositionInEntityCircle(positionCircle));
+        }
+    }
+    @Test
+    public void test() {
+        List<Entity> entities = new LinkedList<>();
+        Entity robot = new BaseRobot(0, 0, 1, 1, 0,
+                1, 0, new Logger(), 100, true, arena,
+                new Random(), new Pose(0, 0, 0), 1) {
+            @Override
+            public void behavior() {
+            }
+        };
+
+        Entity box = new Box(arena, new Random(), 1, 1, false, new Pose(0, 0, 0), 0);
+        Entity wall = new Wall(arena, new Random(), 1, 1, false, new Pose(0, 0, 0), 0);
+        Entity area = new Area(arena, new Random(), 1, 1, new Pose(0, 0, 0));
+
+        entities.add(box);
+        entities.add(wall);
+        entities.add(area);
+        entities.add(robot);
+
+        for (Entity entity : entities) {
+            boolean paused = entity.getPaused();
+            Assert.assertTrue(entity.toString().length() > 0);
+            Assert.assertNotNull(entity.getClassColor());
+            Assert.assertTrue(entity.getPose().equals(new Pose(0, 0, 0)));
+            entity.togglePause();
+            Assert.assertTrue(paused != entity.getPaused());
+            Assert.assertTrue(entity.getWidth() == 1);
+            Assert.assertTrue(entity.getHeight()== 1);
+            Assert.assertTrue(entity.getArea() > 0);
         }
     }
 }

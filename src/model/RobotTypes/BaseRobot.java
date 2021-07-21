@@ -81,7 +81,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         minSpeed = builder.getMinSpeed();
         setEngineL(builder.getEngineL());
         setEngineR(builder.getEngineR());
-        distanceE = builder.getDistanceE();
+        distanceE = builder.getDistanceE() > 0 ? builder.getDistanceE()  : 0.1;
         diameters = builder.getDiameters();
         powerTransmission = builder.getPowerTransmission();
         logger = builder.getLogger();
@@ -101,7 +101,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         this.minSpeed = minSpeed;
         setEngineL(engineL);
         setEngineR(engineR);
-        this.distanceE = distanceE;
+        this.distanceE = distanceE > 0 ? distanceE : 0.1;
         this.diameters = diameters;
         this.powerTransmission = powerTransmission;
         this.logger = logger;
@@ -555,7 +555,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * and adds it to the memory.
      */
     @Override
-    public void setNextPose() {
+    public void setNextPoseInMemory() {
         if (isPaused) {
             List<Pose> positions = getPosesFromMemory();
             if (0 < poseRingMemoryPointer) {
@@ -646,6 +646,11 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
 
     public Color getColor() {
         return color;
+    }
+
+    @Override
+    public Color getClassColor() {
+        return new Color(200,250,150);
     }
 
     public double getDiameters() {
