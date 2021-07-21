@@ -191,6 +191,14 @@ public class RobotBuilder {
         };
     }
 
+    /**
+     * Builds the robot of type sheep
+     *
+     * @return Robot1
+     */
+    public Sheep buildSheep() {
+        return new Sheep(this);
+    }
 
     /**
      * Builds the robot of type dog
