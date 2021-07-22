@@ -3,6 +3,7 @@ package model.RobotTypes;
 import model.AbstractModel.Entity;
 import model.Position;
 import model.RobotBuilder;
+import model.Vector2D;
 
 import java.awt.*;
 import java.util.List;
@@ -23,10 +24,13 @@ public class Sheep extends BaseRobot {
         nextDog = closestEntityOfClass(List.of(Dog.class));
         nextSheep = closestEntityOfClass(List.of(this.getClass()));
         double nextDogDistance = arena.getEuclideanDistanceToClosestPosition(pose,nextDog.getPose());
+        double nextSheepDistance = arena.getEuclideanDistanceToClosestPosition(pose,nextSheep.getPose());
         if (20 > nextDogDistance){
-            Position fleeDog = pose.getPoseInDirection(1,
-                    pose.getAngleToPosition(nextDog.getPose())+Math.PI);
-            driveToPosition(fleeDog.addToPosition(nextSheep.getPose().toVector()));
+            Vector2D fleeDog = pose.getVectorInDirection(1, pose.getAngleToPosition(nextDog.getPose())+Math.PI);
+            fleeDog.add(pose.getVectorInDirection(1,pose.getAngleToPosition(center)));
+            driveToPosition(pose.creatPositionByDecreasing(fleeDog.getX(),fleeDog.getY()),6);
+        }else if (10 > nextSheepDistance){
+            driveToPosition(center,3);
         }else moveRandom(1,0.5,30);
     }
 
