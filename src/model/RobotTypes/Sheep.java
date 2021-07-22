@@ -14,7 +14,6 @@ public class Sheep extends BaseRobot {
         super(builder);
     }
 
-    int i = 0;
     Position center;
     Entity nextDog;
     Entity nextSheep;
@@ -25,12 +24,12 @@ public class Sheep extends BaseRobot {
         nextSheep = closestEntityOfClass(List.of(this.getClass()));
         double nextDogDistance = arena.getEuclideanDistanceToClosestPosition(pose,nextDog.getPose());
         double nextSheepDistance = arena.getEuclideanDistanceToClosestPosition(pose,nextSheep.getPose());
-        if (20 > nextDogDistance){
-            Vector2D fleeDog = pose.getVectorInDirection(1, pose.getAngleToPosition(nextDog.getPose())+Math.PI);
-            fleeDog.add(pose.getVectorInDirection(1,pose.getAngleToPosition(center)));
-            driveToPosition(pose.creatPositionByDecreasing(fleeDog.getX(),fleeDog.getY()),6);
-        }else if (10 > nextSheepDistance){
-            driveToPosition(center,3);
+        if (10 > nextDogDistance){
+            Vector2D fleeVec = pose.getVectorInDirection(2, arena.getAngleToPosition(pose,nextDog.getPose()));
+            fleeVec = fleeVec.add(pose.getVectorInDirection(1,pose.getAngleToPosition(nextSheep.getPose())));
+            driveToPosition(pose.creatPositionByDecreasing(fleeVec),5);
+        }else if (10 < nextSheepDistance){
+            driveToPosition(nextSheep.getPose(),3);
         }else moveRandom(1,0.5,30);
     }
 

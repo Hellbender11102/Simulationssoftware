@@ -122,8 +122,8 @@ public class Position extends Point2D {
      * @param vector Position
      * @return position - position
      */
-    public Position creatPositionByDecreasing(Position vector) {
-        return new Position(xCoordinate - vector.xCoordinate, yCoordinate - vector.yCoordinate);
+    public Position creatPositionByDecreasing(Vector2D vector) {
+        return new Position(xCoordinate - vector.getX(), yCoordinate - vector.getY());
     }
 
     /**

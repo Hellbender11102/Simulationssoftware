@@ -1,12 +1,12 @@
  {
   "seed": 10,
-  "ticsPerSimulatedSecond": 1000,
+  "ticsPerSimulatedSecond": 500,
   "maxSpeed": 10.0,
   "minSpeed": 0.0,
   "arena": {
     "torus": true,
-    "width": 100,
-    "height": 100
+    "width": 200,
+    "height": 200
   },
   "robots": [
     {

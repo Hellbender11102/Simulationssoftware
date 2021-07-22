@@ -15,6 +15,7 @@ public class Controller {
     private final List<Thread> robotThreads = new LinkedList<>();
     private Timer repaintTimer;
     private final Timer loggerTimer = new Timer();
+    private final int timeToSimulate;
     private final Logger logger = new Logger();
     private final JsonLoader jsonLoader = new JsonLoader(logger);
 
@@ -23,6 +24,7 @@ public class Controller {
      */
     public Controller() {
         arena = jsonLoader.initArena();
+        timeToSimulate = jsonLoader.loadSimulatedTime();
         if (jsonLoader.loadDisplayView()) {
             init(); // loads all entities
             view = new View(arena); // creates view
@@ -31,7 +33,6 @@ public class Controller {
         } else {
             long startTime = System.currentTimeMillis();
             init();
-            int timeToSimulate = jsonLoader.loadSimulatedTime();
 
             /*
              * If logging shall happen in regular timed thread
@@ -43,14 +44,11 @@ public class Controller {
             arena.getPhysicalEntityList().forEach(this::startThread);
 
             Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
-
             // updates each second how far the current simulation progressed
-            while (robotThreads.stream().anyMatch(Thread::isAlive)) {
-                int finalTimeToSimulate = timeToSimulate;
-                Optional<Long> percentageUntilDone = arena.getRobots().stream()
-                        .map(robot -> Math.round((1 - ((double) robot.getTimeToSimulate() / (double) finalTimeToSimulate)) * 100))
-                        .reduce(Long::sum);
-                System.out.print((percentageUntilDone.map(Math::toIntExact).orElse(0) / arena.getRobots().size()) + "%\r");
+            long ticsToSimulate = (long) timeToSimulate * jsonLoader.loadTicsPerSimulatedSecond();
+            while (robotThreads.stream().anyMatch(Thread::isAlive) && arena.getRobots().size() > 0) {
+                System.out.print(
+                        Math.round((1- (arena.getRobots().get(0).getTimeToSimulate() / (double)ticsToSimulate))*100 )+ "%\r");
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException interruptedException) {
@@ -61,7 +59,6 @@ public class Controller {
             logger.saveFullLogToFile(true);
             if (robotThreads.stream().noneMatch(Thread::isAlive)
                     && (logger.saveThread == null || !logger.saveThread.isAlive())) {
-                timeToSimulate = jsonLoader.loadSimulatedTime();
                 long endTime = System.currentTimeMillis();
                 // prints final status and exit
                 System.out.println("Done simulating.\nSimulated "
@@ -300,7 +297,7 @@ public class Controller {
     /**
      *
      */
-    private void startStop(){
+    private void startStop() {
         for (PhysicalEntity entity : arena.getPhysicalEntityList()) {
             if (stopped) {
                 entity.setToLatestPose();

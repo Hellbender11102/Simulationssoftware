@@ -153,7 +153,21 @@ public class Arena {
      * @return double
      */
     public double getEuclideanDistanceToClosestPosition(Position position1, Position position2) {
+        if(isTorus)
         return position1.getEuclideanDistance(getClosestPositionInTorus(position1, position2));
+        else return position1.getEuclideanDistance(position2);
+    }
+    /**
+     * Returns the distance between two positions in an torus arena
+     *
+     * @param position1 Position
+     * @param position2 Position
+     * @return double
+     */
+    public double getAngleToPosition(Position position1, Position position2) {
+        if(isTorus)
+        return position1.getAngleToPosition(getClosestPositionInTorus(position1, position2));
+        else return position1.getAngleToPosition(position2);
     }
 
     @Override

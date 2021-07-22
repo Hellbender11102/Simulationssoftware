@@ -317,7 +317,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
                 double length = distanceToKeep + getRadius() + robot.getRadius() - distance;
                 double direction = pose.getAngleToPosition(robotPose);
                 dummyPose.incRotation(dummyPose.getRotation() + direction);
-                dummyPose.addToPosition(dummyPose.creatPositionByDecreasing(dummyPose.getPositionInDirection(length)));
+                dummyPose.addToPosition(dummyPose.creatPositionByDecreasing(dummyPose.getPositionInDirection(length).toVector()));
             }
         }
         dummyPose.setRotation(dummyPose.getRotation());

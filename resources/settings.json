@@ -1,5 +1,5 @@
 {
   "fps": 60,
-  "display-view": true,
+  "display-view": false,
   "simulate-seconds": 86400
 }
