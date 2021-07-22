@@ -6,6 +6,10 @@ import model.Position;
 import java.awt.*;
 import java.util.Random;
 
+/**
+ * Entity interface declares all necessary functions
+ */
+
 public interface Entity {
 
     Color getClassColor();
@@ -22,7 +26,7 @@ public interface Entity {
 
     void setPrevPose();
 
-    void setNextPose();
+    void setNextPoseInMemory();
 
     void setToLatestPose();
 

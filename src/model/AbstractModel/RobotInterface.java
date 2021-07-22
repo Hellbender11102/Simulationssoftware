@@ -1,7 +1,9 @@
 package model.AbstractModel;
 
 import java.util.List;
-
+/**
+ * RobotInterface interface declares all necessary functions
+ */
 public interface RobotInterface extends PhysicalEntity {
 
     void behavior();

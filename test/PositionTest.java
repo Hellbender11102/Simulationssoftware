@@ -40,7 +40,7 @@ public class PositionTest {
     }
 
     @Test
-    public void TestGetAngle() {
+    public void testGetAngle() {
         Position posZero = new Position(0, 0), posOne = new Position(1, 0);
         Assert.assertEquals(posZero.getAngleToPosition(posOne), 0, 0);
         Assert.assertEquals(posOne.getAngleToPosition(posZero), Math.PI, 0.01);
@@ -50,16 +50,39 @@ public class PositionTest {
         }
     }
     @Test
-    public void TestDistance() {
+    public void testDistance() {
         Assert.assertEquals(position1.distance(position2),position1.subtractFromPosition(position2.toVector()).distance(0,0), 0.00);
     }
 
     @Test
-    public void TestPositionAddSubtract() {
+    public void testPositionAddSubtract() {
         Position position1Old= position1.clone();
         Assert.assertEquals(position1.distance(position2),position1.creatPositionByDecreasing(position2).distance(0,0), 0.00);
         Assert.assertTrue(position1.creatPositionByDecreasing(position2).equals(position1.subtractFromPosition(position2.toVector())));
         position1.addToPosition(position2);
         Assert.assertTrue(position1.equals(position1Old));
+    }
+    @Test
+    public void TestPositionEquals() {
+         Assert.assertTrue(position1.equals(position1.clone()));
+    }
+    @Test
+    public void testToString() {
+         Assert.assertTrue(position1.toString().length() > 0);
+         Assert.assertTrue(position2.toString().length() > 0);
+    }
+    @Test
+    public void testAdd() {
+        Position buffer = position1.clone();
+        position1.addToPosition(position2.getX(),position2.getY());
+         Assert.assertTrue(position1.equals(position2.addToPosition(buffer.toVector())));
+         Assert.assertTrue(position1.equals(position2.creatPositionByDecreasing(0,0)));
+    }
+    @Test
+    public void testSubtract() {
+        Position buffer = position1.clone();
+        System.out.println(position1);
+        position1.subtractFromPosition(position2.getX(),position2.getY());
+         Assert.assertTrue(position1.equals(buffer.subtractFromPosition(position2.getX(),position2.getY())));
     }
 }

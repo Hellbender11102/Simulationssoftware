@@ -3,7 +3,7 @@ package model;
 import java.awt.geom.Point2D;
 
 public class Position extends Point2D {
-   protected double xCoordinate, yCoordinate;
+    protected double xCoordinate, yCoordinate;
 
     public Position(Position position) {
         this.xCoordinate = position.getX();
@@ -15,6 +15,10 @@ public class Position extends Point2D {
         this.yCoordinate = yCoordinate;
     }
 
+    /**
+     * Returns the polar angle to this position
+     * @return double
+     */
     public double getPolarAngle() {
         if (distance(new Position(0, 0)) != 0.0)
             return Math.atan2(yCoordinate, xCoordinate);
@@ -39,10 +43,20 @@ public class Position extends Point2D {
                 yCoordinate == position.yCoordinate;
     }
 
+    /**
+     * Returns the euclidean distance between this and the given position
+     * @param position Position
+     * @return double
+     */
     public double getEuclideanDistance(Position position) {
         return Math.hypot(position.getX() - xCoordinate, position.getY() - yCoordinate);
     }
-
+    /**
+     * Returns the euclidean distance between this and the given coordinates
+     * @param x double
+     * @param y double
+     * @return double
+     */
     public double getEuclideanDistance(double x, double y) {
         return Math.hypot(xCoordinate - x, yCoordinate - y);
     }
@@ -147,6 +161,10 @@ public class Position extends Point2D {
         this.yCoordinate = yCoordinate;
     }
 
+    /**
+     * Returns the vector to this position
+     * @return Vector2D
+     */
     public Vector2D toVector() {
         return new Vector2D(xCoordinate, yCoordinate);
     }

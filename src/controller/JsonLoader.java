@@ -13,7 +13,7 @@ import java.util.*;
 class JsonLoader {
     private JSONObject settings;
     private JSONObject variables;
-    private final Logger errorLogger = new Logger();
+    private final Logger errorLogger;
     private Arena arena;
     private boolean displayView = false;
     private final String pathSettings = "resources/settings.json";
@@ -24,7 +24,8 @@ class JsonLoader {
      * Constructor
      * Loads default path for settings and variables
      */
-    JsonLoader() {
+    JsonLoader(Logger errorLogger) {
+        this.errorLogger = errorLogger;
         {
             try {
                 settings = loadJSON(pathSettings, errorLogger);
@@ -44,7 +45,6 @@ class JsonLoader {
 
     /**
      * Loads the arena
-     *
      * @return Arena
      */
     Arena initArena() {
@@ -62,7 +62,6 @@ class JsonLoader {
 
     /**
      * Reloads the arena and overwrites its singleton instance
-     *
      * @return Arena
      */
     Arena reloadArena() {
@@ -71,12 +70,16 @@ class JsonLoader {
             arena = Arena.overWriteInstance((int) (long) arenaObj.get("width"), (int) (long) arenaObj.get("height"), (boolean) arenaObj.get("torus"));
         } else {
             error = "Could not read arena from variables.json.";
-
             errorLogger.dumpError(error);
         }
         return arena;
     }
 
+    /**
+     * Reads the seed from the current variables json object
+     * Returns a random with given seed else random without seed
+     * @return Random
+     */
     Random loadRandom() {
         if (variables != null && variables.containsKey("seed"))
             return new Random((long) variables.get("seed"));
@@ -86,6 +89,10 @@ class JsonLoader {
         }
     }
 
+    /**
+     *  Returns the max speed value of the current variables json object
+     * @return double
+     */
     double loadMaxSpeed() {
         if (variables != null && variables.containsKey("maxSpeed"))
             return (double) variables.get("maxSpeed");
@@ -96,6 +103,10 @@ class JsonLoader {
         }
     }
 
+    /**
+     * Returns the min speed value of the current variables json object
+     * @return double
+     */
     double loadMinSpeed() {
         if (variables != null && variables.containsKey("minSpeed"))
             return (double) variables.get("minSpeed");
@@ -107,17 +118,24 @@ class JsonLoader {
         }
     }
 
+    /**
+     * Loads the fps value of the current settings json object
+     * @return int
+     */
     int loadFps() {
         if (settings != null && settings.containsKey("fps"))
             return (int) (long) settings.get("fps");
         else {
             error = "Could not read fps from settings.json.";
-
             errorLogger.dumpError(error);
             return 10;
         }
     }
 
+    /**
+     * Returns the simulate-seconds value of the current settings json object
+     * @return int
+     */
     int loadSimulatedTime() {
         if (settings != null && settings.containsKey("simulate-seconds")) {
             return (int) (long) settings.get("simulate-seconds");
@@ -129,6 +147,10 @@ class JsonLoader {
         }
     }
 
+    /**
+     * Returns the display-view value of the current settings json object
+     * @return boolean
+     */
     boolean loadDisplayView() {
         if (settings != null && settings.containsKey("display-view")) {
             displayView = (boolean) settings.get("display-view");
@@ -141,6 +163,10 @@ class JsonLoader {
         }
     }
 
+    /**
+     * Returns the current ticsPerSimulatedSecond value of the variables json object
+     * @return int
+     */
     int loadTicsPerSimulatedSecond() {
         if (variables != null && variables.containsKey("ticsPerSimulatedSecond"))
             return (int) (long) variables.get("ticsPerSimulatedSecond");
@@ -153,9 +179,8 @@ class JsonLoader {
     }
 
     /**
-     * Loads all boxes from the variables.json
+     * Loads all boxes from the variables json object
      * Returns a list of all boxes
-     *
      * @param random Random
      * @return List<Entity>
      */
@@ -171,13 +196,15 @@ class JsonLoader {
         JSONArray boxes = (JSONArray) variables.get("boxes");
         for (Object box : boxes) {
             JSONObject jsonBox = (JSONObject) box;
-            if (jsonBox.containsKey("width") && jsonBox.containsKey("position") && jsonBox.containsKey("height") && loadPose(jsonBox) != null)
+            if (jsonBox.containsKey("width") && jsonBox.containsKey("position") && jsonBox.containsKey("height") &&
+                    loadPose(jsonBox,false) != null)
                 boxList.add(
                         new Box(arena,
                                 new Random(random.nextInt()),
                                 (double) jsonBox.get("width"),
                                 (double) jsonBox.get("height"),
-                                loadPose(jsonBox),
+                                displayView,
+                                loadPose(jsonBox,false),
                                 loadTicsPerSimulatedSecond()));
             else {
                 error = "Could not load box entry " + (boxList.size() + missing++) + " correctly. Entry width, height or position missing.";
@@ -207,11 +234,15 @@ class JsonLoader {
         JSONArray walls = (JSONArray) variables.get("walls");
         for (Object wall : walls) {
             JSONObject jsonWall = (JSONObject) wall;
-            if (jsonWall.containsKey("width") && jsonWall.containsKey("position") && jsonWall.containsKey("height") && loadPose(jsonWall) != null)
-                wallList.add(new Wall(arena, new Random(random.nextInt()), (double) jsonWall.get("width"), (double) jsonWall.get("height"), loadPose(jsonWall),loadTicsPerSimulatedSecond()));
+            if (jsonWall.containsKey("width") && jsonWall.containsKey("position") &&
+                    jsonWall.containsKey("height") && loadPose(jsonWall,false) != null)
+                wallList.add(new Wall(arena, new Random(random.nextInt()),
+                        (double) jsonWall.get("width"),
+                        (double) jsonWall.get("height"),
+                        displayView,
+                        loadPose(jsonWall,false), loadTicsPerSimulatedSecond()));
             else {
                 error = "Could not load wall " + (wallList.size() + missing++) + " correctly. Entry width, height or position missing.";
-
                 errorLogger.dumpError(error);
             }
         }
@@ -237,8 +268,11 @@ class JsonLoader {
         JSONArray areas = (JSONArray) variables.get("areas");
         for (Object area : areas) {
             JSONObject jsonArea = (JSONObject) area;
-            if (jsonArea.containsKey("diameters") && jsonArea.containsKey("noticeableDistanceDiameters") && loadPose(jsonArea) != null)
-                areaList.add(new Area(arena, new Random(random.nextInt()), (double) jsonArea.get("diameters"), (double) jsonArea.get("noticeableDistanceDiameters"), loadPose(jsonArea)));
+            if (jsonArea.containsKey("diameters") && jsonArea.containsKey("noticeableDistanceDiameters") && loadPose(jsonArea,false) != null)
+                areaList.add(new Area(arena, new Random(random.nextInt()),
+                        (double) jsonArea.get("diameters"),
+                        (double) jsonArea.get("noticeableDistanceDiameters"),
+                        loadPose(jsonArea,false)));
             else {
                 error = "Could not load area " + (areaList.size() + missing++) + " correctly. Entry diameters, noticeableDistance or position missing.";
 
@@ -320,13 +354,13 @@ class JsonLoader {
             Logger logger, int timeToSimulate) {
         if (robotObject.containsKey("engineR") && robotObject.containsKey("engineL") &&
                 robotObject.containsKey("distance") && robotObject.containsKey("powerTransmission") &&
-                robotObject.containsKey("diameters") && robotObject.containsKey("type") && loadPose(robotObject) != null) {
+                robotObject.containsKey("diameters") && robotObject.containsKey("type") && loadPose(robotObject,true) != null) {
             RobotBuilder builder = new RobotBuilder()
                     .engineRight((Double) robotObject.get("engineR"))
                     .engineLeft((Double) robotObject.get("engineL"))
                     .engineDistance((Double) robotObject.get("distance"))
                     .random(new Random(random.nextInt()))
-                    .pose(loadPose(robotObject))
+                    .pose(loadPose(robotObject,true))
                     .ticsPerSimulatedSecond(loadTicsPerSimulatedSecond())
                     .minSpeed(loadMinSpeed())
                     .maxSpeed(loadMaxSpeed())
@@ -341,22 +375,20 @@ class JsonLoader {
                 builder = builder.visionAngle((double) robotObject.get("visionAngle")).visionRange((Double) robotObject.get("visionRange"));
             }
             RobotInterface robot;
+            // Implement new robot classes
             switch ((String) robotObject.get("type")) {
-                case "1":
-                    robot = builder.buildRobot1();
+                case "sheep":
+                    robot = builder.buildSheep();
                     break;
-                case "2":
-                    robot = builder.buildRobot2();
-                    break;
-                case "3":
-                    robot = builder.buildRobot3();
-                    break;
-                case "4":
-                    robot = builder.buildRobot4();
+                case "dog":
+                    robot = builder.buildDog();
                     break;
                 case "vision":
                     robot = builder.buildVisionCone();
                     break;
+                /* Space to add own robot types */
+
+                /* ----------------------------- */
                 default:
                     robot = builder.buildDefault();
             }
@@ -374,20 +406,22 @@ class JsonLoader {
      * @param object JSONObject
      * @return Pose
      */
-    private Pose loadPose(JSONObject object) {
+    private Pose loadPose(JSONObject object, boolean loadRotation) {
         if (!object.containsKey("position")) {
             error = "Could not load position for " + object;
             errorLogger.dumpError(error);
             return null;
         }
         JSONObject positionObject = (JSONObject) object.get("position");
-        if (!positionObject.containsKey("x") || !positionObject.containsKey("y") || !positionObject.containsKey("rotation")) {
+        if (!positionObject.containsKey("x") || !positionObject.containsKey("y") || (loadRotation && !positionObject.containsKey("rotation"))) {
             error = "Could not load x, y or rotation for " + object;
             errorLogger.dumpError(error);
             return null;
         }
-        return new Pose((Double) positionObject.get("x"), (Double) positionObject.get("y"),
-                Math.toRadians((Double) positionObject.get("rotation")));
+        if (loadRotation)
+            return new Pose((Double) positionObject.get("x"), (Double) positionObject.get("y"),
+                    Math.toRadians((Double) positionObject.get("rotation")));
+        else return new Pose((Double) positionObject.get("x"), (Double) positionObject.get("y"), 0);
     }
 
     void setVariables(JSONObject variables) {

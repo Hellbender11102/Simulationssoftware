@@ -267,7 +267,7 @@ public abstract class BaseVisionConeRobot extends BaseRobot {
      * @param c Class
      * @return List<Object>
      */
-    List<Object> listOfRobotsInVisionByCLass(Class c) {
+    List<Object> getListOfRobotsInVisionByCLass(Class c) {
         return getListOfRobotsInSight().stream()
                 .filter(x -> c.isAssignableFrom(x.getClass()))
                 .map((Function<RobotInterface, Object>) (c)::cast)

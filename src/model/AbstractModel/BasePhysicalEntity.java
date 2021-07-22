@@ -1,7 +1,9 @@
 package model.AbstractModel;
 
 import model.*;
+import model.RobotTypes.BaseRobot;
 
+import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -26,22 +28,23 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
      * If below .25 objects will increase speed what so ever
      * Best is around .35
      */
-    protected final double frictionInPercent;
+    protected final double frictionInPercent = 0.1;
     /**
-     * Describes how elastic the bump is
-     * bumpParam = 1 for the elastic bump
-     * bumpParam = 0 for the completely inelastic angle
-     * The simulation is set up for the elastic bump
+     * Toggles a different angle at which objects of type wall and box collide
      */
-    private final int bumpParam = 1;
+    protected final boolean gettingDifferentAngleToSquares = true;
+    protected final boolean simulateWithView;
+    /**
+     * The moving vector
+     */
     protected AtomicReference<Vector2D> movingVec = new AtomicReference<>();
 
 
-    protected BasePhysicalEntity(Arena arena, Random random, double width, double height, Pose pose, int ticsPerSimulatedSecond) {
+    protected BasePhysicalEntity(Arena arena, Random random, double width, double height, boolean simulateWithView, Pose pose, int ticsPerSimulatedSecond) {
         super(arena, random, width, height, pose);
         movingVec.set(Vector2D.zeroVector());
         this.ticsPerSimulatedSecond = ticsPerSimulatedSecond;
-        frictionInPercent = 0.01;
+        this.simulateWithView = simulateWithView;
     }
 
     /**
@@ -77,7 +80,7 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
             alterMovingVector();
             collisionDetection();
             setNextPosition();
-            updatePositionMemory();
+            if (simulateWithView) updatePositionMemory();
             try {
                 sleep(1000 / ticsPerSimulatedSecond);
             } catch (InterruptedException e) {
@@ -86,6 +89,10 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
         }
     }
 
+    /**
+     * Slows the current velocity by frictionInPercent
+     * Current velocity * 1 - frictionInPercent
+     */
     @Override
     public void alterMovingVector() {
         movingVec.set(movingVec.get().multiplication(1. - frictionInPercent));
@@ -114,7 +121,6 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
         return returnValue;
     }
 
-
     /**
      * Calculates the collision with an elastic shock
      *
@@ -122,9 +128,23 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
      */
     synchronized public void collision(PhysicalEntity physicalEntity) {
         Position position = pose, positionPe = physicalEntity.getPose();
+        /* TODO :D
+        Position closest = getClosestPositionInEntity(positionPe),
+                closestPe = physicalEntity.getClosestPositionInEntity(position);
         if (arena.isTorus) {
-            position = arena.getClosestPositionInTorus(physicalEntity.getPose(), pose);
-            positionPe = arena.getClosestPositionInTorus(pose, physicalEntity.getPose());
+            closest = getClosestPositionInEntity(positionPe);
+            closestPe = physicalEntity.getClosestPositionInEntity(position);
+}
+        */
+
+
+        //calculate the minimal distance for a collision
+        double distance = position.getEuclideanDistance(getClosestPositionInEntity(positionPe)) +
+                positionPe.getEuclideanDistance(physicalEntity.getClosestPositionInEntity(position)) - position.getEuclideanDistance(positionPe);
+
+        if (arena.isTorus && position.getAngleToPosition(positionPe) > distance) { //TODO
+            position = arena.getClosestPositionInTorus(pose, physicalEntity.getPose());
+            positionPe = arena.getClosestPositionInTorus(physicalEntity.getPose(), pose);
         }
 
         double u1Angle = position.getAngleToPosition(positionPe);
@@ -134,12 +154,15 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
 
         double m1 = getWeight(), m2 = physicalEntity.getWeight();
         double v1 = moving1.getLength(), v2 = moving2.getLength();
-
-        if (Wall.class.isAssignableFrom(physicalEntity.getClass()) || Box.class.isAssignableFrom(physicalEntity.getClass())) {
-            u1Angle = position.getAngleToPosition(physicalEntity.getClosestPositionInEntity(position));
-        }
-        if (Wall.class.isAssignableFrom(getClass()) || Box.class.isAssignableFrom(getClass())) {
-            u2Angle = positionPe.getAngleToPosition(getClosestPositionInEntity(positionPe));
+        if (gettingDifferentAngleToSquares) {
+            if (Wall.class.isAssignableFrom(physicalEntity.getClass()) || Box.class.isAssignableFrom(physicalEntity.getClass())) {
+                u1Angle = position.getAngleToPosition(physicalEntity.getClosestPositionInEntity(position));
+                u2Angle = physicalEntity.getClosestPositionInEntity(position).getAngleToPosition(position);
+            }
+            if (Wall.class.isAssignableFrom(getClass()) || Box.class.isAssignableFrom(getClass())) {
+                u2Angle = positionPe.getAngleToPosition(getClosestPositionInEntity(positionPe));
+                u1Angle = getClosestPositionInEntity(positionPe).getAngleToPosition(positionPe);
+            }
         }
 
         double v1x = calcX(v1, v2, m1, m2, moving1.getAngle(), moving2.getAngle(), u1Angle);
@@ -156,9 +179,6 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
         if (position.getEuclideanDistance(physicalEntity.getPose()) - (resultingPe.getLength() + resulting.getLength()) <
                 position.getEuclideanDistance(getClosestPositionInEntity(positionPe)) +
                         positionPe.getEuclideanDistance(physicalEntity.getClosestPositionInEntity(position))) {
-
-            double distance = position.getEuclideanDistance(getClosestPositionInEntity(positionPe)) +
-                    positionPe.getEuclideanDistance(physicalEntity.getClosestPositionInEntity(position)) - position.getEuclideanDistance(positionPe);
             if (isMovable() && physicalEntity.isMovable()) {
                 pose.addToPosition(Vector2D.creatCartesian(distance / 2, u2Angle));
                 physicalEntity.getPose().addToPosition(Vector2D.creatCartesian(distance / 2, u1Angle));
@@ -173,12 +193,46 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
 
     }
 
+    /**
+     * Calculates the x value for an elastic collision
+     * v1 vector magnitude of object one
+     * v2 vector magnitude of object two
+     * m1 mass of object one
+     * m2 mass of object two
+     * movingAngle1 angle of current moving direction for object one
+     * movingAngle2 angle of current moving direction for object two
+     * @param v1           double
+     * @param v2           double
+     * @param m1           double
+     * @param m2           double
+     * @param movingAngle1 double
+     * @param movingAngle2 double
+     * @param contactAngle double
+     * @return double
+     */
     private double calcX(double v1, double v2, double m1, double m2, double movingAngle1, double movingAngle2, double contactAngle) {
         return ((v1 * Math.cos(movingAngle1 - contactAngle) * (m1 - m2) + 2 * m2 * v2 * Math.cos(movingAngle2 - contactAngle)) /
                 (m1 + m2))
                 * Math.cos(contactAngle) + v1 * Math.sin(movingAngle1 - contactAngle) * Math.cos(contactAngle + (Math.PI / 2));
     }
 
+    /**
+     * Calculates the y value for an elastic collision
+     * v1 vector magnitude of object one
+     * v2 vector magnitude of object two
+     * m1 mass of object one
+     * m2 mass of object two
+     * movingAngle1 angle of current moving direction for object one
+     * movingAngle2 angle of current moving direction for object two
+     * @param v1           double
+     * @param v2           double
+     * @param m1           double
+     * @param m2           double
+     * @param movingAngle1 double
+     * @param movingAngle2 double
+     * @param contactAngle double
+     * @return double
+     */
     private double calcY(double v1, double v2, double m1, double m2, double movingAngle1, double movingAngle2, double contactAngle) {
         return ((v1 * Math.cos(movingAngle1 - contactAngle) * (m1 - m2) + 2 * m2 * v2 * Math.cos(movingAngle2 - contactAngle)) /
                 (m1 + m2))
@@ -237,9 +291,6 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
     public Position centerOfGroupWithEntities(List<Entity> group) {
         Position center = new Position(0, 0);
         for (Entity entity : group) {
-            if (arena.isTorus)
-                center.addToPosition(arena.getClosestPositionInTorus(center, entity.getPose()));
-            else
                 center.addToPosition(entity.getPose());
         }
         center.setX(center.getX() / group.size());

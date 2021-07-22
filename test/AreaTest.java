@@ -1,6 +1,7 @@
 import model.Area;
 import model.Arena;
 import model.Pose;
+import model.Position;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -87,4 +88,15 @@ public class AreaTest {
         area.increaseNoticeableDistanceDiameters(1);
         Assert.assertEquals(noticeableDistanceDiameter + 1, area.getNoticeableDistanceDiameter(), 0.01);
     }
+
+    @Test
+    public void testIsPositionInEntity() {
+        for (double x = -area.getWidth(); x < area.getWidth(); x += 0.1) {
+            for (double y = -area.getHeight(); y < area.getHeight(); y += 0.1) {
+                Position position = new Position(x, y);
+                Assert.assertEquals(area.isPositionInEntity(position), area.isPositionInEntityCircle(position));
+            }
+        }
+    }
+
 }

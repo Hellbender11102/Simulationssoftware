@@ -174,11 +174,6 @@ public class RobotBuilder {
             @Override
             public void behavior() {
             }
-
-            @Override
-            public Color getClassColor() {
-                return Color.BLUE;
-            }
         };
     }
 
@@ -195,45 +190,24 @@ public class RobotBuilder {
             }
         };
     }
+
     /**
-     * Builds the robot of type 1
+     * Builds the robot of type sheep
      *
      * @return Robot1
      */
-    public Robot1 buildRobot1() {
-        return new Robot1(this);
+    public Sheep buildSheep() {
+        return new Sheep(this);
     }
 
     /**
-     * Builds the robot of type 2
+     * Builds the robot of type dog
      *
      * @return Robot2
      */
-    public Robot2 buildRobot2() {
-        return new Robot2(this);
+    public Dog buildDog() {
+        return new Dog(this);
     }
-
-    /**
-     * Builds the robot of type 3
-     *
-     * @return Robot3
-     */
-    public Robot3 buildRobot3() {
-        return new Robot3(this);
-    }
-
-    /**
-     * Builds the robot of type 4
-     *
-     * @return Robot4
-     */
-    public Robot4 buildRobot4() {
-        return new Robot4(this);
-    }
-
-
-
-
 
     /* Space to add own robot types */
 }

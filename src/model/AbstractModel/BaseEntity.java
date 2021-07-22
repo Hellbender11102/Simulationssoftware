@@ -36,8 +36,6 @@ abstract public class BaseEntity extends Thread implements Entity {
     }
 
 
-    // Ring memory logic
-
     /**
      * Reads the poseRingMemory and orders it correctly in a list
      * from list entry zero current position
@@ -71,7 +69,7 @@ abstract public class BaseEntity extends Thread implements Entity {
      * Sets the pose to the next pose saved in the memory
      */
     @Override
-    public void setNextPose() {
+    public void setNextPoseInMemory() {
         List<Pose> positions = getPosesFromMemory();
         if (0 < poseRingMemoryPointer) {
             if (poseRingMemoryPointer < positions.size())
@@ -116,18 +114,18 @@ abstract public class BaseEntity extends Thread implements Entity {
 
         if (position.getX() <= pose.getX() + width / 2 && position.getX() >= pose.getX() - width / 2) {
             closest.setX(position.getX());
-        }else if(position.getX() > pose.getX() + width / 2){
-            closest.setX(pose.getX()+width /2);
-        } else if(position.getX() < pose.getX() + width / 2){
-            closest.setX(pose.getX()-width /2);
+        } else if (position.getX() > pose.getX() + width / 2) {
+            closest.setX(pose.getX() + width / 2);
+        } else if (position.getX() < pose.getX() + width / 2) {
+            closest.setX(pose.getX() - width / 2);
         }
 
         if (position.getY() <= pose.getY() + height / 2 && position.getY() >= pose.getY() - height / 2) {
             closest.setY(position.getY());
-        }else if(position.getY() > pose.getY() + height / 2){
-            closest.setY(pose.getY()+height /2);
-        } else if(position.getY() < pose.getY() + height / 2){
-            closest.setY(pose.getY()-height /2);
+        } else if (position.getY() > pose.getY() + height / 2) {
+            closest.setY(pose.getY() + height / 2);
+        } else if (position.getY() < pose.getY() + height / 2) {
+            closest.setY(pose.getY() - height / 2);
         }
         return closest;
     }
@@ -188,6 +186,9 @@ abstract public class BaseEntity extends Thread implements Entity {
         return random;
     }
 
+    /**
+     * Toggles the isPaused boolean
+     */
     public void togglePause() {
         isPaused = !isPaused;
     }
@@ -196,6 +197,11 @@ abstract public class BaseEntity extends Thread implements Entity {
         return isPaused;
     }
 
+    /**
+     * Checks if this equals given entity
+     * @param entity Entity
+     * @return boolean
+     */
     public boolean equals(Entity entity) {
         return pose.equals(entity.getPose()) && color == entity.getColor()
                 && entity.hasPhysicalBody() == hasPhysicalBody() && entity.getClass().equals(getClass());

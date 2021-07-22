@@ -8,6 +8,7 @@ public class LoggerTest {
 
     @Before
     public void setUp() {
+        tearDown();
         logger = new Logger();
     }
 
@@ -90,9 +91,9 @@ public class LoggerTest {
         for (int i = 0; i < 6000; i++) {
             if (i == 0)
                 Assert.assertEquals(readLine(reader), "TestSaveFullLogToFile,");
-            else if(i <= 3000)
-                Assert.assertEquals(readLine(reader), (i - 1)+",");
-            else    Assert.assertEquals(readLine(reader), (i - 3001)+",");
+            else if (i <= 3000)
+                Assert.assertEquals(readLine(reader), (i - 1) + ",");
+            else Assert.assertEquals(readLine(reader), (i - 3001) + ",");
         }
         reader.close();
     }
@@ -112,7 +113,7 @@ public class LoggerTest {
             if (i == 0)
                 Assert.assertEquals(readLine(reader), "TestSaveFullLogToFileSmaller,");
             else
-                Assert.assertEquals(readLine(reader), (i - 1)+",");
+                Assert.assertEquals(readLine(reader), (i - 1) + ",");
         }
         reader.close();
     }
@@ -122,8 +123,8 @@ public class LoggerTest {
         logger.dumpError("This is an test error.");
         logger.dumpError("It has more.");
         BufferedReader reader = new BufferedReader(new FileReader("out/Error.txt"));
-        Assert.assertEquals(readLine(reader),"This is an test error.");
-        Assert.assertEquals(readLine(reader),"It has more.");
+        Assert.assertEquals(readLine(reader), "This is an test error.");
+        Assert.assertEquals(readLine(reader), "It has more.");
         reader.close();
     }
 

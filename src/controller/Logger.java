@@ -17,7 +17,7 @@ public class Logger {
      * Sets the maximum number a single list will hold until the logger will save the current map to an file
      * If issues with the RAM usage appear try to lower the number
      */
-    private final int listEntrySize= 5000;
+    private final int listEntrySize = 5000;
 
     /**
      * Constructor
@@ -72,6 +72,7 @@ public class Logger {
     /**
      * Saves the current log to an file
      * If append is true inserts at the end of file
+     *
      * @param append boolean
      */
     synchronized
@@ -80,7 +81,7 @@ public class Logger {
                 .map(List::size)
                 .reduce((currLargest, nextItem) -> currLargest > nextItem ? currLargest : nextItem);
         int longestListSize = longestList.orElse(0);
-        if(!append) headWritten = false;
+        if (!append) headWritten = false;
         saveLogToFile(append, longestListSize);
     }
 
@@ -95,10 +96,11 @@ public class Logger {
         try {
             FileWriter fileWriter = new FileWriter(outputFile, append);
             StringBuilder stringBuilder = new StringBuilder();
-            if(!append) headWritten = false;
+            if (!append) headWritten = false;
             if (!headWritten) {
                 for (String key : logMap.keySet()) {
-                    stringBuilder.append(key).append(",");
+                    stringBuilder.append(key.replace(",",".").replace("\n",""));
+                    stringBuilder.append(",");
                 }
                 headWritten = true;
                 stringBuilder.append('\n');
@@ -107,7 +109,7 @@ public class Logger {
             while (i < longestListSize) {
                 for (String key : logMap.keySet()) {
                     if (i < logMap.get(key).size())
-                        stringBuilder.append(logMap.get(key).get(i)).append(",");
+                        stringBuilder.append(logMap.get(key).get(i).replace(",",".").replace("\n","")).append(",");
                     else stringBuilder.append(",");
                 }
                 stringBuilder.append("\n");
@@ -124,17 +126,18 @@ public class Logger {
 
     /**
      * Writes an error directly to the error File
+     *
      * @param errorMessage String
      */
     public void dumpError(String errorMessage) {
         try {
             System.err.println(errorMessage);
             FileWriter fileWriter = new FileWriter(errFile, true);
-            fileWriter.write(errorMessage +"\n");
+            fileWriter.write(errorMessage + "\n");
             fileWriter.flush();
             fileWriter.close();
         } catch (IOException e) {
-            System.err.println("Error, could not log error!\n"+errorMessage);
+            System.err.println("Error, could not log error!\n" + errorMessage);
             e.printStackTrace();
         }
     }
@@ -142,6 +145,7 @@ public class Logger {
     /**
      * Starts an thread if any key has more entries as listEntrySize
      * The thread will save to an file and reduce the entries
+     *
      * @param appendDataInFIle boolean
      */
     private void threadedSave(boolean appendDataInFIle) {

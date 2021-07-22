@@ -13,42 +13,57 @@ public class Controller {
     private View view;
     private Arena arena;
     private final List<Thread> robotThreads = new LinkedList<>();
-    private final JsonLoader jsonLoader = new JsonLoader();
-    private final Timer repaintTimer = new Timer();
+    private Timer repaintTimer;
     private final Timer loggerTimer = new Timer();
     private final Logger logger = new Logger();
+    private final JsonLoader jsonLoader = new JsonLoader(logger);
 
+    /**
+     * Constructor which loads and start all needed threads
+     */
     public Controller() {
-        long startTime = System.currentTimeMillis();
         arena = jsonLoader.initArena();
         if (jsonLoader.loadDisplayView()) {
-            init();
-            view = new View(arena);
-            repaintTimer(jsonLoader.loadFps());
-            addViewListener();
+            init(); // loads all entities
+            view = new View(arena); // creates view
+            repaintTimer(jsonLoader.loadFps()); // sets refresh rate of the view
+            addViewListener(); // adds all keybindings
         } else {
+            long startTime = System.currentTimeMillis();
             init();
-            int timeToSimulate = arena.getRobots().get(0).getTimeToSimulate();
-            startLoggerTimer(1000);
+            int timeToSimulate = jsonLoader.loadSimulatedTime();
+
+            /*
+             * If logging shall happen in regular timed thread
+             * Important! This kind of logging will not determine the passed simulated time
+             */
+            //startLoggerTimer(1000);
+
+            //start thread on each intractable object
             arena.getPhysicalEntityList().forEach(this::startThread);
+
             Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+
+            // updates each second how far the current simulation progressed
             while (robotThreads.stream().anyMatch(Thread::isAlive)) {
                 int finalTimeToSimulate = timeToSimulate;
-                Optional<Long> percantageUntilDone = arena.getRobots().stream()
+                Optional<Long> percentageUntilDone = arena.getRobots().stream()
                         .map(robot -> Math.round((1 - ((double) robot.getTimeToSimulate() / (double) finalTimeToSimulate)) * 100))
                         .reduce(Long::sum);
-                System.out.print((percantageUntilDone.map(Math::toIntExact).orElse(0) / arena.getRobots().size()) + "%\r");
+                System.out.print((percentageUntilDone.map(Math::toIntExact).orElse(0) / arena.getRobots().size()) + "%\r");
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException interruptedException) {
                     logger.dumpError(interruptedException.getMessage());
                 }
             }
+            //logs the remaining log entries to the current log file
             logger.saveFullLogToFile(true);
             if (robotThreads.stream().noneMatch(Thread::isAlive)
                     && (logger.saveThread == null || !logger.saveThread.isAlive())) {
                 timeToSimulate = jsonLoader.loadSimulatedTime();
                 long endTime = System.currentTimeMillis();
+                // prints final status and exit
                 System.out.println("Done simulating.\nSimulated "
                         + (timeToSimulate / 60) / 60 + "h " + (timeToSimulate / 60) % 60 + "min " + timeToSimulate % 60 + "sec (" + timeToSimulate + ")");
                 System.out.println("That took " + ((endTime - startTime) / 1000) / 60 + " min and " + ((endTime - startTime) / 1000) % 60 + " sec");
@@ -90,7 +105,8 @@ public class Controller {
      * @param framesPerSecond int
      */
     public void repaintTimer(int framesPerSecond) {
-        if(framesPerSecond <= 0){
+        repaintTimer = new Timer();
+        if (framesPerSecond <= 0) {
             logger.dumpError("Started simulation with 0 frames per second.");
             framesPerSecond = 1;
         }
@@ -110,8 +126,6 @@ public class Controller {
         KeyListener keyListener = new KeyListener() {
             int x = 0, y = 0;
 
-            Map<RobotInterface, Position> robots;
-
             @Override
             public void keyTyped(KeyEvent e) {
             }
@@ -120,16 +134,7 @@ public class Controller {
             public void keyPressed(KeyEvent e) {
                 switch (e.getKeyCode()) {
                     case KeyEvent.VK_SPACE:
-                        for (PhysicalEntity entity : arena.getPhysicalEntityList()) {
-                            if (stopped) {
-                                entity.setToLatestPose();
-                                entity.togglePause();
-                                startThread(entity);
-                            } else {
-                                entity.togglePause();
-                            }
-                        }
-                        stopped = !stopped;
+                        startStop();
                         break;
                     case KeyEvent.VK_B:
                         if (stopped)
@@ -140,7 +145,7 @@ public class Controller {
                     case KeyEvent.VK_N:
                         if (stopped)
                             for (RobotInterface robot : arena.getRobots()) {
-                                robot.setNextPose();
+                                robot.setNextPoseInMemory();
                             }
                         break;
                     case KeyEvent.VK_W:
@@ -191,7 +196,7 @@ public class Controller {
                         view.getSimView().toggleDrawTypeInColor();
                         break;
                     case KeyEvent.VK_L:
-                        view.getSimView().toggleDrawInfosLeft();
+                        view.getSimView().toggleDrawInfosRight();
                         break;
                     case KeyEvent.VK_K:
                         view.getSimView().toggleDrawCenter();
@@ -199,13 +204,16 @@ public class Controller {
                     case KeyEvent.VK_V:
                         view.getSimView().toggleDrawRobotCone();
                         break;
+                    case KeyEvent.VK_X:
+                        view.getSimView().toggleDrawRobotSignal();
+                        break;
                     case KeyEvent.VK_F1:
                         if (stopped) {
                             init();
                         }
                         break;
                     case KeyEvent.VK_F2:
-                        logger.saveFullLogToFile(false);
+                        logger.saveFullLogToFile(true);
                         break;
                 }
             }
@@ -234,6 +242,10 @@ public class Controller {
         //saves a log to file causes overwriting an if existing
         view.getLog().addActionListener(actionListener -> {
             logger.saveFullLogToFile(false);
+        });
+        //Restarts the simulation
+        view.getItemStartStop().addActionListener(actionListener -> {
+            startStop();
         });
         //Restarts the simulation
         view.getRestart().addActionListener(actionListener -> {
@@ -265,6 +277,8 @@ public class Controller {
             arena.clearEntityList();
             jsonLoader.reload();
             arena = jsonLoader.reloadArena();
+            view.getSimView().setArena(arena);
+            repaintTimer.cancel();
             repaintTimer(jsonLoader.loadFps());
             init();
         });
@@ -281,5 +295,21 @@ public class Controller {
         if (RobotInterface.class.isAssignableFrom(physicalEntity.getClass()))
             robotThreads.add(t);
         t.start();
+    }
+
+    /**
+     *
+     */
+    private void startStop(){
+        for (PhysicalEntity entity : arena.getPhysicalEntityList()) {
+            if (stopped) {
+                entity.setToLatestPose();
+                entity.togglePause();
+                startThread(entity);
+            } else {
+                entity.togglePause();
+            }
+        }
+        stopped = !stopped;
     }
 }

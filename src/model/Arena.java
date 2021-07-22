@@ -117,12 +117,13 @@ public class Arena {
 
     /**
      * Checks if an position outside of the walls is closer due to the torus arena
+     *
      * @param measuringPosition Position
-     * @param position Position
+     * @param position          Position
      * @return position
      */
     public Position getClosestPositionInTorus(Position measuringPosition, Position position) {
-       double x=position.getX(),y = position.getY();
+        double x = position.getX(), y = position.getY();
         if (position.getX() > width / 2. && measuringPosition.getX() < width / 2.)
             x = measuringPosition.getEuclideanDistance(position.creatPositionByDecreasing(width, 0))
                     < measuringPosition.getEuclideanDistance(position) ? position.creatPositionByDecreasing(width, 0).getX() :
@@ -141,7 +142,7 @@ public class Arena {
                     < measuringPosition.getEuclideanDistance(position) ? position.creatPositionByDecreasing(0, -height).getY() :
                     position.getY();
         }
-        return new Position(x,y);
+        return new Position(x, y);
     }
 
     /**
@@ -211,6 +212,10 @@ public class Arena {
         return singleton.width;
     }
 
+    /**
+     * Adds an entity to the entity list
+     * @param entity Entity
+     */
     public void addEntity(Entity entity) {
         if (!singleton.entityList.contains(entity)) {
             singleton.entityList.add(entity);
