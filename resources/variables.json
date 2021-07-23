@@ -4,7 +4,7 @@
   "maxSpeed": 10.0,
   "minSpeed": 0.0,
   "arena": {
-    "torus": true,
+    "torus": false,
     "width": 200,
     "height": 200
   },

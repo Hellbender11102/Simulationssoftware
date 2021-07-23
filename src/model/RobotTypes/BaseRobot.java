@@ -370,7 +370,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * @return double
      */
     public double distanceToClosestEntityOfClass(List<Class> classList) {
-        return  pose.getEuclideanDistance(closestEntityOfClass(classList).getPose());
+        return  arena.getEuclideanDistanceToClosestPosition(pose,closestEntityOfClass(classList).getPose());
     }
 
     /**
