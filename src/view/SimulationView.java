@@ -28,6 +28,7 @@ public class SimulationView extends JPanel {
     private boolean infosRight = false;
     private boolean drawRobotCone = true;
     private boolean drawRobotSignal = true;
+    private boolean paused = true;
     private int fontSize = 10;
     private double zoomFactor = 5;
 
@@ -108,6 +109,9 @@ public class SimulationView extends JPanel {
                 n++;
                 drawInfo(g, robot, x, y);
             }
+        } if(paused) {
+            g2d.setColor(Color.darkGray);
+            g2d.drawString("Pausiert drücke Leertaste zum Fortfahren", 20, +20);
         }
     }
 
@@ -165,10 +169,14 @@ public class SimulationView extends JPanel {
         if (!drawInClassColor)
             g2d.setColor(robot.getColor());
         else g2d.setColor(robot.getClassColor());
-        if (!robot.getPaused())
+        if (!robot.getPaused()) {
             g2d.fillOval(convertZoom(x), convertZoom(y), convertZoom(robot.getDiameters()), convertZoom(robot.getDiameters()));
-        else
+            paused = false;
+        }
+        else {
             g2d.drawOval(convertZoom(x), convertZoom(y), convertZoom(robot.getDiameters()), convertZoom(robot.getDiameters()));
+            paused = true;
+        }
         g2d.setColor(Color.BLACK);
         if (drawRotationIndicator) {
             Position direction = robot.getPose().getPositionInDirection(robot.getRadius());

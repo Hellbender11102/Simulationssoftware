@@ -122,7 +122,7 @@ public abstract class BaseVisionConeRobot extends BaseRobot {
     public List<Box> getListOfBoxesInSight() {
         List<Box> entityList = new LinkedList<>();
         for (Box box : arena.getBoxList()) {
-            if (isSquareInSight(box.getPose(), box.getWidth(), box.getHeight())) {
+            if (isRectangleInSight(box.getPose(), box.getWidth(), box.getHeight())) {
                 entityList.add(box);
             }
         }
@@ -137,7 +137,7 @@ public abstract class BaseVisionConeRobot extends BaseRobot {
     public List<Wall> getListOfWallsInSight() {
         List<Wall> entityList = new LinkedList<>();
         for (Wall wall : arena.getWallList()) {
-            if (isSquareInSight(wall.getPose(), wall.getWidth(), wall.getHeight())) {
+            if (isRectangleInSight(wall.getPose(), wall.getWidth(), wall.getHeight())) {
                 entityList.add(wall);
             }
         }
@@ -242,7 +242,7 @@ public abstract class BaseVisionConeRobot extends BaseRobot {
      * @param height Position
      * @return boolean
      */
-    public boolean isSquareInSight(Position center, double width, double height) {
+    public boolean isRectangleInSight(Position center, double width, double height) {
         double rotation = pose.getRotation();
         Rectangle2D rectangle2D = new Rectangle2D.Double(center.getX() - width / 2, center.getY() - height / 2, width, height);
         // if body is square
