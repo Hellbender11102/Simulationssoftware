@@ -390,8 +390,14 @@ public class JsonLoader {
                 case "sheep":
                     robot = builder.buildSheep();
                     break;
-                case "dog":
-                    robot = builder.buildDog();
+                case "groupingSheep":
+                    robot = builder.buildGroupingSheep();
+                    break;
+                case "singleDog":
+                    robot = builder.buildSingleDog();
+                    break;
+                case "multipleDog":
+                    robot = builder.buildMultipleDog();
                     break;
                 case "vision":
                     robot = builder.buildVisionCone();

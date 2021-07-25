@@ -216,7 +216,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      */
     public void driveToPosition(Position position, double speed, double precisionInDegree) {
         if (arena.isTorus) position = arena.getClosestPositionInTorus(pose, position);
-        if (rotateToAngle(pose.getAngleToPosition(position), Math.toRadians(precisionInDegree), speed, 0)) {
+        if (rotateToAngle(arena.getAngleToPosition(pose,position), Math.toRadians(precisionInDegree), speed, 0)) {
             setEngines(speed, speed);
         }
     }
@@ -237,8 +237,8 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      */
     public void driveToPosition(Position position, double maxSpeed) {
         maxSpeed = Math.min(maxSpeed, this.maxSpeed);
-        double speed = Math.min(maxSpeed, maxSpeed - position.getEuclideanDistance(position));
-        double angle = pose.getAngleToPosition(position);
+        double speed = Math.min(maxSpeed, maxSpeed - arena.getEuclideanDistanceToClosestPosition(position,position));
+        double angle = arena.getAngleToPosition(pose,position);
         double rotationSpeed = pose.getAngleDiff(angle);
         setEngineR(speed + distanceE * rotationSpeed);
         setEngineL(speed + -distanceE * rotationSpeed);
@@ -312,11 +312,11 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
         for (RobotInterface robot : group) {
             Position robotPose = robot.getPose();
             if (arena.isTorus) robotPose = arena.getClosestPositionInTorus(pose, robotPose);
-            double distance = pose.getEuclideanDistance(robotPose);
+            double distance = arena.getEuclideanDistanceToClosestPosition(pose,robotPose);
             if (!equals(robot) && distance <= distanceToKeep + getRadius() + robot.getRadius()) {
                 isEnoughDistance = false;
                 double length = distanceToKeep + getRadius() + robot.getRadius() - distance;
-                double direction = pose.getAngleToPosition(robotPose);
+                double direction = arena.getAngleToPosition(pose,robotPose);
                 dummyPose.incRotation(dummyPose.getRotation() + direction);
                 dummyPose.addToPosition(dummyPose.creatPositionByDecreasing(dummyPose.getPositionInDirection(length).toVector()));
             }
@@ -391,7 +391,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
                 if (closestEntity == null) {
                     closestEntity = entity;
                 }
-                else if(pose.getEuclideanDistance(closestEntity.getPose()) > distance ){
+                else if(arena.getEuclideanDistanceToClosestPosition(pose,closestEntity.getPose()) > distance ){
                     closestEntity = entity;
                 }
             }
@@ -641,7 +641,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      */
     @Override
     public Position getClosestPositionInEntity(Position position) {
-        if (pose.getEuclideanDistance(position) < getRadius()) return position;
+        if (arena.getEuclideanDistanceToClosestPosition(pose,position) < getRadius()) return position;
         return closestPositionInEntityForCircle(position, getRadius());
     }
 

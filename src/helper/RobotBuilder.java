@@ -195,19 +195,35 @@ public class RobotBuilder {
     /**
      * Builds the robot of type sheep
      *
-     * @return Robot1
+     * @return Sheep
      */
     public Sheep buildSheep() {
         return new Sheep(this);
     }
+     /**
+     * Builds the robot of type GroupingSheep
+     *
+     * @return GroupingSheep
+     */
+    public GroupingSheep buildGroupingSheep() {
+        return new GroupingSheep(this);
+    }
 
     /**
-     * Builds the robot of type dog
+     * Builds the robot of type SingleDog
      *
-     * @return Robot2
+     * @return SingleDog
      */
-    public Dog buildDog() {
-        return new Dog(this);
+    public SingleDog buildSingleDog() {
+        return new SingleDog(this);
+    }
+    /**
+     * Builds the robot of type MultipleDog
+     *
+     * @return MultipleDog
+     */
+    public MultipleDog buildMultipleDog() {
+        return new MultipleDog(this);
     }
 
     /* Space to add own robot types */

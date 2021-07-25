@@ -126,15 +126,6 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
      */
     synchronized public void collision(PhysicalEntity physicalEntity) {
         Position position = pose, positionPe = physicalEntity.getPose();
-        /* TODO :D
-        Position closest = getClosestPositionInEntity(positionPe),
-                closestPe = physicalEntity.getClosestPositionInEntity(position);
-        if (arena.isTorus) {
-            closest = getClosestPositionInEntity(positionPe);
-            closestPe = physicalEntity.getClosestPositionInEntity(position);
-}
-        */
-
 
         //calculate the minimal distance for a collision
         double distance = position.getEuclideanDistance(getClosestPositionInEntity(positionPe)) +
@@ -172,7 +163,6 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
         Vector2D resultingPe = new Vector2D(v2x, v2y),
                 resulting = new Vector2D(v1x, v1y);
 
-
         //ensures correct distance ist kept
         if (position.getEuclideanDistance(physicalEntity.getPose()) - (resultingPe.getLength() + resulting.getLength()) <
                 position.getEuclideanDistance(getClosestPositionInEntity(positionPe)) +
@@ -199,6 +189,7 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
      * m2 mass of object two
      * movingAngle1 angle of current moving direction for object one
      * movingAngle2 angle of current moving direction for object two
+     *
      * @param v1           double
      * @param v2           double
      * @param m1           double
@@ -222,6 +213,7 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
      * m2 mass of object two
      * movingAngle1 angle of current moving direction for object one
      * movingAngle2 angle of current moving direction for object two
+     *
      * @param v1           double
      * @param v2           double
      * @param m1           double
@@ -289,10 +281,11 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
     public Position centerOfGroupWithEntities(List<Entity> group) {
         Position center = new Position(0, 0);
         for (Entity entity : group) {
-                center.addToPosition(entity.getPose());
+            center.addToPosition(entity.getPose());
         }
         center.setX(center.getX() / group.size());
         center.setY(center.getY() / group.size());
+
         return center;
     }
 

@@ -22,14 +22,14 @@ public class Sheep extends BaseRobot {
     @Override
     public void behavior() {
         center = centerOfGroupWithClasses(List.of(this.getClass()));
-        nextDog = closestEntityOfClass(List.of(Dog.class));
+        nextDog = closestEntityOfClass(List.of(SingleDog.class));
         nextSheep = (RobotInterface) closestEntityOfClass(List.of(this.getClass()));
         Pose nextSheepPose = nextSheep.getPose();
         double nextDogDistance = arena.getEuclideanDistanceToClosestPosition(pose,nextDog.getPose());
         double nextSheepDistance = arena.getEuclideanDistanceToClosestPosition(pose,nextSheepPose);
         if (10 > nextDogDistance){
             Vector2D fleeVec = pose.getVectorInDirection(1, arena.getAngleToPosition(pose,nextDog.getPose()));
-            fleeVec= fleeVec.add( pose.getVectorInDirection(1, arena.getAngleToPosition(nextSheepPose,pose)));
+            fleeVec= fleeVec.add( pose.getVectorInDirection(1, arena.getAngleToPosition(center,pose)));
             driveToPosition(pose.creatPositionByDecreasing(fleeVec),5);
             signal = true;
         }else if (10 < nextSheepDistance){

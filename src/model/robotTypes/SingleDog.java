@@ -8,9 +8,9 @@ import java.awt.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Dog extends BaseRobot {
+public class SingleDog extends BaseRobot {
 
-    public Dog(RobotBuilder builder) {
+    public SingleDog(RobotBuilder builder) {
         super(builder);
     }
 
@@ -18,21 +18,23 @@ public class Dog extends BaseRobot {
     private final int avoidingDistance = 9;
     double i = 0;
     Position centerOfSheep;
-    List<RobotInterface> sheepList = robotGroupByClasses(List.of(Sheep.class));
+    List<RobotInterface> sheepList = robotGroupByClasses(List.of(Sheep.class,GroupingSheep.class));
     double distanceSheeps;
     double distanceSheep;
     Position positionRunaway, positionFurthest;
-    final Position target = new Position(200, 200);
+     Position target = null;
     Vector2D movingResult;
 
     @Override
     public void behavior() {
-        sheepList = robotGroupByClasses(List.of(Sheep.class));
+        if(target == null && arena.getAreaList().size() > 0)
+            target = arena.getAreaList().stream().findFirst().get().getPose();
+        sheepList = robotGroupByClasses(List.of(Sheep.class,GroupingSheep.class));
         centerOfSheep = centerOfGroupWithRobots(sheepList);
         distanceSheeps = 0;
         for (RobotInterface sheep : sheepList) {
             Pose sheepPose = sheep.getPose();
-            distanceSheep = sheep.distanceToClosestEntityOfClass(List.of(Sheep.class));
+            distanceSheep = sheep.distanceToClosestEntityOfClass(List.of(Sheep.class,GroupingSheep.class));
             distanceSheeps += distanceSheep;
             if (positionRunaway == null)
                 positionRunaway = sheepPose;
@@ -48,7 +50,7 @@ public class Dog extends BaseRobot {
         }
 
         //if distance is greater than 2 cm for each sheep
-        if (distanceSheeps > sheepList.size() * sheepHerdDistance)
+        if (distanceSheeps > sheepList.size() * sheepHerdDistance &&  robotGroupByClasses(List.of(GroupingSheep.class)).size() == 0)
             movingResult = steerSheep(positionRunaway,centerOfSheep);
         else
             movingResult = steerSheep(positionFurthest,target);

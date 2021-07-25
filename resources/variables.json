@@ -4,13 +4,13 @@
   "maxSpeed": 10.0,
   "minSpeed": 0.0,
   "arena": {
-    "torus": false,
+    "torus": true,
     "width": 200,
     "height": 200
   },
   "robots": [
     {
-      "type": "sheep",
+      "type": "groupingSheep",
       "visionRange": 20.0,
       "visionAngle": 40.0,
       "engineR": 1.0,
@@ -25,7 +25,7 @@
       }
     },
     {
-      "type": "sheep",
+      "type": "groupingSheep",
       "visionRange": 20.0,
       "visionAngle": 40.0,
       "engineR": 1.0,
@@ -38,24 +38,9 @@
         "y": 10.0,
         "rotation": 180.0
       }
-    },
+},
     {
-      "type": "sheep",
-      "visionRange": 20.0,
-      "visionAngle": 40.0,
-      "engineR": 1.0,
-      "engineL":1.0,
-      "distance": 4.0,
-      "diameters": 4.0,
-      "powerTransmission": 0.0,
-      "position": {
-        "x": 80.0,
-        "y": 91.0,
-        "rotation": 180.0
-      }
-    },
-    {
-      "type": "sheep",
+      "type": "groupingSheep",
       "visionRange": 20.0,
       "visionAngle": 40.0,
       "engineR": 1.0,
@@ -70,7 +55,7 @@
       }
     },
     {
-      "type": "sheep",
+      "type": "groupingSheep",
       "visionRange": 20.0,
       "visionAngle": 40.0,
       "engineR": 1.0,
@@ -85,7 +70,7 @@
       }
     },
     {
-      "type": "sheep",
+      "type": "groupingSheep",
       "visionRange": 20.0,
       "visionAngle": 40.0,
       "engineR": 1.0,
@@ -100,7 +85,7 @@
       }
     },
     {
-      "type": "sheep",
+      "type": "groupingSheep",
       "visionRange": 20.0,
       "visionAngle": 40.0,
       "engineR": 1.0,
@@ -115,7 +100,7 @@
       }
     },
     {
-      "type": "sheep",
+      "type": "groupingSheep",
       "visionRange": 20.0,
       "visionAngle": 40.0,
       "engineR": 1.0,
@@ -130,7 +115,7 @@
       }
     },
     {
-      "type": "dog",
+      "type": "singleDog",
       "visionRange": 20.0,
       "visionAngle": 40.0,
       "engineR": 1.0,
@@ -150,5 +135,13 @@
   "walls": [
   ],
   "areas": [
+{
+"diameters": 10.0,
+"noticeableDistanceDiameters": 10.0,
+ 	"position": {
+ 	"x": 190.0,
+ 	"y": 190.0 
+}
+}
   ]
 }
