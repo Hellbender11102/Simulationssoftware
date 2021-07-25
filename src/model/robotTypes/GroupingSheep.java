@@ -14,15 +14,19 @@ public class GroupingSheep extends BaseRobot {
     }
 
     Entity nextDog;
+    final int fleeingDistance = 10;
+    final int distanceToGroupEntities = 2;
+    final int fleeingSpeed = 5;
+    final int speedInGroup = 2;
 
     @Override
     public void behavior() {
         nextDog = closestEntityOfClass(List.of(SingleDog.class));
-        if (10 > arena.getEuclideanDistanceToClosestPosition(pose, nextDog.getPose())) {
+        if (fleeingDistance > arena.getEuclideanDistanceToClosestPosition(pose, nextDog.getPose())) {
             Vector2D fleeVec = pose.getVectorInDirection(1, arena.getAngleToPosition(pose, nextDog.getPose()));
-            driveToPosition(pose.creatPositionByDecreasing(fleeVec), 5);
+            driveToPosition(pose.creatPositionByDecreasing(fleeVec), fleeingSpeed);
         } else
-            stayGroupedWithRobotType(2, List.of(this.getClass()), 4);
+            stayGroupedWithRobotType(distanceToGroupEntities, List.of(this.getClass()), speedInGroup);
     }
 
     @Override

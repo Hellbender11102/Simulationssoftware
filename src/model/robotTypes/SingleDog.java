@@ -16,13 +16,12 @@ public class SingleDog extends BaseRobot {
 
     private final int sheepHerdDistance = 5;
     private final int avoidingDistance = 9;
-    double i = 0;
     Position centerOfSheep;
     List<RobotInterface> sheepList = robotGroupByClasses(List.of(Sheep.class,GroupingSheep.class));
     double distanceSheeps;
     double distanceSheep;
     Position positionRunaway, positionFurthest;
-     Position target = null;
+    Position target = null;
     Vector2D movingResult;
 
     @Override
@@ -48,7 +47,6 @@ public class SingleDog extends BaseRobot {
                 positionFurthest = arena.getEuclideanDistanceToClosestPosition(sheepPose, target) > arena.getEuclideanDistanceToClosestPosition(sheepPose, target)
                         ? sheepPose : positionFurthest;
         }
-
         //if distance is greater than 2 cm for each sheep
         if (distanceSheeps > sheepList.size() * sheepHerdDistance &&  robotGroupByClasses(List.of(GroupingSheep.class)).size() == 0)
             movingResult = steerSheep(positionRunaway,centerOfSheep);
@@ -57,6 +55,12 @@ public class SingleDog extends BaseRobot {
         driveToPosition(pose.creatPositionByIncreasing(movingResult), movingResult.getLength());
     }
 
+    /**
+     * Returns the moving vector to the steer the given sheep to the given Position
+     * @param sheep Position
+     * @param target Position
+     * @return Vector2D
+     */
     private Vector2D steerSheep(Position sheep,Position target) {
         double angle = arena.getAngleToPosition(pose, sheep);
         Vector2D currentOrientation = Vector2D.creatCartesian(5, angle);
