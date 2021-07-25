@@ -1,8 +1,9 @@
-package model.RobotTypes;
+package model.robotTypes;
 
+import helper.RobotBuilder;
 import model.*;
-import model.AbstractModel.Entity;
-import model.AbstractModel.RobotInterface;
+import model.abstractModel.Entity;
+import model.abstractModel.RobotInterface;
 
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;

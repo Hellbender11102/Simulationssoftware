@@ -1,9 +1,9 @@
 package model;
 
-import model.AbstractModel.Entity;
-import model.AbstractModel.PhysicalEntity;
-import model.AbstractModel.RobotInterface;
-import model.RobotTypes.BaseRobot;
+import model.abstractModel.Entity;
+import model.abstractModel.PhysicalEntity;
+import model.abstractModel.RobotInterface;
+import model.robotTypes.BaseRobot;
 
 import java.util.ArrayList;
 import java.util.List;

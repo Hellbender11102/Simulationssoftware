@@ -1,7 +1,8 @@
-package model;
+package helper;
 
-import controller.Logger;
-import model.RobotTypes.*;
+import model.Arena;
+import model.Pose;
+import model.robotTypes.*;
 
 import java.awt.*;
 import java.util.Random;

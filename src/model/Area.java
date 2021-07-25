@@ -1,6 +1,6 @@
 package model;
 
-import model.AbstractModel.BaseEntity;
+import model.abstractModel.BaseEntity;
 
 import java.awt.*;
 import java.util.Random;

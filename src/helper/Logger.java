@@ -1,4 +1,4 @@
-package controller;
+package helper;
 
 import java.io.*;
 import java.text.DecimalFormat;
@@ -9,7 +9,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Logger {
     private File outputFile;
     private File errFile;
-    DecimalFormat df;
+    private DecimalFormat df;
+
+
+
     Thread saveThread;
     private boolean headWritten = false;
     private final ConcurrentHashMap<String, List<String>> logMap = new ConcurrentHashMap<>();
@@ -166,5 +169,9 @@ public class Logger {
                 saveThread.start();
             }
         }
+    }
+
+    public Thread getSaveThread() {
+        return saveThread;
     }
 }

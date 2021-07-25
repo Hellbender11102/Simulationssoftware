@@ -1,8 +1,10 @@
 package controller;
 
+import helper.JsonLoader;
+import helper.Logger;
 import model.*;
-import model.AbstractModel.PhysicalEntity;
-import model.AbstractModel.RobotInterface;
+import model.abstractModel.PhysicalEntity;
+import model.abstractModel.RobotInterface;
 import view.View;
 
 import java.awt.event.*;
@@ -58,7 +60,7 @@ public class Controller {
             //logs the remaining log entries to the current log file
             logger.saveFullLogToFile(true);
             if (robotThreads.stream().noneMatch(Thread::isAlive)
-                    && (logger.saveThread == null || !logger.saveThread.isAlive())) {
+                    && (logger.getSaveThread() == null || !logger.getSaveThread().isAlive())) {
                 long endTime = System.currentTimeMillis();
                 // prints final status and exit
                 System.out.println("Done simulating.\nSimulated "

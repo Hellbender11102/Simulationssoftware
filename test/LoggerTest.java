@@ -1,4 +1,4 @@
-import controller.Logger;
+import helper.Logger;
 import org.junit.*;
 
 import java.io.*;

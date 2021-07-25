@@ -1,7 +1,8 @@
-package model.RobotTypes;
+package model.robotTypes;
 
+import helper.RobotBuilder;
 import model.*;
-import model.AbstractModel.RobotInterface;
+import model.abstractModel.RobotInterface;
 
 import java.awt.*;
 import java.util.List;

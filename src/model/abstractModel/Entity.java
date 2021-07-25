@@ -1,4 +1,4 @@
-package model.AbstractModel;
+package model.abstractModel;
 
 import model.Pose;
 import model.Position;

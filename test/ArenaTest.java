@@ -1,9 +1,9 @@
 
-import controller.Logger;
+import helper.Logger;
 import model.*;
-import model.AbstractModel.BaseEntity;
-import model.AbstractModel.PhysicalEntity;
-import model.RobotTypes.BaseRobot;
+import model.abstractModel.BaseEntity;
+import model.abstractModel.PhysicalEntity;
+import model.robotTypes.BaseRobot;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;

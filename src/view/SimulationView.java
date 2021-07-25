@@ -1,11 +1,11 @@
 package view;
 
-import model.AbstractModel.PhysicalEntity;
+import model.abstractModel.PhysicalEntity;
 import model.Area;
 import model.Arena;
 import model.Position;
-import model.AbstractModel.RobotInterface;
-import model.RobotTypes.BaseVisionConeRobot;
+import model.abstractModel.RobotInterface;
+import model.robotTypes.BaseVisionConeRobot;
 
 import javax.swing.*;
 import java.awt.*;

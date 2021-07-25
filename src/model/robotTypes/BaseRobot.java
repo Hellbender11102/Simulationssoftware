@@ -1,10 +1,11 @@
-package model.RobotTypes;
+package model.robotTypes;
 
-import controller.Logger;
+import helper.Logger;
+import helper.RobotBuilder;
 import model.*;
-import model.AbstractModel.BasePhysicalEntity;
-import model.AbstractModel.Entity;
-import model.AbstractModel.RobotInterface;
+import model.abstractModel.BasePhysicalEntity;
+import model.abstractModel.Entity;
+import model.abstractModel.RobotInterface;
 import org.uncommons.maths.random.ExponentialGenerator;
 import org.uncommons.maths.random.GaussianGenerator;
 

@@ -1,9 +1,7 @@
-package model.AbstractModel;
+package model.abstractModel;
 
 import model.*;
-import model.RobotTypes.BaseRobot;
 
-import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;

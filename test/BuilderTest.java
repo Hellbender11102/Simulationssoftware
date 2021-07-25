@@ -1,9 +1,9 @@
-import controller.Logger;
-import model.AbstractModel.RobotInterface;
+import helper.Logger;
+import model.abstractModel.RobotInterface;
 import model.Arena;
 import model.Pose;
-import model.RobotBuilder;
-import model.RobotTypes.BaseVisionConeRobot;
+import helper.RobotBuilder;
+import model.robotTypes.BaseVisionConeRobot;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
