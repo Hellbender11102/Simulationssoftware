@@ -29,6 +29,7 @@ public class MultipleDog extends BaseRobot {
     Vector2D movingResult;
     int a = 1, b = 1;
 
+    //This is an approach to multiple behavior of dogs to guide sheeps
     @Override
     public void behavior() {
         if (target == null && arena.getAreaList().size() > 0) {
@@ -40,11 +41,13 @@ public class MultipleDog extends BaseRobot {
 
         //rotate
         for (RobotInterface sheep : sheepList) {
-            Position position = sheep.getPose();
+            Pose position = sheep.getPose();
             rotatedPositions.add(new Position(
                     position.getX() * Math.cos(angleCenterTarget) + position.getY() * Math.sin(angleCenterTarget),
                     -position.getX() * Math.sin(angleCenterTarget) + position.getY() * Math.cos(angleCenterTarget)
             ));
+            new Position(Vector2D.creatCartesian(position.getEuclideanDistance(0,0),angleCenterTarget).getX(),
+                    Vector2D.creatCartesian( position.getEuclideanDistance(0,0),angleCenterTarget).getY());
         }
         double minX = Double.NaN, minY = Double.NaN, maxX = Double.NaN, maxY = Double.NaN;
         for (Position position : rotatedPositions) {

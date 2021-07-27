@@ -128,12 +128,12 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
         Position position = pose, positionPe = physicalEntity.getPose();
 
         //calculate the minimal distance for a collision
-        double distance = arena.getEuclideanDistanceToClosestPosition(position,getClosestPositionInEntity(positionPe)) +
-                arena.getEuclideanDistanceToClosestPosition(positionPe,physicalEntity.getClosestPositionInEntity(position))
-                - arena.getEuclideanDistanceToClosestPosition(position,positionPe);
+        double distance = arena.getEuclideanDistanceToClosestPosition(position, getClosestPositionInEntity(positionPe)) +
+                arena.getEuclideanDistanceToClosestPosition(positionPe, physicalEntity.getClosestPositionInEntity(position))
+                - arena.getEuclideanDistanceToClosestPosition(position, positionPe);
 
-        double u1Angle = arena.getAngleToPosition(position,positionPe);
-        double u2Angle =  arena.getAngleToPosition(positionPe,position);
+        double u1Angle = arena.getAngleToPosition(position, positionPe);
+        double u2Angle = arena.getAngleToPosition(positionPe, position);
 
         Vector2D moving1 = movingVec.getAcquire(), moving2 = physicalEntity.getMovingVec().getAcquire();
 
@@ -162,10 +162,10 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
         //ensures correct distance ist kept
         //if entity is to close set them apart
         //also checks for the calculated distance it can cause errors on the edge of the torus
-        if (arena.getEuclideanDistanceToClosestPosition(position,physicalEntity.getPose()) - (resultingPe.getLength() + resulting.getLength()) <
-                arena.getEuclideanDistanceToClosestPosition(position,getClosestPositionInEntity(positionPe)) +
-                        arena.getEuclideanDistanceToClosestPosition(positionPe,physicalEntity.getClosestPositionInEntity(position)) &&
-        distance < (physicalEntity.getWeight()+physicalEntity.getHeight())/2 +(getWeight()+getHeight())/2) {
+        if (arena.getEuclideanDistanceToClosestPosition(position, physicalEntity.getPose()) - (resultingPe.getLength() + resulting.getLength()) <
+                arena.getEuclideanDistanceToClosestPosition(position, getClosestPositionInEntity(positionPe)) +
+                        arena.getEuclideanDistanceToClosestPosition(positionPe, physicalEntity.getClosestPositionInEntity(position)) &&
+                distance < (physicalEntity.getWeight() + physicalEntity.getHeight()) / 2 + (getWeight() + getHeight()) / 2) {
             if (isMovable() && physicalEntity.isMovable()) {
                 pose.addToPosition(Vector2D.creatCartesian(distance / 2, u2Angle));
                 physicalEntity.getPose().addToPosition(Vector2D.creatCartesian(distance / 2, u1Angle));
@@ -280,11 +280,25 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
     public Position centerOfGroupWithEntities(List<Entity> group) {
         Position center = new Position(0, 0);
         for (Entity entity : group) {
-            center.addToPosition(entity.getPose());
+            Position position = entity.getPose().clone();
+            if (arena.isTorus) {
+                if (group.stream().map(Entity::getPose).takeWhile(pose -> pose.getX() > arena.getWidth() / 2).count() > group.size() / 2) {
+                    if (position.getX() < arena.getWidth() / 2)
+                        position.addToPosition(arena.getWidth(), 0);
+                } else if (position.getX() > arena.getWidth() / 2)
+                    position.addToPosition(-arena.getWidth(), 0);
+                if (group.stream().map(Entity::getPose).takeWhile(pose -> pose.getY() > arena.getHeight() / 2).count() > group.size() / 2) {
+                    if (position.getY() < arena.getHeight() / 2)
+                        position.addToPosition(0,arena.getHeight());
+                } else if (position.getY() > arena.getHeight() / 2)
+                    position.addToPosition(0,-arena.getHeight());
+            }
+            center.addToPosition(position);
         }
         center.setX(center.getX() / group.size());
         center.setY(center.getY() / group.size());
-
+        if (arena.isTorus)
+            center=  arena.setPositionInBoundsTorus(center);
         return center;
     }
 
