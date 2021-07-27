@@ -5,6 +5,7 @@ import model.*;
 import model.abstractModel.RobotInterface;
 
 import java.awt.*;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,64 +17,94 @@ public class MultipleDog extends BaseRobot {
 
     private final int sheepHerdDistance = 5;
     private final int avoidingDistance = 9;
+    private final int avoidDogs = 15;
     double i = 0;
     Position centerOfSheep;
-    List<RobotInterface> sheepList = robotGroupByClasses(List.of(Sheep.class,GroupingSheep.class));
+    List<RobotInterface> sheepList;
     double distanceSheeps;
     double distanceSheep;
     Position positionRunaway, positionFurthest;
     Position target = null;
+    List<Position> rotatedPositions = new LinkedList<>();
     Vector2D movingResult;
+    int a = 1, b = 1;
 
     @Override
     public void behavior() {
-        if(target == null && arena.getAreaList().size() > 0)
-            target = arena.getAreaList().stream().findFirst().get().getPose();
-        sheepList = robotGroupByClasses(List.of(Sheep.class,GroupingSheep.class));
+        if (target == null && arena.getAreaList().size() > 0) {
+            target = arena.getAreaList().get(0).getPose();
+        }
+        sheepList = robotGroupByClasses(List.of(Sheep.class, GroupingSheep.class));
         centerOfSheep = centerOfGroupWithRobots(sheepList);
-        distanceSheeps = 0;
+        double angleCenterTarget = arena.getAngleToPosition(centerOfSheep, target);
+
+        //rotate
         for (RobotInterface sheep : sheepList) {
-            Pose sheepPose = sheep.getPose();
-            distanceSheep = sheep.distanceToClosestEntityOfClass(List.of(Sheep.class,GroupingSheep.class));
-            distanceSheeps += distanceSheep;
-            if (positionRunaway == null)
-                positionRunaway = sheepPose;
-            else
-                positionRunaway = arena.getEuclideanDistanceToClosestPosition(sheepPose, centerOfSheep) + arena.getEuclideanDistanceToClosestPosition(sheepPose, target)
-                        > arena.getEuclideanDistanceToClosestPosition(positionRunaway, centerOfSheep) + arena.getEuclideanDistanceToClosestPosition(positionRunaway, target)
-                        ? sheepPose : positionRunaway;
-            if (positionFurthest == null)
-                positionFurthest = sheepPose;
-            else
-                positionFurthest = arena.getEuclideanDistanceToClosestPosition(sheepPose, target) > arena.getEuclideanDistanceToClosestPosition(sheepPose, target)
-                        ? sheepPose : positionFurthest;
+            Position position = sheep.getPose();
+            rotatedPositions.add(new Position(
+                    position.getX() * Math.cos(angleCenterTarget) + position.getY() * Math.sin(angleCenterTarget),
+                    -position.getX() * Math.sin(angleCenterTarget) + position.getY() * Math.cos(angleCenterTarget)
+            ));
         }
-
-        //if distance is greater than 2 cm for each sheep
-        if (distanceSheeps > sheepList.size() * sheepHerdDistance &&  robotGroupByClasses(List.of(GroupingSheep.class)).size() == 0)
-            movingResult = steerSheep(positionRunaway,centerOfSheep);
-        else
-            movingResult = steerSheep(positionFurthest,target);
-        driveToPosition(pose.creatPositionByIncreasing(movingResult), movingResult.getLength());
-    }
-
-    private Vector2D steerSheep(Position sheep,Position target) {
-        double angle = arena.getAngleToPosition(pose, sheep);
-        Vector2D currentOrientation = Vector2D.creatCartesian(5, angle);
-        List<RobotInterface> listOfToClose = sheepList.stream().filter(x -> arena.getEuclideanDistanceToClosestPosition(x.getPose(), pose) < avoidingDistance).collect(Collectors.toList());
-        double speed = pose.getEuclideanDistance(sheep.creatPositionByIncreasing(currentOrientation));
-        if (listOfToClose.size() > 0) {
-            RobotInterface closestSheep = listOfToClose.stream().reduce((robot1, robot2) ->
-                    arena.getEuclideanDistanceToClosestPosition(robot1.getPose(), pose) < arena.getEuclideanDistanceToClosestPosition(robot2.getPose(), pose) ? robot1 : robot2).get();
-            currentOrientation.set(Vector2D.creatCartesian(5, arena.getAngleToPosition(closestSheep.getPose(), target) - Math.PI));
+        double minX = Double.NaN, minY = Double.NaN, maxX = Double.NaN, maxY = Double.NaN;
+        for (Position position : rotatedPositions) {
+            if (Double.isNaN(minX)) {
+                minX = position.getX();
+                minY = position.getY();
+                maxX = position.getX();
+                maxY = position.getY();
+            } else {
+                minX = Math.min(minX, position.getX());
+                minY = Math.min(minY, position.getY());
+                maxX = Math.max(maxX, position.getX());
+                maxY = Math.max(maxY, position.getY());
+            }
         }
-        return currentOrientation.normalize().multiplication(speed);
+        //rotate back max/ min positions
+        Position corner1 = new Position(
+                maxX * Math.cos(angleCenterTarget) - maxY * Math.sin(angleCenterTarget),
+                maxX * Math.sin(angleCenterTarget) + maxY * Math.cos(angleCenterTarget));
+        Position corner2 = new Position(
+                maxX * Math.cos(angleCenterTarget) - minY * Math.sin(angleCenterTarget),
+                maxX * Math.sin(angleCenterTarget) + minY * Math.cos(angleCenterTarget));
+        Position corner3 = new Position(
+                minX * Math.cos(angleCenterTarget) - maxY * Math.sin(angleCenterTarget),
+                minX * Math.sin(angleCenterTarget) + maxY * Math.cos(angleCenterTarget));
+        Position corner4 = new Position(
+                minX * Math.cos(angleCenterTarget) - minY * Math.sin(angleCenterTarget),
+                minX * Math.sin(angleCenterTarget) + minY * Math.cos(angleCenterTarget));
+        Position drivingTo = new Position(0, 0);
+        if (a == 1) {
+            drivingTo = corner1;
+            if (arena.getEuclideanDistanceToClosestPosition(pose, corner1) < getRadius()) {
+                b = 1;
+                a += b;
+            }
+        } else if (a == 2) {
+            drivingTo = corner3;
+            if (arena.getEuclideanDistanceToClosestPosition(pose, corner3) < getRadius()) {
+                a += b;
+            }
+        } else if (a == 3) {
+            drivingTo = corner4;
+            if (arena.getEuclideanDistanceToClosestPosition(pose, corner4) < getRadius())
+                a += b;
+        } else if (a == 4) {
+            drivingTo = corner2;
+            if (arena.getEuclideanDistanceToClosestPosition(pose, corner2) < getRadius()) {
+                b = -1;
+                a += b;
+            }
+        }
+        drivingTo=arena.setPositionInBoundsTorus(drivingTo);
+        System.out.println(drivingTo);
+        System.out.println(a);
+        driveToPosition(drivingTo);
     }
-
 
     @Override
     public Color getClassColor() {
-        return Color.YELLOW;
+        return Color.RED;
     }
 
 }

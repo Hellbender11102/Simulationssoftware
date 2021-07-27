@@ -1,6 +1,7 @@
 package model.robotTypes;
 
 import helper.RobotBuilder;
+import model.Position;
 import model.Vector2D;
 import model.abstractModel.Entity;
 
@@ -18,6 +19,7 @@ public class GroupingSheep extends BaseRobot {
     final int distanceToGroupEntities = 2;
     final int fleeingSpeed = 5;
     final int speedInGroup = 2;
+    int logging =0;
 
     @Override
     public void behavior() {
@@ -27,6 +29,14 @@ public class GroupingSheep extends BaseRobot {
             driveToPosition(pose.creatPositionByDecreasing(fleeVec), fleeingSpeed);
         } else
             stayGroupedWithRobotType(distanceToGroupEntities, List.of(this.getClass()), speedInGroup);
+        //logs once per simulated second
+        if (logging++ % ticsPerSimulatedSecond == 0) {
+            Position center = centerOfGroupWithClasses( List.of(this.getClass()));
+            logger.logDouble(getId()+": sheep-x",pose.getX(),2);
+            logger.logDouble(getId()+": sheep-y",pose.getY(),2);
+            logger.logDouble(getId()+": distance-center",arena.getEuclideanDistanceToClosestPosition(pose,center),2);
+            logger.logDouble(getId()+": distance-closest",arena.getEuclideanDistanceToClosestPosition(pose,center),2);
+        }
     }
 
     @Override
