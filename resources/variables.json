@@ -128,7 +128,37 @@
         "y": 10.0,
         "rotation": 180.0
       }
-    }
+ },
+    {
+      "type": "a",
+      "visionRange": 20.0,
+      "visionAngle": 40.0,
+      "engineR": 5.0,
+      "engineL":5.0,
+      "distance": 4.0,
+      "diameters": 4.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 10.0,
+        "y": 100.0,
+        "rotation": 180.0
+      }
+ },
+    {
+      "type": "a",
+      "visionRange": 20.0,
+      "visionAngle": 40.0,
+      "engineR": 6.0,
+      "engineL":6.0,
+      "distance": 4.0,
+      "diameters": 4.0,
+      "powerTransmission": 0.0,
+      "position": {
+        "x": 185.0,
+        "y": 100.0,
+        "rotation": 0.0
+      }
+}
   ],
   "boxes": [
   ],

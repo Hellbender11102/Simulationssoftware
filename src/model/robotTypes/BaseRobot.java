@@ -564,10 +564,10 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
                     pose = positions.get(poseRingMemoryPointer);
                 poseRingMemoryPointer -= 1;
             } else {
+                alterMovingVector();
                 behavior();
-                setNextPosition();
-                inArenaBounds();
                 collisionDetection();
+                setNextPosition();
                 updatePositionMemory();
             }
         }

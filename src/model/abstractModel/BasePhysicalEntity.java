@@ -128,16 +128,12 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
         Position position = pose, positionPe = physicalEntity.getPose();
 
         //calculate the minimal distance for a collision
-        double distance = position.getEuclideanDistance(getClosestPositionInEntity(positionPe)) +
-                positionPe.getEuclideanDistance(physicalEntity.getClosestPositionInEntity(position)) - position.getEuclideanDistance(positionPe);
+        double distance = arena.getEuclideanDistanceToClosestPosition(position,getClosestPositionInEntity(positionPe)) +
+                arena.getEuclideanDistanceToClosestPosition(positionPe,physicalEntity.getClosestPositionInEntity(position))
+                - arena.getEuclideanDistanceToClosestPosition(position,positionPe);
 
-        if (arena.isTorus && position.getAngleToPosition(positionPe) > distance) { //TODO
-            position = arena.getClosestPositionInTorus(pose, physicalEntity.getPose());
-            positionPe = arena.getClosestPositionInTorus(physicalEntity.getPose(), pose);
-        }
-
-        double u1Angle = position.getAngleToPosition(positionPe);
-        double u2Angle = positionPe.getAngleToPosition(position);
+        double u1Angle = arena.getAngleToPosition(position,positionPe);
+        double u2Angle =  arena.getAngleToPosition(positionPe,position);
 
         Vector2D moving1 = movingVec.getAcquire(), moving2 = physicalEntity.getMovingVec().getAcquire();
 
@@ -164,9 +160,12 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
                 resulting = new Vector2D(v1x, v1y);
 
         //ensures correct distance ist kept
-        if (position.getEuclideanDistance(physicalEntity.getPose()) - (resultingPe.getLength() + resulting.getLength()) <
-                position.getEuclideanDistance(getClosestPositionInEntity(positionPe)) +
-                        positionPe.getEuclideanDistance(physicalEntity.getClosestPositionInEntity(position))) {
+        //if entity is to close set them apart
+        //also checks for the calculated distance it can cause errors on the edge of the torus
+        if (arena.getEuclideanDistanceToClosestPosition(position,physicalEntity.getPose()) - (resultingPe.getLength() + resulting.getLength()) <
+                arena.getEuclideanDistanceToClosestPosition(position,getClosestPositionInEntity(positionPe)) +
+                        arena.getEuclideanDistanceToClosestPosition(positionPe,physicalEntity.getClosestPositionInEntity(position)) &&
+        distance < (physicalEntity.getWeight()+physicalEntity.getHeight())/2 +(getWeight()+getHeight())/2) {
             if (isMovable() && physicalEntity.isMovable()) {
                 pose.addToPosition(Vector2D.creatCartesian(distance / 2, u2Angle));
                 physicalEntity.getPose().addToPosition(Vector2D.creatCartesian(distance / 2, u1Angle));

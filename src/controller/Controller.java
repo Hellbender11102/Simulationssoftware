@@ -50,7 +50,7 @@ public class Controller {
             long ticsToSimulate = (long) timeToSimulate * jsonLoader.loadTicsPerSimulatedSecond();
             while (robotThreads.stream().anyMatch(Thread::isAlive) && arena.getRobots().size() > 0) {
                 System.out.print(
-                        Math.round((1- (arena.getRobots().get(0).getTimeToSimulate() / (double)ticsToSimulate))*100 )+ "%\r");
+                        Math.round((1 - (arena.getRobots().get(0).getTimeToSimulate() / (double) ticsToSimulate)) * 100) + "%\r");
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException interruptedException) {
@@ -124,6 +124,7 @@ public class Controller {
     private void addViewListener() {
         KeyListener keyListener = new KeyListener() {
             int x = 0, y = 0;
+            boolean setNext = false, setPrev = false;
 
             @Override
             public void keyTyped(KeyEvent e) {
@@ -137,14 +138,14 @@ public class Controller {
                         break;
                     case KeyEvent.VK_B:
                         if (stopped)
-                            for (RobotInterface robot : arena.getRobots()) {
-                                robot.setPrevPose();
+                            for (int i = 0; i < 10; i++) {
+                                arena.getPhysicalEntityList().stream().forEach(PhysicalEntity::setPrevPose);
                             }
                         break;
                     case KeyEvent.VK_N:
                         if (stopped)
-                            for (RobotInterface robot : arena.getRobots()) {
-                                robot.setNextPoseInMemory();
+                            for (int i = 0; i < 10; i++) {
+                                arena.getPhysicalEntityList().stream().forEach(PhysicalEntity::setNextPoseInMemory);
                             }
                         break;
                     case KeyEvent.VK_W:
