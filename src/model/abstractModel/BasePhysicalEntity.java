@@ -2,9 +2,7 @@ package model.abstractModel;
 
 import model.*;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalEntity {
@@ -37,6 +35,7 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
      */
     protected AtomicReference<Vector2D> movingVec = new AtomicReference<>();
 
+    private Map<String, Integer> loggingCounterMap = new HashMap<>();
 
     protected BasePhysicalEntity(Arena arena, Random random, double width, double height, boolean simulateWithView, Pose pose, int ticsPerSimulatedSecond) {
         super(arena, random, width, height, pose);
@@ -282,23 +281,31 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
         for (Entity entity : group) {
             Position position = entity.getPose().clone();
             if (arena.isTorus) {
-                if (group.stream().map(Entity::getPose).takeWhile(pose -> pose.getX() > arena.getWidth() / 2).count() > group.size() / 2) {
-                    if (position.getX() < arena.getWidth() / 2)
-                        position.addToPosition(arena.getWidth(), 0);
-                } else if (position.getX() > arena.getWidth() / 2)
-                    position.addToPosition(-arena.getWidth(), 0);
-                if (group.stream().map(Entity::getPose).takeWhile(pose -> pose.getY() > arena.getHeight() / 2).count() > group.size() / 2) {
-                    if (position.getY() < arena.getHeight() / 2)
-                        position.addToPosition(0,arena.getHeight());
-                } else if (position.getY() > arena.getHeight() / 2)
-                    position.addToPosition(0,-arena.getHeight());
+                if (group.stream().map(Entity::getPose)
+                        .map(pose -> pose.getEuclideanDistance(position))
+                        .reduce(Double::sum).get() >
+                        group.stream().map(Entity::getPose)
+                                .map(pose -> arena.getEuclideanDistanceToClosestPosition(position, pose))
+                                .reduce(Double::sum).get()
+                ) {
+                    if (group.stream().map(Entity::getPose).takeWhile(pose -> pose.getX() >= arena.getWidth() / 2).count() > group.size() / 2) {
+                        if (position.getX() <= arena.getWidth() / 2)
+                            position.addToPosition(arena.getWidth(), 0);
+                    } else if (position.getX() >= arena.getWidth() / 2)
+                        position.addToPosition(-arena.getWidth(), 0);
+                    if (group.stream().map(Entity::getPose).takeWhile(pose -> pose.getY() >= arena.getHeight() / 2).count() > group.size() / 2) {
+                        if (position.getY() <= arena.getHeight() / 2)
+                            position.addToPosition(0, arena.getHeight());
+                    } else if (position.getY() >= arena.getHeight() / 2)
+                        position.addToPosition(0, -arena.getHeight());
+                }
             }
             center.addToPosition(position);
         }
         center.setX(center.getX() / group.size());
         center.setY(center.getY() / group.size());
         if (arena.isTorus)
-            center=  arena.setPositionInBoundsTorus(center);
+            center = arena.setPositionInBoundsTorus(center);
         return center;
     }
 
@@ -329,6 +336,30 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
             }
         }
         return entityInGroup;
+    }
+
+    /**
+     * @param key
+     * @param value
+     * @param logsPerSecond
+     */
+    public void logPerSecond(String key, String value, int logsPerSecond) {
+        if (!loggingCounterMap.containsKey(key)) {
+            loggingCounterMap.put(key, 0);
+        }
+        loggingCounterMap.putIfAbsent(key, 0);
+        if (loggingCounterMap.get(key) % (ticsPerSimulatedSecond / logsPerSecond) == 0)
+            logger.log(key, value);
+        loggingCounterMap.computeIfPresent(key, (k, v) -> v + 1);
+    }
+
+    public void logDoublePerSecond(String key, double value, int decimalplaces, int logsPerSecond) {
+        if (!loggingCounterMap.containsKey(key)) {
+            loggingCounterMap.put(key, 0);
+        }
+        if (loggingCounterMap.get(key) % (ticsPerSimulatedSecond / logsPerSecond) == 0)
+            logger.logDouble(key, value, decimalplaces);
+        loggingCounterMap.computeIfPresent(key, (k, v) -> v + 1);
     }
 
 
