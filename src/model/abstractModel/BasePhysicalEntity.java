@@ -281,6 +281,7 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
         for (Entity entity : group) {
             Position position = entity.getPose().clone();
             if (arena.isTorus) {
+                //checks if the distance is greater to torus positions for each entity in the group
                 if (group.stream().map(Entity::getPose)
                         .map(pose -> pose.getEuclideanDistance(position))
                         .reduce(Double::sum).get() >
