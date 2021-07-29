@@ -132,11 +132,19 @@ public class Position extends Point2D {
     public Position creatPositionByIncreasing(Vector2D vector) {
         return new Position(xCoordinate + vector.getX(), yCoordinate + vector.getY());
     }
+    /**
+     * @param x double
+     * @param y double
+     * @return Position
+     */
+    public Position creatPositionByIncreasing(double x,double y) {
+        return new Position(xCoordinate + x, yCoordinate + y);
+    }
 
     /**
      * @param x double
      * @param y double
-     * @return position - position
+     * @return position
      */
     public Position creatPositionByDecreasing(double x, double y) {
         return new Position(xCoordinate - x, yCoordinate - y);

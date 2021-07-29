@@ -17,7 +17,7 @@ public class SingleDog extends BaseRobot {
     private final int sheepHerdDistance = 5;
     private final int avoidingDistance = 9;
     Position centerOfSheep;
-    List<RobotInterface> sheepList = robotGroupByClasses(List.of(Sheep.class, GroupingSheep.class));
+    List<RobotInterface> sheepList;
     double distanceSheeps;
     double distanceSheep;
     Position positionRunaway, positionFurthest;

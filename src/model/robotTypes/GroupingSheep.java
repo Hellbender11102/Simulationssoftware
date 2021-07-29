@@ -21,23 +21,22 @@ public class GroupingSheep extends BaseRobot {
     final int speedInGroup = 2;
     int logging =0;
 
+    int i = 0;
+
     @Override
     public void behavior() {
-        nextDog = closestEntityOfClass(List.of(SingleDog.class));
-        if (fleeingDistance > arena.getEuclideanDistanceToClosestPosition(pose, nextDog.getPose())) {
-            Vector2D fleeVec = pose.getVectorInDirection(1, arena.getAngleToPosition(pose, nextDog.getPose()));
-            driveToPosition(pose.creatPositionByDecreasing(fleeVec), fleeingSpeed);
-        } else
-            stayGroupedWithRobotType(distanceToGroupEntities, List.of(this.getClass()), speedInGroup);
-        //logs once per simulated second
-        if (logging++ % ticsPerSimulatedSecond == 0) {
-            Position center = centerOfGroupWithClasses( List.of(this.getClass()));
-            logger.logDouble(getId()+": sheep-x",pose.getX(),2);
-            logger.logDouble(getId()+": sheep-y",pose.getY(),2);
-            logger.logDouble(getId()+": distance-center",arena.getEuclideanDistanceToClosestPosition(pose,center),2);
-            logger.logDouble(getId()+": distance-closest",arena.getEuclideanDistanceToClosestPosition(pose,center),2);
+        stayGroupedWithAllRobots(10, 8);
+        Position groupCenter = centerOfGroupWithClasses(List.of(getClass()));
+        if(i% (ticsPerSimulatedSecond / 20) == 0) {
+            logger.logDouble(getId() + " Distant closest", distanceToClosestEntityOfClass(List.of(getClass())), 2);
+            if(getId() == 19) {
+                logger.logDouble(" center X", groupCenter.getX(), 1);
+                logger.logDouble(" center Y", groupCenter.getY(), 1);
+            }
         }
+        i++;
     }
+
 
     @Override
     public Color getClassColor() {
