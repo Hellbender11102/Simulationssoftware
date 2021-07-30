@@ -54,13 +54,19 @@ public class SingleDog extends BaseRobot {
         else
             movingResult = steerSheep(positionFurthest, target);
         driveToPosition(pose.creatPositionByIncreasing(movingResult), movingResult.getLength());
-        //logging once per simulated second
+      /*
+          Functional logging code
+          it will log once per simulated second
+          it will log the position for each dong on the same value
+          also it keeps track of the distance from the sheep center to the target
+          and the distance of sheeps
         if (logging++ % ticsPerSimulatedSecond == 0) {
-            logger.logDouble("dog-x", pose.getX(), 2);
-            logger.logDouble("dog-y", pose.getY(), 2);
+            logger.logDouble("dogX", pose.getX(), 2);
+            logger.logDouble("dogY", pose.getY(), 2);
             logger.logDouble("distance-center-target", arena.getEuclideanDistanceToClosestPosition(centerOfSheep, target), 2);
             logger.logDouble("distanceSheeps", distanceSheeps, 2);
         }
+       */
     }
 
     /**
@@ -72,13 +78,13 @@ public class SingleDog extends BaseRobot {
      */
     private Vector2D steerSheep(Position sheep, Position target) {
         double angle = arena.getAngleToPosition(pose, sheep);
-        Vector2D currentOrientation = Vector2D.creatCartesian(5, angle);
+        Vector2D currentOrientation = Vector2D.creatCartesian(2, angle);
         List<RobotInterface> listOfToClose = sheepList.stream().filter(x -> arena.getEuclideanDistanceToClosestPosition(x.getPose(), pose) < avoidingDistance).collect(Collectors.toList());
         double speed = pose.getEuclideanDistance(sheep.creatPositionByIncreasing(currentOrientation));
         if (listOfToClose.size() > 0) {
             RobotInterface closestSheep = listOfToClose.stream().reduce((robot1, robot2) ->
                     arena.getEuclideanDistanceToClosestPosition(robot1.getPose(), pose) < arena.getEuclideanDistanceToClosestPosition(robot2.getPose(), pose) ? robot1 : robot2).get();
-            currentOrientation.set(Vector2D.creatCartesian(5, arena.getAngleToPosition(closestSheep.getPose(), target) - Math.PI));
+            currentOrientation.set(Vector2D.creatCartesian(2, arena.getAngleToPosition(closestSheep.getPose(), target) - Math.PI));
         }
         return currentOrientation.normalize().multiplication(speed);
     }

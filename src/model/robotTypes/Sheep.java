@@ -51,13 +51,19 @@ public class Sheep extends BaseRobot {
             moveRandom(pathLength, moveRandomSpeed, turnRadius);
             signal = false;
         }
-        //logs once per simulated second
+        /*
+          Functional logging code
+          it will log once per simulated second
+          it will log the position for each sheep on the same key
+          also it keeps track of the distance to the sheep center
+          and the closest sheep
         if (logging++ % ticsPerSimulatedSecond == 0) {
-            logger.logDouble(getId()+": sheep-x",pose.getX(),2);
-            logger.logDouble(getId()+": sheep-y",pose.getY(),2);
-            logger.logDouble(getId()+": distance-center",arena.getEuclideanDistanceToClosestPosition(pose,center),2);
-            logger.logDouble(getId()+": distance-closest",arena.getEuclideanDistanceToClosestPosition(pose,nextSheepPose),2);
+            logger.logDouble("sheepX",pose.getX(),2);
+            logger.logDouble("sheepY",pose.getY(),2);
+            logger.logDouble(getId()+"distance-center",arena.getEuclideanDistanceToClosestPosition(pose,center),2);
+            logger.logDouble(getId()+"distance-closest",arena.getEuclideanDistanceToClosestPosition(pose,nextSheepPose),2);
         }
+           */
     }
 
     @Override

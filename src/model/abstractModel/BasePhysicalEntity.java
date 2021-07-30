@@ -312,23 +312,21 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
                     if (entityCount == positionsLowerWidthHalf.size() && entityCount == groupSize / 2)
                         entityCount -= 1;
 
-                    if (positionX < arena.getWidth() / 2. && entityCount > groupSize / 2) {
+                    if (positionX < arena.getWidth() / 2. && entityCount > positionsLowerWidthHalf.size()) {
                         eucDist = positionsGreaterWidthHalf.stream()
-                                .map(pos -> pos.creatPositionByDecreasing(0, pos.getY()).getEuclideanDistance
-                                        (position.creatPositionByDecreasing(0, positionY))).reduce(Double::sum).get();
+                                .map(pos -> Math.abs(pos.getX()- positionX)).reduce(Double::sum).get();
                         eucDistTorus = positionsGreaterWidthHalf.stream()
-                                .map(pos -> arena.getEuclideanDistanceToClosestPosition(pos.creatPositionByDecreasing(0, pos.getY()),
-                                        position.creatPositionByDecreasing(0, positionY))).reduce(Double::sum).get();
+                                .map(pos -> arena.getEuclideanDistanceToClosestPosition(new Position(pos.getX(),0),
+                                        new Position(positionX, 0))).reduce(Double::sum).get();
                         if (eucDistTorus < eucDist - 0.01) { // - 0.01 cause of double rounding issues
                             buffPos.addToPosition(arena.getWidth(), 0);
                         }
-                    } else if (positionX > arena.getWidth() / 2. && positionsLowerWidthHalf.size() >= groupSize / 2) {
+                    } else if (positionX > arena.getWidth() / 2. && positionsLowerWidthHalf.size() >= entityCount) {
                         eucDist = positionsLowerWidthHalf.stream()
-                                .map(pos -> pos.creatPositionByDecreasing(0, pos.getY()).getEuclideanDistance
-                                        (position.creatPositionByDecreasing(0, positionY))).reduce(Double::sum).get();
+                                .map(pos -> Math.abs(pos.getX()- positionX)).reduce(Double::sum).get();
                         eucDistTorus = positionsLowerWidthHalf.stream()
-                                .map(pos -> arena.getEuclideanDistanceToClosestPosition(pos.creatPositionByDecreasing(0, pos.getY()),
-                                        position.creatPositionByDecreasing(0, positionY))).reduce(Double::sum).get();
+                                .map(pos -> arena.getEuclideanDistanceToClosestPosition(new Position(pos.getX(),0),
+                                        new Position(positionX, 0))).reduce(Double::sum).get();
                         if (eucDistTorus <= eucDist - 0.01) {
                             buffPos.addToPosition(-arena.getWidth(), 0);
                         }
@@ -337,30 +335,29 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
                     if (entityCount == positionsLowerHeightHalf.size() && entityCount == groupSize / 2)
                         entityCount -= 1;
 
-                    if (positionY < arena.getHeight() / 2. && entityCount > groupSize / 2) {
+                    if (positionY < arena.getHeight() / 2. && entityCount > positionsLowerHeightHalf.size()) {
                         eucDist = positionsGreaterHeightHalf.stream()
-                                .map(pos -> pos.creatPositionByDecreasing(pos.getX(), 0).getEuclideanDistance
-                                        (position.creatPositionByDecreasing(positionX, 0))).reduce(Double::sum).get();
+                                .map(pos -> Math.abs(pos.getY()- positionY)).reduce(Double::sum).get();
                         eucDistTorus = positionsGreaterHeightHalf.stream()
-                                .map(pos -> arena.getEuclideanDistanceToClosestPosition(pos.creatPositionByDecreasing(pos.getX(), 0),
-                                        position.creatPositionByDecreasing(positionX, 0))).reduce(Double::sum).get();
+                                .map(pos -> arena.getEuclideanDistanceToClosestPosition(new Position(0, pos.getY()),
+                                        new Position(0, positionY))).reduce(Double::sum).get();
                         if (eucDistTorus < eucDist - 0.01) {
                             buffPos.addToPosition(0, arena.getHeight());
                         }
-                    } else if (positionY > arena.getHeight() / 2. && positionsLowerHeightHalf.size() >= groupSize / 2) {
+                    } else if (positionY > arena.getHeight() / 2. && positionsLowerHeightHalf.size() >= entityCount) {
                         eucDist = positionsLowerHeightHalf.stream()
-                                .map(pos -> pos.creatPositionByDecreasing(pos.getX(), 0).getEuclideanDistance
-                                        (position.creatPositionByDecreasing(positionX, 0))).reduce(Double::sum).get();
+                                .map(pos -> Math.abs(pos.getY()- positionY)).reduce(Double::sum).get();
                         eucDistTorus = positionsLowerHeightHalf.stream()
-                                .map(pos -> arena.getEuclideanDistanceToClosestPosition(pos.creatPositionByDecreasing(pos.getX(), 0),
-                                        position.creatPositionByDecreasing(positionX, 0))).reduce(Double::sum).get();
+                                .map(pos -> arena.getEuclideanDistanceToClosestPosition(new Position(0, pos.getY()),
+                                        new Position(0, positionY))).reduce(Double::sum).get();
                         if (eucDistTorus <= eucDist - 0.01) {
                             buffPos.addToPosition(0, -arena.getHeight());
                         }
                     }
                 }
-                center.addToPosition(buffPos);
+                position.set(buffPos);
             }
+            center.addToPosition(position);
         }
         center.setX(center.getX() / group.size());
         center.setY(center.getY() / group.size());
@@ -397,31 +394,6 @@ abstract public class BasePhysicalEntity extends BaseEntity implements PhysicalE
         }
         return entityInGroup;
     }
-
-    /**
-     * @param key
-     * @param value
-     * @param logsPerSecond
-     */
-    public void logPerSecond(String key, String value, int logsPerSecond) {
-        if (!loggingCounterMap.containsKey(key)) {
-            loggingCounterMap.put(key, 0);
-        }
-        loggingCounterMap.putIfAbsent(key, 0);
-        if (loggingCounterMap.get(key) % (ticsPerSimulatedSecond / logsPerSecond) == 0)
-            logger.log(key, value);
-        loggingCounterMap.computeIfPresent(key, (k, v) -> v + 1);
-    }
-
-    public void logDoublePerSecond(String key, double value, int decimalplaces, int logsPerSecond) {
-        if (!loggingCounterMap.containsKey(key)) {
-            loggingCounterMap.put(key, 0);
-        }
-        if (loggingCounterMap.get(key) % (ticsPerSimulatedSecond / logsPerSecond) == 0)
-            logger.logDouble(key, value, decimalplaces);
-        loggingCounterMap.computeIfPresent(key, (k, v) -> v + 1);
-    }
-
 
     @Override
     public boolean hasPhysicalBody() {

@@ -100,7 +100,6 @@ public class MultipleDog extends BaseRobot {
             }
         }
         drivingTo=arena.setPositionInBoundsTorus(drivingTo);
-        logDoublePerSecond("1",b,2,1);
         driveToPosition(drivingTo);
     }
 

@@ -402,6 +402,9 @@ public class JsonLoader {
                 case "vision":
                     robot = builder.buildVisionCone();
                     break;
+                case "grouping":
+                    robot = builder.buildGrouping();
+                    break;
                 /* Space to add own robot types */
 
                 /* ----------------------------- */

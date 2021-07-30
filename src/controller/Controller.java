@@ -71,19 +71,6 @@ public class Controller {
         }
     }
 
-    /**
-     * Starts an scheduled timer which logs in an set time interval
-     *
-     * @param logsPerSec int
-     */
-    public void startLoggerTimer(int logsPerSec) {
-        loggerTimer.schedule(new TimerTask() {
-            @Override
-            public void run() { // logging can be done her
-
-            }
-        }, 0, 1000 / logsPerSec);
-    }
 
     /**
      * loads all entities from the JSON file and adds them to the arena
@@ -241,7 +228,7 @@ public class Controller {
         //Menu listener events
         //saves a log to file causes overwriting an if existing
         view.getLog().addActionListener(actionListener -> {
-            logger.saveFullLogToFile(false);
+            logger.saveFullLogToFile(true);
         });
         //Restarts the simulation
         view.getItemStartStop().addActionListener(actionListener -> {

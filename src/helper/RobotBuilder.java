@@ -193,6 +193,14 @@ public class RobotBuilder {
     }
 
     /**
+     * Builds the robot of type grouping
+     *
+     * @return Grouping
+     */
+    public Grouping buildGrouping() {
+        return new Grouping(this);
+    }
+    /**
      * Builds the robot of type sheep
      *
      * @return Sheep

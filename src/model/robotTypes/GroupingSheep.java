@@ -4,6 +4,7 @@ import helper.RobotBuilder;
 import model.Position;
 import model.Vector2D;
 import model.abstractModel.Entity;
+import model.abstractModel.RobotInterface;
 
 import java.awt.*;
 import java.util.List;
@@ -21,22 +22,32 @@ public class GroupingSheep extends BaseRobot {
     final int speedInGroup = 2;
     int logging =0;
 
-    int i = 0;
 
     @Override
     public void behavior() {
-        stayGroupedWithAllRobots(10, 8);
-        Position groupCenter = centerOfGroupWithClasses(List.of(getClass()));
-        if(i% (ticsPerSimulatedSecond / 20) == 0) {
-            logger.logDouble(getId() + " Distant closest", distanceToClosestEntityOfClass(List.of(getClass())), 2);
-            if(getId() == 19) {
-                logger.logDouble(" center X", groupCenter.getX(), 1);
-                logger.logDouble(" center Y", groupCenter.getY(), 1);
-            }
+        nextDog = closestEntityOfClass(List.of(SingleDog.class));
+        if (fleeingDistance > arena.getEuclideanDistanceToClosestPosition(pose, nextDog.getPose())) {
+            Vector2D fleeVec = pose.getVectorInDirection(1, arena.getAngleToPosition(pose, nextDog.getPose()));
+            driveToPosition(pose.creatPositionByDecreasing(fleeVec), fleeingSpeed);
+        } else
+            stayGroupedWithRobotType(distanceToGroupEntities, List.of(this.getClass()), speedInGroup);
+        /*
+          Functional logging code
+          it will log once per simulated second
+          it will log the position for each sheep on the same key
+          also it keeps track of the distance to the sheep center
+          and the closest sheep
+        if (logging++ % ticsPerSimulatedSecond == 0) {
+            Position center = centerOfGroupWithClasses( List.of(this.getClass()));
+            logger.logDouble("sheepX",pose.getX(),2);
+            logger.logDouble("sheepY",pose.getY(),2);
+            logger.logDouble(getId()+"distance-center",arena.getEuclideanDistanceToClosestPosition(pose,center),2);
+            logger.logDouble(getId()+"distance-closest",arena.getEuclideanDistanceToClosestPosition(pose,
+                    closestEntityOfClass(List.of(getClass())).getPose()),2);
         }
-        i++;
-    }
+        */
 
+    }
 
     @Override
     public Color getClassColor() {
