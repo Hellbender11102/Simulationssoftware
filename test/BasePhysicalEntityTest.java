@@ -1,7 +1,7 @@
-import controller.Logger;
+import helper.Logger;
 import model.*;
-import model.AbstractModel.*;
-import model.RobotTypes.BaseRobot;
+import model.abstractModel.*;
+import model.robotTypes.BaseRobot;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,7 +10,6 @@ import org.junit.runners.Parameterized;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 @RunWith(Parameterized.class)
 public class BasePhysicalEntityTest {

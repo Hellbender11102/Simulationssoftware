@@ -1,6 +1,6 @@
 package view;
 
-import controller.Logger;
+import helper.Logger;
 
 import javax.swing.*;
 import java.awt.*;

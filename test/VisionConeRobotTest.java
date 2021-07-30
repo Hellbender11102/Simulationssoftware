@@ -1,9 +1,10 @@
-import controller.Logger;
+import helper.Logger;
+import helper.RobotBuilder;
 import model.*;
-import model.AbstractModel.BaseEntity;
-import model.AbstractModel.PhysicalEntity;
-import model.RobotTypes.BaseRobot;
-import model.RobotTypes.BaseVisionConeRobot;
+import model.abstractModel.BaseEntity;
+import model.abstractModel.PhysicalEntity;
+import model.robotTypes.BaseRobot;
+import model.robotTypes.BaseVisionConeRobot;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

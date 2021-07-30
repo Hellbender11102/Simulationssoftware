@@ -1,9 +1,9 @@
 package model;
 
-import model.AbstractModel.Entity;
-import model.AbstractModel.PhysicalEntity;
-import model.AbstractModel.RobotInterface;
-import model.RobotTypes.BaseRobot;
+import model.abstractModel.Entity;
+import model.abstractModel.PhysicalEntity;
+import model.abstractModel.RobotInterface;
+import model.robotTypes.BaseRobot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -124,23 +124,23 @@ public class Arena {
      */
     public Position getClosestPositionInTorus(Position measuringPosition, Position position) {
         double x = position.getX(), y = position.getY();
-        if (position.getX() > width / 2. && measuringPosition.getX() < width / 2.)
-            x = measuringPosition.getEuclideanDistance(position.creatPositionByDecreasing(width, 0))
-                    < measuringPosition.getEuclideanDistance(position) ? position.creatPositionByDecreasing(width, 0).getX() :
-                    position.getX();
-        else if (position.getX() < width / 2. && measuringPosition.getX() > width / 2.) {
-            x = measuringPosition.getEuclideanDistance(position.creatPositionByDecreasing(-width, 0))
-                    < measuringPosition.getEuclideanDistance(position) ? position.creatPositionByDecreasing(-width, 0).getX() :
-                    position.getX();
+        if (position.getX() >= width / 2. && measuringPosition.getX() < width / 2.)
+            x = measuringPosition.getEuclideanDistance(position.creatPositionByIncreasing(-width, 0))
+                    < measuringPosition.getEuclideanDistance(position)
+                    ? position.getX() - width : position.getX();
+        else if (position.getX() <= width / 2. && measuringPosition.getX() > width / 2.) {
+            x = measuringPosition.getEuclideanDistance(position.creatPositionByIncreasing(width, 0))
+                    < measuringPosition.getEuclideanDistance(position)
+                    ? position.getX() + width : position.getX();
         }
-        if (position.getY() > height / 2. && measuringPosition.getY() < height / 2.)
-            y = measuringPosition.getEuclideanDistance(position.creatPositionByDecreasing(0, height))
-                    < measuringPosition.getEuclideanDistance(position) ? position.creatPositionByDecreasing(0, height).getY() :
-                    position.getY();
-        else if (position.getY() < height / 2. && measuringPosition.getY() > height / 2.) {
-            y = measuringPosition.getEuclideanDistance(position.creatPositionByDecreasing(0, -height))
-                    < measuringPosition.getEuclideanDistance(position) ? position.creatPositionByDecreasing(0, -height).getY() :
-                    position.getY();
+        if (position.getY() >= height / 2. && measuringPosition.getY() < height / 2.)
+            y = measuringPosition.getEuclideanDistance(position.creatPositionByIncreasing(0, -height))
+                    < measuringPosition.getEuclideanDistance(position)
+                    ?  position.getY()- height : position.getY();
+        else if (position.getY() <= height / 2. && measuringPosition.getY() > height / 2.) {
+            y = measuringPosition.getEuclideanDistance(position.creatPositionByIncreasing(0, height))
+                    < measuringPosition.getEuclideanDistance(position)
+                    ? position.getY()+ height : position.getY();
         }
         return new Position(x, y);
     }
@@ -153,7 +153,22 @@ public class Arena {
      * @return double
      */
     public double getEuclideanDistanceToClosestPosition(Position position1, Position position2) {
-        return position1.getEuclideanDistance(getClosestPositionInTorus(position1, position2));
+        if (isTorus)
+            return position1.getEuclideanDistance(getClosestPositionInTorus(position1, position2));
+        else return position1.getEuclideanDistance(position2);
+    }
+
+    /**
+     * Returns the distance between two positions in an torus arena
+     *
+     * @param position1 Position
+     * @param position2 Position
+     * @return double
+     */
+    public double getAngleToPosition(Position position1, Position position2) {
+        if (isTorus)
+            return position1.getAngleToPosition(getClosestPositionInTorus(position1, position2));
+        else return position1.getAngleToPosition(position2);
     }
 
     @Override
@@ -214,6 +229,7 @@ public class Arena {
 
     /**
      * Adds an entity to the entity list
+     *
      * @param entity Entity
      */
     public void addEntity(Entity entity) {

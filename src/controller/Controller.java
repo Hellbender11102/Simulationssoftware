@@ -1,8 +1,10 @@
 package controller;
 
+import helper.JsonLoader;
+import helper.Logger;
 import model.*;
-import model.AbstractModel.PhysicalEntity;
-import model.AbstractModel.RobotInterface;
+import model.abstractModel.PhysicalEntity;
+import model.abstractModel.RobotInterface;
 import view.View;
 
 import java.awt.event.*;
@@ -15,6 +17,7 @@ public class Controller {
     private final List<Thread> robotThreads = new LinkedList<>();
     private Timer repaintTimer;
     private final Timer loggerTimer = new Timer();
+    private final int timeToSimulate;
     private final Logger logger = new Logger();
     private final JsonLoader jsonLoader = new JsonLoader(logger);
 
@@ -23,6 +26,7 @@ public class Controller {
      */
     public Controller() {
         arena = jsonLoader.initArena();
+        timeToSimulate = jsonLoader.loadSimulatedTime();
         if (jsonLoader.loadDisplayView()) {
             init(); // loads all entities
             view = new View(arena); // creates view
@@ -31,7 +35,6 @@ public class Controller {
         } else {
             long startTime = System.currentTimeMillis();
             init();
-            int timeToSimulate = jsonLoader.loadSimulatedTime();
 
             /*
              * If logging shall happen in regular timed thread
@@ -43,14 +46,11 @@ public class Controller {
             arena.getPhysicalEntityList().forEach(this::startThread);
 
             Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
-
             // updates each second how far the current simulation progressed
-            while (robotThreads.stream().anyMatch(Thread::isAlive)) {
-                int finalTimeToSimulate = timeToSimulate;
-                Optional<Long> percentageUntilDone = arena.getRobots().stream()
-                        .map(robot -> Math.round((1 - ((double) robot.getTimeToSimulate() / (double) finalTimeToSimulate)) * 100))
-                        .reduce(Long::sum);
-                System.out.print((percentageUntilDone.map(Math::toIntExact).orElse(0) / arena.getRobots().size()) + "%\r");
+            long ticsToSimulate = (long) timeToSimulate * jsonLoader.loadTicsPerSimulatedSecond();
+            while (robotThreads.stream().anyMatch(Thread::isAlive) && arena.getRobots().size() > 0) {
+                System.out.print(
+                        Math.round((1 - (arena.getRobots().get(0).getTimeToSimulate() / (double) ticsToSimulate)) * 100) + "%\r");
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException interruptedException) {
@@ -60,8 +60,7 @@ public class Controller {
             //logs the remaining log entries to the current log file
             logger.saveFullLogToFile(true);
             if (robotThreads.stream().noneMatch(Thread::isAlive)
-                    && (logger.saveThread == null || !logger.saveThread.isAlive())) {
-                timeToSimulate = jsonLoader.loadSimulatedTime();
+                    && (logger.getSaveThread() == null || !logger.getSaveThread().isAlive())) {
                 long endTime = System.currentTimeMillis();
                 // prints final status and exit
                 System.out.println("Done simulating.\nSimulated "
@@ -72,19 +71,6 @@ public class Controller {
         }
     }
 
-    /**
-     * Starts an scheduled timer which logs in an set time interval
-     *
-     * @param logsPerSec int
-     */
-    public void startLoggerTimer(int logsPerSec) {
-        loggerTimer.schedule(new TimerTask() {
-            @Override
-            public void run() { // logging can be done her
-
-            }
-        }, 0, 1000 / logsPerSec);
-    }
 
     /**
      * loads all entities from the JSON file and adds them to the arena
@@ -125,6 +111,7 @@ public class Controller {
     private void addViewListener() {
         KeyListener keyListener = new KeyListener() {
             int x = 0, y = 0;
+            boolean setNext = false, setPrev = false;
 
             @Override
             public void keyTyped(KeyEvent e) {
@@ -138,14 +125,14 @@ public class Controller {
                         break;
                     case KeyEvent.VK_B:
                         if (stopped)
-                            for (RobotInterface robot : arena.getRobots()) {
-                                robot.setPrevPose();
+                            for (int i = 0; i < 10; i++) {
+                                arena.getPhysicalEntityList().stream().forEach(PhysicalEntity::setPrevPose);
                             }
                         break;
                     case KeyEvent.VK_N:
                         if (stopped)
-                            for (RobotInterface robot : arena.getRobots()) {
-                                robot.setNextPoseInMemory();
+                            for (int i = 0; i < 10; i++) {
+                                arena.getPhysicalEntityList().stream().forEach(PhysicalEntity::setNextPoseInMemory);
                             }
                         break;
                     case KeyEvent.VK_W:
@@ -241,7 +228,7 @@ public class Controller {
         //Menu listener events
         //saves a log to file causes overwriting an if existing
         view.getLog().addActionListener(actionListener -> {
-            logger.saveFullLogToFile(false);
+            logger.saveFullLogToFile(true);
         });
         //Restarts the simulation
         view.getItemStartStop().addActionListener(actionListener -> {
@@ -300,7 +287,7 @@ public class Controller {
     /**
      *
      */
-    private void startStop(){
+    private void startStop() {
         for (PhysicalEntity entity : arena.getPhysicalEntityList()) {
             if (stopped) {
                 entity.setToLatestPose();

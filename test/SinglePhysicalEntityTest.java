@@ -1,7 +1,7 @@
-import controller.Logger;
+import helper.Logger;
 import model.*;
-import model.AbstractModel.PhysicalEntity;
-import model.RobotTypes.BaseRobot;
+import model.abstractModel.PhysicalEntity;
+import model.robotTypes.BaseRobot;
 import org.junit.Assert;
 import org.junit.Test;
 

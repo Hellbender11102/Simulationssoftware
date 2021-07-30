@@ -1,11 +1,11 @@
 package view;
 
-import model.AbstractModel.PhysicalEntity;
+import model.abstractModel.PhysicalEntity;
 import model.Area;
 import model.Arena;
 import model.Position;
-import model.AbstractModel.RobotInterface;
-import model.RobotTypes.BaseVisionConeRobot;
+import model.abstractModel.RobotInterface;
+import model.robotTypes.BaseVisionConeRobot;
 
 import javax.swing.*;
 import java.awt.*;
@@ -28,6 +28,7 @@ public class SimulationView extends JPanel {
     private boolean infosRight = false;
     private boolean drawRobotCone = true;
     private boolean drawRobotSignal = true;
+    private boolean paused = true;
     private int fontSize = 10;
     private double zoomFactor = 5;
 
@@ -86,8 +87,8 @@ public class SimulationView extends JPanel {
             for (RobotInterface robot : classList) {
                 Position position = robot.centerOfGroupWithClasses(List.of(robot.getClass()));
                 g2d.setColor(robot.getClassColor());
-                g2d.drawOval(convertZoom(position.getX() - offsetX- convertZoom(1)),
-                        convertZoom(arena.getHeight() - position.getY() - offsetY- convertZoom(1))
+                g2d.drawOval(convertZoom(position.getX() - offsetX -1),
+                        convertZoom(arena.getHeight() - position.getY() - offsetY -1)
                         , convertZoom(2), convertZoom(2));
             }
         //draws robots and the infos
@@ -108,6 +109,9 @@ public class SimulationView extends JPanel {
                 n++;
                 drawInfo(g, robot, x, y);
             }
+        } if(paused) {
+            g2d.setColor(Color.darkGray);
+            g2d.drawString("Pausiert drücke Leertaste zum Fortfahren", 20, +20);
         }
     }
 
@@ -165,10 +169,14 @@ public class SimulationView extends JPanel {
         if (!drawInClassColor)
             g2d.setColor(robot.getColor());
         else g2d.setColor(robot.getClassColor());
-        if (!robot.getPaused())
+        if (!robot.getPaused()) {
             g2d.fillOval(convertZoom(x), convertZoom(y), convertZoom(robot.getDiameters()), convertZoom(robot.getDiameters()));
-        else
+            paused = false;
+        }
+        else {
             g2d.drawOval(convertZoom(x), convertZoom(y), convertZoom(robot.getDiameters()), convertZoom(robot.getDiameters()));
+            paused = true;
+        }
         g2d.setColor(Color.BLACK);
         if (drawRotationIndicator) {
             Position direction = robot.getPose().getPositionInDirection(robot.getRadius());

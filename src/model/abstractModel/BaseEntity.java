@@ -1,6 +1,6 @@
-package model.AbstractModel;
+package model.abstractModel;
 
-import controller.Logger;
+import helper.Logger;
 import model.Arena;
 import model.Pose;
 import model.Position;

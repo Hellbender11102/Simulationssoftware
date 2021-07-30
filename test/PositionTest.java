@@ -44,9 +44,9 @@ public class PositionTest {
         Position posZero = new Position(0, 0), posOne = new Position(1, 0);
         Assert.assertEquals(posZero.getAngleToPosition(posOne), 0, 0);
         Assert.assertEquals(posOne.getAngleToPosition(posZero), Math.PI, 0.01);
-        if (!position2.creatPositionByDecreasing(position1).equals(new Position(0, 0))) {
-            Assert.assertEquals(position1.getAngleToPosition(position2), position2.creatPositionByDecreasing(position1).getPolarAngle(), 0);
-            Assert.assertEquals(position2.getAngleToPosition(position1), position1.creatPositionByDecreasing(position2).getPolarAngle(), 0);
+        if (!position2.creatPositionByDecreasing(position1.toVector()).equals(new Position(0, 0))) {
+            Assert.assertEquals(position1.getAngleToPosition(position2), position2.creatPositionByDecreasing(position1.toVector()).getPolarAngle(), 0);
+            Assert.assertEquals(position2.getAngleToPosition(position1), position1.creatPositionByDecreasing(position2.toVector()).getPolarAngle(), 0);
         }
     }
     @Test
@@ -57,8 +57,8 @@ public class PositionTest {
     @Test
     public void testPositionAddSubtract() {
         Position position1Old= position1.clone();
-        Assert.assertEquals(position1.distance(position2),position1.creatPositionByDecreasing(position2).distance(0,0), 0.00);
-        Assert.assertTrue(position1.creatPositionByDecreasing(position2).equals(position1.subtractFromPosition(position2.toVector())));
+        Assert.assertEquals(position1.distance(position2),position1.creatPositionByDecreasing(position2.toVector()).distance(0,0), 0.00);
+        Assert.assertTrue(position1.creatPositionByDecreasing(position2.toVector()).equals(position1.subtractFromPosition(position2.toVector())));
         position1.addToPosition(position2);
         Assert.assertTrue(position1.equals(position1Old));
     }

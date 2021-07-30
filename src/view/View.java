@@ -7,6 +7,7 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 import java.net.URL;
 
 public class View extends JFrame {
@@ -98,10 +99,16 @@ public class View extends JFrame {
             else settings.setVisible(true);
         };
         itemVariablesEditor.addActionListener(variablesAction);
-        //display log
+        //display last log
         ActionListener logAction = e -> {
+            File file = new File("out\\log.csv");
+            int fileCount = 0;
+            while (new File("out\\log"+fileCount+".csv").exists()) {
+                file = new File("out\\log" + fileCount + ".csv");
+                fileCount++;
+            }
             if (log == null)
-                log = new TextView("log.csv", logPath,
+                log = new TextView(file.getName(), file.getAbsolutePath(),
                         (int) (screenSize.width * 0.75), true);
             else log.setVisible(true);
         };
