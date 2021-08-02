@@ -291,8 +291,7 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * @return Position
      */
     public Position centerOfGroupWithRobots(List<RobotInterface> group) {
-        List<Entity> entityList = new LinkedList<>();
-        entityList.addAll(group);
+        List<Entity> entityList = new LinkedList<>(group);
         return centerOfGroupWithEntities(entityList);
     }
 

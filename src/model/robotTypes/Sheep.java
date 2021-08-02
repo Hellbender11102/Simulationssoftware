@@ -1,11 +1,8 @@
 package model.robotTypes;
 
-import model.abstractModel.Entity;
-import model.abstractModel.RobotInterface;
-import model.Pose;
-import model.Position;
+import model.abstractModel.*;
 import helper.RobotBuilder;
-import model.Vector2D;
+import model.*;
 
 import java.awt.*;
 import java.util.List;

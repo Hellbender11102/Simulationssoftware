@@ -16,8 +16,6 @@ public class Controller {
     private Arena arena;
     private final List<Thread> robotThreads = new LinkedList<>();
     private Timer repaintTimer;
-    private final Timer loggerTimer = new Timer();
-    private final int timeToSimulate;
     private final Logger logger = new Logger();
     private final JsonLoader jsonLoader = new JsonLoader(logger);
 
@@ -26,7 +24,7 @@ public class Controller {
      */
     public Controller() {
         arena = jsonLoader.initArena();
-        timeToSimulate = jsonLoader.loadSimulatedTime();
+        int timeToSimulate = jsonLoader.loadSimulatedTime();
         if (jsonLoader.loadDisplayView()) {
             init(); // loads all entities
             view = new View(arena); // creates view
@@ -111,7 +109,6 @@ public class Controller {
     private void addViewListener() {
         KeyListener keyListener = new KeyListener() {
             int x = 0, y = 0;
-            boolean setNext = false, setPrev = false;
 
             @Override
             public void keyTyped(KeyEvent e) {
@@ -126,13 +123,13 @@ public class Controller {
                     case KeyEvent.VK_B:
                         if (stopped)
                             for (int i = 0; i < 10; i++) {
-                                arena.getPhysicalEntityList().stream().forEach(PhysicalEntity::setPrevPose);
+                                arena.getPhysicalEntityList().forEach(PhysicalEntity::setPrevPose);
                             }
                         break;
                     case KeyEvent.VK_N:
                         if (stopped)
                             for (int i = 0; i < 10; i++) {
-                                arena.getPhysicalEntityList().stream().forEach(PhysicalEntity::setNextPoseInMemory);
+                                arena.getPhysicalEntityList().forEach(PhysicalEntity::setNextPoseInMemory);
                             }
                         break;
                     case KeyEvent.VK_W:

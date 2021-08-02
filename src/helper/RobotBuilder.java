@@ -1,7 +1,6 @@
 package helper;
 
-import model.Arena;
-import model.Pose;
+import model.*;
 import model.robotTypes.*;
 
 import java.awt.*;

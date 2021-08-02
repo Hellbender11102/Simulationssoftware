@@ -1,10 +1,8 @@
 package model.robotTypes;
 
 import helper.RobotBuilder;
-import model.Position;
 import model.Vector2D;
 import model.abstractModel.Entity;
-import model.abstractModel.RobotInterface;
 
 import java.awt.*;
 import java.util.List;

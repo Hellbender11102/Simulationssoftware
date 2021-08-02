@@ -443,9 +443,6 @@ public class JsonLoader {
         else return new Pose((Double) positionObject.get("x"), (Double) positionObject.get("y"), 0);
     }
 
-    void setVariables(JSONObject variables) {
-        this.variables = variables;
-    }
 
     /**
      * Reloads the JSObjects from the current file paths

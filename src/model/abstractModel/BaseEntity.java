@@ -1,9 +1,7 @@
 package model.abstractModel;
 
 import helper.Logger;
-import model.Arena;
-import model.Pose;
-import model.Position;
+import model.*;
 
 import java.awt.*;
 import java.util.LinkedList;

@@ -9,9 +9,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Logger {
     private File outputFile;
     private File errFile;
-    private DecimalFormat df;
-
-
 
     Thread saveThread;
     private boolean headWritten = false;
@@ -68,7 +65,7 @@ public class Logger {
         while (decimalPlaces-- > 0) {
             stringBuilder.append('#');
         }
-        df = new DecimalFormat(stringBuilder.toString());
+        DecimalFormat df = new DecimalFormat(stringBuilder.toString());
         log(key, df.format(value).replaceAll(",", "."));
     }
 

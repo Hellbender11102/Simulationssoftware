@@ -1,14 +1,8 @@
 package model.robotTypes;
 
 import helper.RobotBuilder;
-import model.Pose;
-import model.Position;
-import model.Vector2D;
-import model.abstractModel.RobotInterface;
 
 import java.awt.*;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class Grouping extends BaseRobot {
 
