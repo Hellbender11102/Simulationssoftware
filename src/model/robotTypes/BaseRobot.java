@@ -413,15 +413,15 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
             steps = pathLength / getTrajectoryMagnitude();
             exponentialGenerator = new ExponentialGenerator(1 / steps, random);
         }
-        GaussianGenerator gaussianGenerator = new GaussianGenerator(0, Math.toRadians(turnRadiusInDegree), random);
+        GaussianGenerator gaussianGenerator = new GaussianGenerator(0,Math.toRadians(turnRadiusInDegree), random);
         double nextDE = exponentialGenerator.nextValue();
         if (isInTurn) {
-            if (rotateToAngle(rotation, Math.toRadians(1), speed, 0)) {
+            if (rotateToAngle(rotation, Math.toRadians(2), speed, 0)) {
                 isInTurn = false;
             }
         } else if (straight <= 0) {
             isInTurn = true;
-            rotation = (pose.getRotation() + gaussianGenerator.nextValue()) % 2 * Math.PI;
+            rotation = (pose.getRotation() +gaussianGenerator.nextValue()) % (2 * Math.PI);
             straight = (int) nextDE;
         } else {
             setEngines(speed, speed);

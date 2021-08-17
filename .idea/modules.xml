@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/vibratingrobotssim.iml" filepath="$PROJECT_DIR$/vibratingrobotssim.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Simulationssoftware.iml" filepath="$PROJECT_DIR$/Simulationssoftware.iml" />
     </modules>
   </component>
 </project>

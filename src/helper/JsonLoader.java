@@ -406,7 +406,9 @@ public class JsonLoader {
                     robot = builder.buildGrouping();
                     break;
                 /* Space to add own robot types */
-
+                case "ant":
+                    robot = builder.buildAnt();
+                    break;
                 /* ----------------------------- */
                 default:
                     robot = builder.buildDefault();

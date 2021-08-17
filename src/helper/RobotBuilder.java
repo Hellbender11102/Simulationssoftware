@@ -234,4 +234,14 @@ public class RobotBuilder {
     }
 
     /* Space to add own robot types */
+
+    /**
+     * Builds the robot of type Ant
+     *
+     * @return Ant
+     */
+    public Ant buildAnt() {
+        return new Ant(this);
+    }
+
 }

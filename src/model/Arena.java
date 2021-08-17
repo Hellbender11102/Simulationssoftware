@@ -232,7 +232,7 @@ public class Arena {
      *
      * @param entity Entity
      */
-    public void addEntity(Entity entity) {
+    synchronized public void addEntity(Entity entity) {
         if (!singleton.entityList.contains(entity)) {
             singleton.entityList.add(entity);
         }

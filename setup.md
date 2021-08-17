@@ -6,3 +6,6 @@ These can be downloaded at:
 
 - https://maths.uncommons.org/
 
+Java version 11.0.11 
+Language level 11
+
