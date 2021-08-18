@@ -213,6 +213,23 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
      * @param position          Position
      * @param precisionInDegree double
      * @param speed             double
+     * @param secondEngine      double
+     */
+    public void driveToPosition(Position position, double speed,double secondEngine, double precisionInDegree) {
+        if (arena.isTorus) position = arena.getClosestPositionInTorus(pose, position);
+        if (rotateToAngle(arena.getAngleToPosition(pose, position), Math.toRadians(precisionInDegree), speed, secondEngine)) {
+            setEngines(speed, speed);
+        }
+    }
+
+    /**
+     * Rotates to Position
+     * If not correctly facing angle sets turning engine to speed and other engine to 0
+     * Facing correct angle sets both to speed
+     *
+     * @param position          Position
+     * @param precisionInDegree double
+     * @param speed             double
      */
     public void driveToPosition(Position position, double speed, double precisionInDegree) {
         if (arena.isTorus) position = arena.getClosestPositionInTorus(pose, position);

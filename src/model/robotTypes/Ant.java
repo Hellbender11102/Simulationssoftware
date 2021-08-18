@@ -35,7 +35,7 @@ public class Ant extends BaseVisionConeRobot {
     }
 
 
-    private Position food = null, home = null;
+    private Position home = null;
 
     @Override
     public void behavior() {
@@ -57,13 +57,11 @@ public class Ant extends BaseVisionConeRobot {
         if (targetVector.getLength() <= 0)
             targetVector = randomVec;
         if (hasFood && home != null)
-            targetVector = targetVector.add(Vector2D.creatCartesian(2, pose.getAngleToPosition(home)));
-        else if (!hasFood && food != null)
-            targetVector = targetVector.add(Vector2D.creatCartesian(2, pose.getAngleToPosition(food)));
+            targetVector = targetVector.add(Vector2D.creatCartesian(1, pose.getAngleToPosition(home)));
         driveToPosition(pose.creatPositionByIncreasing(targetVector));
 
         if (turned != null) {
-            driveToPosition(turned);
+            driveToPosition(turned,5,-1,5);
             if (isPositionInEntity(turned))
                 turned = null;
         }
@@ -99,18 +97,19 @@ public class Ant extends BaseVisionConeRobot {
                 .filter(x -> x.getNoticeableDistanceDiameter() == pheromoneTypeSearching)
                 .collect(Collectors.toList());
         if (areaList.stream().anyMatch(area -> area.getNoticeableDistanceDiameter() == searchedAreaType)) {
-            Area searchedArea = areaList.stream().filter(area -> area.getNoticeableDistanceDiameter() == searchedAreaType)
+            Area searchedArea = areaList.stream()
+                    .filter(area -> area.getNoticeableDistanceDiameter() == searchedAreaType)
                     .collect(Collectors.toList()).get(0);
             buffVec = Vector2D.creatCartesian(1, pose.getAngleToPosition(searchedArea.getPose()));
 
             if (isPositionInEntity(searchedArea.getClosestPositionInEntity(pose))) {
-                if (hasFood == false && food == null)
-                    food = searchedArea.getPose();
-                else if (hasFood == true && home == null)
-                    home = searchedArea.getPose();
+                 if (hasFood && home == null) {
+                    home = searchedArea.getPose().clone();
+                    System.out.println(home);
+                }
                 hasFood = getFood;
                 signal = getFood;
-                turned = pose.getPositionInDirection(3, searchedArea.getPose().getAngleToPosition(pose));
+                turned = pose.getPositionInDirection(3, pose.getRotation()+Math.PI);
             }
 
         } else if (group.size() > 1) {
