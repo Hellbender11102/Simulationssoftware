@@ -43,6 +43,7 @@ public class Arena {
      */
     synchronized
     public static Arena overWriteInstance(int width, int height, boolean isTorus) {
+        singleton.entityList.clear();
         singleton = new Arena(width, height, isTorus);
         return singleton;
     }

@@ -244,9 +244,19 @@ public class Controller {
 
         view.getItemLoadVariables().addActionListener(actionListener -> {
             String path = view.getPathOfSelectedFile();
-            if (path != null)
+            if (path != null) {
                 jsonLoader.setPathVariables(path);
+                for (PhysicalEntity physicalEntity : arena.getPhysicalEntityList()) {
+                    if (!stopped) {
+                        physicalEntity.togglePause();
+                    }
+                }
+                stopped = true;
+            }
+            arena.clearEntityList();
             jsonLoader.reload();
+            arena = jsonLoader.reloadArena();
+            view.getSimView().setArena(arena);
             init();
         });
         //Restarts the simulation after initializing all resources again

@@ -87,8 +87,10 @@ public class JsonLoader {
         if (variables != null && variables.containsKey("seed"))
             return new Random((long) variables.get("seed"));
         else {
-            System.out.println("No seed is used.");
-            return new Random();
+            int seed = new Random().nextInt();
+            System.out.println("No seed is used. Generated "+ seed);
+            return new Random(seed);
+
         }
     }
 

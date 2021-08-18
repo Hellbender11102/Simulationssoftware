@@ -316,7 +316,6 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
                 isEnoughDistance = false;
                 double length = distanceToKeep + robot.getRadius() + getRadius() - distance;
                 double direction = arena.getAngleToPosition(pose, robotPose);
-                ;
                 dummyPose.subtractFromPosition(Vector2D.creatCartesian(length * 2, direction));
             }
         }
