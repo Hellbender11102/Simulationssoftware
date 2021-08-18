@@ -74,13 +74,7 @@ public abstract class BaseVisionConeRobot extends BaseRobot {
      * @return List<Area>
      */
     public List<Area> getListOfAreasInSight() {
-        List<Area> entityList = new LinkedList<>();
-        for (Area area : arena.getAreaList()) {
-            if (isAreaInSight(area)) {
-                entityList.add(area);
-            }
-        }
-        return entityList;
+        return arena.getAreaList().stream().filter(this::isAreaInSight).collect(Collectors.toList());
     }
 
     /**
@@ -219,7 +213,7 @@ public abstract class BaseVisionConeRobot extends BaseRobot {
     public boolean isCircleInSight(Position center, double distance) {
         double rotation = pose.getRotation();
         // if body is in noticeable distance
-        if (pose.getEuclideanDistance(center) <= distance + getRadius()) return true;
+        if (isPositionInVisionCone(center)) return true;
         // one side of the vision cone is in sight
         Line2D firstConeLine = new Line2D.Double(pose, pose.getPositionInDirection(visionRange, rotation - visionAngle / 2));
         Line2D secondConeLine = new Line2D.Double(pose, pose.getPositionInDirection(visionRange, rotation + visionAngle / 2));

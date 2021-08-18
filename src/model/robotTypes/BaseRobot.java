@@ -371,15 +371,33 @@ abstract public class BaseRobot extends BasePhysicalEntity implements RobotInter
     public double distanceToClosestEntityOfClass(List<Class> classList) {
         return arena.getEuclideanDistanceToClosestPosition(pose, closestEntityOfClass(classList).getPose());
     }
+    /**
+     * Calculates the distance to the closest entity of given class
+     *
+     * @param group List<Entity>
+     * @return double
+     */
+    public double distanceToClosestEntityOfGroup(List<Entity> group) {
+        return arena.getEuclideanDistanceToClosestPosition(pose, closestEntityOfGroup(group).getPose());
+    }
 
     /**
-     * Returns the closest Entity of
+     * Returns the closest Entity of of the given Class
      *
      * @param classList List<Class>
      * @return double
      */
     public Entity closestEntityOfClass(List<Class> classList) {
         LinkedList<Entity> group = entityGroupByClasses(classList);
+        return closestEntityOfGroup(group);
+    }
+    /**
+     * Returns the closest Entity of the given group
+     *
+     * @param group List<Entity>
+     * @return double
+     */
+    public Entity closestEntityOfGroup(List<Entity> group) {
         double distance;
         Entity closestEntity = null;
         for (Entity entity : group) {

@@ -7,10 +7,11 @@ import model.robotTypes.BaseRobot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 public class Arena {
-    private final List<Entity> entityList = new ArrayList<>();
+    private final CopyOnWriteArrayList<Entity> entityList = new CopyOnWriteArrayList<>();
     private final int height, width;
     private static Arena singleton;
     public final boolean isTorus;
@@ -61,11 +62,11 @@ public class Arena {
     public boolean inArenaBounds(Position position) {
         if (position.getX() < 0)
             return false;
-        else if (position.getX() > width)
+        else if (position.getX() > singleton.width)
             return false;
         if (position.getY() < 0)
             return false;
-        else return position.getY() <= height;
+        else return position.getY() <= singleton.height;
     }
 
     /**
@@ -76,15 +77,15 @@ public class Arena {
      */
     public Position setPositionInBoundsTorus(Position position) {
         Position buffPosition = position.clone();
-        if (width > 0) {
-            buffPosition.xCoordinate = position.getX() % width;
-            while (buffPosition.getX() < 0) buffPosition.addToPosition(width, 0);
+        if (singleton.width > 0) {
+            buffPosition.xCoordinate = position.getX() % singleton.width;
+            while (buffPosition.getX() < 0) buffPosition.addToPosition(singleton.width, 0);
         } else {
             buffPosition.xCoordinate = 0;
         }
-        if (height > 0) {
-            buffPosition.yCoordinate = position.getY() % height;
-            while (buffPosition.getY() < 0) buffPosition.addToPosition(0, height);
+        if (singleton.height > 0) {
+            buffPosition.yCoordinate = position.getY() % singleton.height;
+            while (buffPosition.getY() < 0) buffPosition.addToPosition(0, singleton.height);
         } else {
             buffPosition.yCoordinate = 0;
         }
@@ -101,8 +102,8 @@ public class Arena {
         Position buffPosition = position.clone();
         if (buffPosition.getX() < 0) buffPosition.setX(0);
         if (buffPosition.getY() < 0) buffPosition.setY(0);
-        if (buffPosition.getX() > width) buffPosition.setX(width);
-        if (buffPosition.getY() > height) buffPosition.setY(height);
+        if (buffPosition.getX() > singleton.width) buffPosition.setX(singleton.width);
+        if (buffPosition.getY() > singleton.height) buffPosition.setY(singleton.height);
         return buffPosition;
     }
 
@@ -124,23 +125,23 @@ public class Arena {
      */
     public Position getClosestPositionInTorus(Position measuringPosition, Position position) {
         double x = position.getX(), y = position.getY();
-        if (position.getX() >= width / 2. && measuringPosition.getX() < width / 2.)
-            x = measuringPosition.getEuclideanDistance(position.creatPositionByIncreasing(-width, 0))
+        if (position.getX() >= singleton.width / 2. && measuringPosition.getX() < singleton.width / 2.)
+            x = measuringPosition.getEuclideanDistance(position.creatPositionByIncreasing(-singleton.width, 0))
                     < measuringPosition.getEuclideanDistance(position)
-                    ? position.getX() - width : position.getX();
-        else if (position.getX() <= width / 2. && measuringPosition.getX() > width / 2.) {
-            x = measuringPosition.getEuclideanDistance(position.creatPositionByIncreasing(width, 0))
+                    ? position.getX() - singleton.width : position.getX();
+        else if (position.getX() <= singleton.width / 2. && measuringPosition.getX() > singleton.width / 2.) {
+            x = measuringPosition.getEuclideanDistance(position.creatPositionByIncreasing(singleton.width, 0))
                     < measuringPosition.getEuclideanDistance(position)
-                    ? position.getX() + width : position.getX();
+                    ? position.getX() + singleton.width : position.getX();
         }
-        if (position.getY() >= height / 2. && measuringPosition.getY() < height / 2.)
-            y = measuringPosition.getEuclideanDistance(position.creatPositionByIncreasing(0, -height))
+        if (position.getY() >= singleton.height / 2. && measuringPosition.getY() < singleton.height / 2.)
+            y = measuringPosition.getEuclideanDistance(position.creatPositionByIncreasing(0, -singleton.height))
                     < measuringPosition.getEuclideanDistance(position)
-                    ?  position.getY()- height : position.getY();
-        else if (position.getY() <= height / 2. && measuringPosition.getY() > height / 2.) {
-            y = measuringPosition.getEuclideanDistance(position.creatPositionByIncreasing(0, height))
+                    ?  position.getY()- singleton.height : position.getY();
+        else if (position.getY() <= singleton.height / 2. && measuringPosition.getY() > singleton.height / 2.) {
+            y = measuringPosition.getEuclideanDistance(position.creatPositionByIncreasing(0, singleton.height))
                     < measuringPosition.getEuclideanDistance(position)
-                    ? position.getY()+ height : position.getY();
+                    ? position.getY()+ singleton.height : position.getY();
         }
         return new Position(x, y);
     }
@@ -153,7 +154,7 @@ public class Arena {
      * @return double
      */
     public double getEuclideanDistanceToClosestPosition(Position position1, Position position2) {
-        if (isTorus)
+        if (singleton.isTorus)
             return position1.getEuclideanDistance(getClosestPositionInTorus(position1, position2));
         else return position1.getEuclideanDistance(position2);
     }
@@ -166,7 +167,7 @@ public class Arena {
      * @return double
      */
     public double getAngleToPosition(Position position1, Position position2) {
-        if (isTorus)
+        if (singleton.isTorus)
             return position1.getAngleToPosition(getClosestPositionInTorus(position1, position2));
         else return position1.getAngleToPosition(position2);
     }
@@ -176,46 +177,46 @@ public class Arena {
         return "Arena width:" + singleton.width + " height:" + singleton.height + " is torus " + isTorus;
     }
 
-    synchronized public void addEntities(List<Entity> entities) {
+     public void addEntities(List<Entity> entities) {
         singleton.entityList.addAll(entities);
     }
 
-    synchronized public List<RobotInterface> getRobots() {
+     public List<RobotInterface> getRobots() {
         return singleton.entityList.stream().filter(x -> RobotInterface.class.isAssignableFrom(x.getClass())).map(x -> (RobotInterface) x).collect(Collectors.toList());
     }
 
-    synchronized public List<PhysicalEntity> getPhysicalEntityList() {
+     public List<PhysicalEntity> getPhysicalEntityList() {
         return singleton.entityList.stream().filter(x -> PhysicalEntity.class.isAssignableFrom(x.getClass())).map(x -> (PhysicalEntity) x).collect(Collectors.toList());
     }
 
-    synchronized public List<PhysicalEntity> getPhysicalEntitiesWithoutRobots() {
+     public List<PhysicalEntity> getPhysicalEntitiesWithoutRobots() {
         return singleton.entityList.stream().filter(
                 x -> PhysicalEntity.class.isAssignableFrom(x.getClass()) &&
                         !BaseRobot.class.isAssignableFrom(x.getClass())
         ).map(x -> (PhysicalEntity) x).collect(Collectors.toList());
     }
 
-    synchronized public List<Entity> getNonPhysicalEntityList() {
+     public List<Entity> getNonPhysicalEntityList() {
         return singleton.entityList.stream().filter(x -> !x.hasPhysicalBody()).collect(Collectors.toList());
     }
 
-    synchronized public void clearEntityList() {
+     public void clearEntityList() {
         singleton.entityList.clear();
     }
 
-    synchronized public List<Area> getAreaList() {
+     public List<Area> getAreaList() {
         return singleton.entityList.stream().filter(x -> Area.class.isAssignableFrom(x.getClass())).map(x -> (Area) x).collect(Collectors.toList());
     }
 
-    synchronized public List<Box> getBoxList() {
+     public List<Box> getBoxList() {
         return singleton.entityList.stream().filter(x -> Box.class.isAssignableFrom(x.getClass())).map(x -> (Box) x).collect(Collectors.toList());
     }
 
-    synchronized public List<Wall> getWallList() {
+     public List<Wall> getWallList() {
         return singleton.entityList.stream().filter(x -> Wall.class.isAssignableFrom(x.getClass())).map(x -> (Wall) x).collect(Collectors.toList());
     }
 
-    synchronized public List<Entity> getEntityList() {
+     public List<Entity> getEntityList() {
         return singleton.entityList;
     }
 
@@ -232,7 +233,7 @@ public class Arena {
      *
      * @param entity Entity
      */
-    synchronized public void addEntity(Entity entity) {
+     public void addEntity(Entity entity) {
         if (!singleton.entityList.contains(entity)) {
             singleton.entityList.add(entity);
         }

@@ -12,8 +12,8 @@ import java.util.stream.Collectors;
 
 public class Ant extends BaseVisionConeRobot {
     enum pheremoneType {
-        SEARCHING(.1),
-        RETURNINGFOOD(.2);
+        SEARCHING(.2),
+        RETURNINGFOOD(.4);
         public final double value;
 
         pheremoneType(double value) {
@@ -21,12 +21,11 @@ public class Ant extends BaseVisionConeRobot {
         }
     }
 
-    List<Area> antAreasSpawend = new LinkedList<>();
+    List<Area> antAreasSpawned = new LinkedList<>();
     int i = 0;
     final int randomMoveLength = 5;
     final int randomAngleChange = 10;
     private boolean hasFood = false;
-    Position nest = null;
     List<Area> areaList = new LinkedList<>();
     List<Area> antAreaList = new LinkedList<>();
 
@@ -37,65 +36,27 @@ public class Ant extends BaseVisionConeRobot {
 
     @Override
     public void behavior() {
-        Vector2D movingVector = new Vector2D(0, 0);
+        Vector2D targetVector;
         areaList = getListOfAreasInSight();
         antAreaList = areaList.stream()
-                .filter(area -> area.getNoticeableDistanceRadius() == pheremoneType.RETURNINGFOOD.value ||
-                        area.getNoticeableDistanceRadius() == pheremoneType.SEARCHING.value)
+                .filter(area -> area.getNoticeableDistanceRadius() < 1)
                 .collect(Collectors.toList());
-        if (!hasFood) {
-            if (areaList.stream().anyMatch(area -> area.getNoticeableDistanceDiameter() == area.getDiameters())) {
-                Area food = areaList.stream().filter(area -> area.getNoticeableDistanceDiameter() ==
-                        area.getDiameters()).collect(Collectors.toList()).get(0);
-                driveToPosition(food.getPose());
-                if (i % ticsPerSimulatedSecond == 0) {
-                    spawnPheromone(1, pheremoneType.SEARCHING.value);
-                }
-                if (isPositionInEntity(food.getClosestPositionInEntity(pose))) {
-                    hasFood = true;
-                    signal = true;
-                    // food.increaseArea(-1);
-                    // food.increaseNoticeableDistanceDiameters(-1);
-                }
-            } else if (antAreaList.size() != 0) {
-                movingVector = Vector2D.creatCartesian(2, pose.getAngleToPosition(centerOfGroupWithEntities(areaList.stream()
-                        .filter(x -> x.getNoticeableDistanceDiameter() == pheremoneType.RETURNINGFOOD.value)
-                        .map(x -> (Entity) x).collect(Collectors.toList()))));
-                if (i % ticsPerSimulatedSecond == 0) {
-                    spawnPheromone(1, pheremoneType.SEARCHING.value);
-                }
-            } else {
-                moveRandom(randomMoveLength, maxSpeed, randomAngleChange);
-                if (i % ticsPerSimulatedSecond == 0) {
-                    spawnPheromone(1, pheremoneType.SEARCHING.value);
-                }
-            }
 
+        if (!hasFood) {
+            targetVector = search(pheremoneType.SEARCHING.value, pheremoneType.RETURNINGFOOD.value, 2, true);
         } else {
-            if (areaList.stream().anyMatch(x -> x.getNoticeableDistanceDiameter() == 1.1)) {
-                hasFood = false;
-                signal = false;
-            } else if (areaList.size() > 0) {
-                movingVector = Vector2D.creatCartesian(2, pose.getAngleToPosition(centerOfGroupWithEntities(areaList.stream()
-                        .filter(x -> x.getNoticeableDistanceDiameter() == pheremoneType.SEARCHING.value)
-                        .map(x -> (Entity) x).collect(Collectors.toList()))));
-                if (i % ticsPerSimulatedSecond == 0) {
-                    spawnPheromone(1, pheremoneType.RETURNINGFOOD.value);
-                }
-            } else {
-                moveRandom(randomMoveLength, maxSpeed, randomAngleChange);
-                if (i % ticsPerSimulatedSecond == 0) {
-                    spawnPheromone(1, pheremoneType.RETURNINGFOOD.value);
-                }
-            }
+            targetVector = search(pheremoneType.RETURNINGFOOD.value, pheremoneType.SEARCHING.value, 1, false);
         }
         if (i++ % ticsPerSimulatedSecond == 0) {
             fadePheromone();
-            i = 1;
         }
-        if (movingVector.getLength() > 0) {
-            driveToPosition(pose.creatPositionByIncreasing(movingVector));
+        if (targetVector.getLength() > 0) {
+            driveToPosition(pose.creatPositionByIncreasing(targetVector), maxSpeed);
+        } else {
+            moveRandom(randomMoveLength, maxSpeed, randomAngleChange);
         }
+        areaList.clear();
+        antAreaList.clear();
     }
 
     /**
@@ -103,8 +64,8 @@ public class Ant extends BaseVisionConeRobot {
      */
     private void spawnPheromone(double size, double pheromoneType) {
         Area antArea = new Area(arena, new Random(), size, pheromoneType, pose.clone());
-        antAreasSpawend.add(antArea);
         arena.addEntity(antArea);
+        antAreasSpawned.add(antArea);
     }
 
     /**
@@ -112,14 +73,39 @@ public class Ant extends BaseVisionConeRobot {
      * deletes the entries from each list if none left
      */
     private void fadePheromone() {
-        if (antAreasSpawend.size() > 0) {
-            antAreasSpawend.forEach(aArea -> aArea.increaseArea(-0.2));
-            List<Area> faded = antAreasSpawend.stream().filter(aArea -> aArea.getDiameters() <= 0).collect(Collectors.toList());
-            antAreasSpawend.removeAll(faded);
-            arena.getEntityList().stream().filter(faded::contains);
+        if (antAreasSpawned.size() > 0) {
+            antAreasSpawned.forEach(aArea -> aArea.increaseArea(-0.1));
+            List<Area> faded = antAreasSpawned.stream().filter(aArea -> aArea.getDiameters() <= 0).collect(Collectors.toList());
+            antAreasSpawned.removeAll(faded);
+            arena.getEntityList().removeIf(faded::contains);
         }
     }
 
+    private Vector2D search(double pheromoneTypeSpawning, double pheromoneTypeSearching, int searchedAreaType, boolean getFood) {
+        Vector2D buffVec = new Vector2D(0, 0);
+        List<Entity> group = antAreaList.stream()
+                .filter(x -> x.getNoticeableDistanceDiameter() == pheromoneTypeSearching)
+                .collect(Collectors.toList());
+        if (areaList.stream().anyMatch(area -> area.getNoticeableDistanceDiameter() == searchedAreaType)) {
+            Area searchedArea = areaList.stream().filter(area -> area.getNoticeableDistanceDiameter() == searchedAreaType)
+                    .collect(Collectors.toList()).get(0);
+            buffVec = Vector2D.creatCartesian(1, pose.getAngleToPosition(searchedArea.getPose()));
+            if (isPositionInEntity(searchedArea.getClosestPositionInEntity(pose))) {
+                hasFood = getFood;
+                signal = getFood;
+            }
+         } else if (group.size() > 1) {
+            Position strongest = group.stream().reduce((x, y) -> x.getWidth() > y.getWidth() ? x : y).get().getPose();
+            Position weakest = group.stream().reduce((x, y) -> x.getWidth() < y.getWidth() ? x : y).get().getPose();
+            Position center = centerOfGroupWithEntities(group);
+            buffVec = Vector2D.creatCartesian(1, strongest.getAngleToPosition(weakest));
+            buffVec = buffVec.subtract(Vector2D.creatCartesian(1,pose.getAngleDiff( pose.getAngleToPosition(center))));
+        }
+        if (i % ticsPerSimulatedSecond == 0) {
+            spawnPheromone(1, pheromoneTypeSpawning);
+        }
+        return buffVec;
+    }
 
     @Override
     public Color getClassColor() {
