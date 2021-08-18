@@ -57,9 +57,9 @@ public class Ant extends BaseVisionConeRobot {
         if (targetVector.getLength() <= 0)
             targetVector = randomVec;
         if (hasFood && home != null)
-            targetVector = targetVector.add(Vector2D.creatCartesian(.5, pose.getAngleToPosition(home)));
+            targetVector = targetVector.add(Vector2D.creatCartesian(2, pose.getAngleToPosition(home)));
         else if (!hasFood && food != null)
-            targetVector = targetVector.add(Vector2D.creatCartesian(.5, pose.getAngleToPosition(food)));
+            targetVector = targetVector.add(Vector2D.creatCartesian(2, pose.getAngleToPosition(food)));
         driveToPosition(pose.creatPositionByIncreasing(targetVector));
 
         if (turned != null) {
